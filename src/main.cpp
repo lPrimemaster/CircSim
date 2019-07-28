@@ -1,0 +1,26 @@
+#include <iostream>
+
+#include "CSim.h"
+#include "render/GLWrapper.h"
+#include "states/Playing.h"
+
+#include <glm/gtc/matrix_transform.hpp>
+
+#include <thread>
+
+
+int main(int argc, char* argv[])
+{
+	//Todo : Use main thread for drawing and create as necessary to the circuit evaluation
+	GLWrapper wrapper;
+	Playing pstate;
+
+	CSim csim;
+	std::thread nt(&CSim::calculateStates, &csim);
+
+	wrapper.run(&pstate, &csim);
+
+	nt.join();
+
+	return 0;
+}
