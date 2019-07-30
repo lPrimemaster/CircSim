@@ -120,3 +120,6 @@ ipch/
 
 # Visual Studio Trace Files
 *.e2e
+
+#Concept art folder
+concept_art/
