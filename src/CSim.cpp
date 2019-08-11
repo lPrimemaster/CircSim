@@ -27,123 +27,170 @@ void CSim::analyzeConnections()
 
 void CSim::calculateStates()
 {
-	// Test only
-	//And gate
-	Node a, b, c, d;
+	Node S0("S0"), R0("R0"), S_0("S-0"), R_0("R-0"), Q0("Q0"), Q_0("Q-0");
+	Node S1("S1"), R1("R1"), S_1("S-1"), R_1("R-1"), Q1("Q1"), Q_1("Q-1");
+	Node S2("S2"), R2("R2"), S_2("S-2"), R_2("R-2"), Q2("Q2"), Q_2("Q-2");
+	Node S3("S3"), R3("R3"), S_3("S-3"), R_3("R-3"), Q3("Q3"), Q_3("Q-3");
 
-	a.write(HIGH);
-	b.write(HIGH);
+	// Uncomment for T-FlipFlop
+	S_0.setDependencyNode(&Q_0);
+	R_0.setDependencyNode(&Q0);
 
-	c.setDependencyNode(&a);
-	c.setDependencyNode(&b);
-	d.setDependencyNode(&c);
+	S_0.setDependencyNode(&S0);
+	R_0.setDependencyNode(&R0);
 
-	calculateNode(&d);
+	Q0.setDependencyNode(&S_0);
+	Q0.setDependencyNode(&Q_0);
 
-	printf("Node A -> %s\n", a.getState() ? "HIGH" : "LOW");
-	printf("Node B -> %s\n", b.getState() ? "HIGH" : "LOW");
-	printf("Node C -> %s\n", c.getState() ? "HIGH" : "LOW");
-	printf("Node D -> %s\n", d.getState() ? "HIGH" : "LOW");
+	Q_0.setDependencyNode(&R_0);
+	Q_0.setDependencyNode(&Q0);
 
-	//RS Flip-flop / Latch test
-	//Attempt a progressive method for timers? -- NOTICE THIS
+	registerNode(&S0);
+	registerNode(&R0);
+	registerNode(&S_0);
+	registerNode(&R_0);
+	registerNode(&Q0);
+	registerNode(&Q_0);
 
-	Node N0, N1, N2, N3, N4, N5, N6, N7, N8, N9;
+	// Uncomment for T-FlipFlop
+	S1.setDependencyNode(&Q0);
+	R1.setDependencyNode(&Q0);
 
+	S_1.setDependencyNode(&Q_1);
+	R_1.setDependencyNode(&Q1);
 
-	N2.setDependencyNode(&N0);
-	N3.setDependencyNode(&N1);
-	N4.setDependencyNode(&N2);
-	N4.setDependencyNode(&N8);
-	N5.setDependencyNode(&N3);
-	N5.setDependencyNode(&N9);
+	S_1.setDependencyNode(&S1);
+	R_1.setDependencyNode(&R1);
 
-	N6.setDependencyNode(&N4);
-	N7.setDependencyNode(&N5);
+	Q1.setDependencyNode(&S_1);
+	Q1.setDependencyNode(&Q_1);
 
-	N8.setDependencyNode(&N7);
-	N9.setDependencyNode(&N6);
+	Q_1.setDependencyNode(&R_1);
+	Q_1.setDependencyNode(&Q1);
 
-	N0.write(HIGH); //R
-	N1.write(LOW);  //S
-	N6.write(HIGH); //Q
-	calculateNode(&N6);
+	registerNode(&S1);
+	registerNode(&R1);
+	registerNode(&S_1);
+	registerNode(&R_1);
+	registerNode(&Q1);
+	registerNode(&Q_1);
 
-	auto clear = [&]() -> void
-	{
-		N0.untick();
-		N1.untick();
-		N2.untick();
-		N3.untick();
-		N4.untick();
-		N5.untick();
-		N6.untick();
-		N7.untick();
-		N8.untick();
-		N9.untick();
-	};
-	auto print = [&]() -> void
-	{
-		printf("N0 -> %s [R]\n", N0.getState() ? "HIGH" : "LOW");
-		printf("N1 -> %s [S]\n", N1.getState() ? "HIGH" : "LOW");
-		printf("N2 -> %s\n", N2.getState() ? "HIGH" : "LOW");
-		printf("N3 -> %s\n", N3.getState() ? "HIGH" : "LOW");
-		printf("N4 -> %s\n", N4.getState() ? "HIGH" : "LOW");
-		printf("N5 -> %s\n", N5.getState() ? "HIGH" : "LOW");
-		printf("N6 -> %s [Q+]\n", N6.getState() ? "HIGH" : "LOW");
-		printf("N7 -> %s [Q-]\n", N7.getState() ? "HIGH" : "LOW");
-		printf("N8 -> %s\n", N8.getState() ? "HIGH" : "LOW");
-		printf("N9 -> %s\n", N9.getState() ? "HIGH" : "LOW");
-	};
+	// // Uncomment for T-FlipFlop
+	// S2.setDependencyNode(&Q1);
+	// R2.setDependencyNode(&Q1);
 	
-	clear();
+	// S_2.setDependencyNode(&Q_2);
+	// R_2.setDependencyNode(&Q2);
 
-	N0.write(LOW); //R
-	N1.write(LOW); //S
-	calculateNode(&N6);
+	// S_2.setDependencyNode(&S2);
+	// R_2.setDependencyNode(&R2);
 
-	print();
-	
+	// Q2.setDependencyNode(&S_2);
+	// Q2.setDependencyNode(&Q_2);
 
-	clear();
+	// Q_2.setDependencyNode(&R_2);
+	// Q_2.setDependencyNode(&Q2);
 
-	N0.write(LOW);
-	N1.write(HIGH);
-	calculateNode(&N6);
+	// registerNode(&S2);
+	// registerNode(&R2);
+	// registerNode(&S_2);
+	// registerNode(&R_2);
+	// registerNode(&Q2);
+	// registerNode(&Q_2);
 
-	print();
+	// // Uncomment for T-FlipFlop
+	// S3.setDependencyNode(&Q2);
+	// R3.setDependencyNode(&Q2);
 
-	registerNode(&N6);
+	// S_3.setDependencyNode(&Q_3);
+	// R_3.setDependencyNode(&Q3);
+
+	// S_3.setDependencyNode(&S3);
+	// R_3.setDependencyNode(&R3);
+
+	// Q3.setDependencyNode(&S_3);
+	// Q3.setDependencyNode(&Q_3);
+
+	// Q_3.setDependencyNode(&R_3);
+	// Q_3.setDependencyNode(&Q3);
+
+	// registerNode(&S3);
+	// registerNode(&R3);
+	// registerNode(&S_3);
+	// registerNode(&R_3);
+	// registerNode(&Q3);
+	// registerNode(&Q_3);
+
+	auto printOut = [&]() -> void
+	{
+		printf("B0 -> %s\n", Q0.getState() ? "HIGH" : "LOW ");
+		printf("B1 -> %s\n", Q1.getState() ? "HIGH" : "LOW ");
+		printf("B2 -> %s\n", Q2.getState() ? "HIGH" : "LOW ");
+		printf("B3 -> %s\n", Q3.getState() ? "HIGH" : "LOW ");
+	};
 
 	int i = 0;
+
+	bool set = false;
+	bool reset = false;
+	bool l = false;
 
 	while (true)
 	{
 		i++;
-		//Clear all registered nodes tick status
-		for (auto reg_node : systemNodes)
-		{
-			clearAll(reg_node.second);
-		}
 
 		for (auto reg_node : systemNodes)
 		{
 			calculateNode(reg_node.second);
 		}
 
-		for (auto reg_node : systemNodes)
+		for(auto reg_node : systemNodes)
 		{
-			printf("Node %p is %s\r", (void*)reg_node.first, reg_node.second->getState() ? "HIGH" : "LOW ");
+			printf("Node %s -> %s\n", reg_node.second->getName().c_str(), reg_node.second->getState() ? "HIGH" : "LOW ");
 		}
 
-		if (!(i % 10)) { N0.write(HIGH); N1.write(LOW); }
-		if (!(i % 11)) { N0.write(LOW); N1.write(LOW); }
-		if (!(i % 20)) { N0.write(LOW); N1.write(HIGH); }
-		if (!(i % 21)) { N0.write(LOW); N1.write(LOW); }
+		printOut();
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		printf("Tick: %d\n", i);
 
-		if (i > 300) break;
+		if(set)
+		{
+			printf("Set!\n");
+		}
+		else if(reset)
+		{
+			printf("Reset!\n");
+		}
+		else
+		{
+			printf("Waiting for set or reset...\n");
+		}
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Limit to 10 TPS
+
+	if(i == 50)
+	{
+		S0.write(HIGH);
+		R0.write(HIGH);
+	}
+	else if(i == 70)
+	{
+		S0.write(LOW);
+		R0.write(LOW);
+	}
+	else if(i == 90)
+	{
+		S0.write(HIGH);
+		R0.write(HIGH);
+	}
+
+		// if(!set && !(i % 40) && !l) { S0.write(HIGH); R0.write(HIGH); set = true; reset = false; }
+		// else if(set) { S0.write(LOW); R0.write(LOW); set = false; reset = true; l = true; }
+		// else if(l) { S0.write(HIGH); R0.write(HIGH); set = true; l = false; }
+		// if(set && !(i % 20)) { S0.write(LOW); R0.write(HIGH); set = false; reset = true; }
+		// else if(reset) { S0.write(LOW); R0.write(LOW); }
+
+		printf("\033[2J\033[1;1H"); //Clear screen
 	}
 }
 
@@ -168,45 +215,19 @@ void CSim::calculateNode(Node* node)
 {
 	static int i = 0;
 	auto deps = node->getDependencyNodes();
-	node->tick();
+	bool any_dep_state = LOW;
 
 	if (!deps.empty())
 	{
-		bool any_dep_state = LOW;
 		for (auto d : deps)
 		{
-			if (!d->getTickedState())
-			{
-				calculateNode(d);
-			}
 			if (!d->getState())
-				any_dep_state = HIGH;
-		}
-		/*if (!node->getState() && any_dep_state)
-			printf("[It %d] State of node %p switched to HIGH.\n", i++, (void*)node);
-		else if (!node->getState() && !any_dep_state)
-			printf("[It %d] State of node %p kept at LOW.\n", i++, (void*)node);
-		else if(node->getState() && any_dep_state)
-			printf("[It %d] State of node %p kept at HIGH.\n", i++, (void*)node);
-		else
-			printf("[It %d] State of node %p switched to LOW.\n", i++, (void*)node);*/
-		node->write(any_dep_state);
-	}
-}
-
-void CSim::clearAll(Node* node)
-{
-	auto deps = node->getDependencyNodes();
-	node->untick();
-
-	if (!deps.empty())
-	{
-		for (auto d : deps)
-		{
-			if (d->getTickedState())
 			{
-				clearAll(d);
+				any_dep_state = HIGH;
+				break;
 			}
 		}
+
+		node->write(any_dep_state);
 	}
 }

@@ -19,7 +19,6 @@ public:
 
 private:
 	void calculateNode(Node* node);
-	void clearAll(Node* node);
 
 private:
 	//List of all in and out nodes of the system

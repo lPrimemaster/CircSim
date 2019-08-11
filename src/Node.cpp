@@ -1,7 +1,8 @@
 #include "Node.h"
 
-Node::Node()
+Node::Node(const std::string name)
 {
+	this->name = name;
 }
 
 Node::~Node()
@@ -9,24 +10,14 @@ Node::~Node()
 	dependencies.clear();
 }
 
-bool Node::getTickedState() const
-{
-	return evaluated;
-}
-
 bool Node::getState() const
 {
 	return state;
 }
 
-void Node::tick()
+std::string Node::getName() const
 {
-	evaluated = true;
-}
-
-void Node::untick()
-{
-	evaluated = false;
+	return name;
 }
 
 void Node::setDependencyNode(Node* node)

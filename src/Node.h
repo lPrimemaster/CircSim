@@ -12,17 +12,15 @@ class Gate;
 class Node
 {
 public:
-	Node();
+	Node(const std::string name);
 	~Node();
 
-	bool getTickedState() const;
 	bool getState() const;
-
-	void tick();
-	void untick();
 
 	void setDependencyNode(Node* node);
 	std::vector<Node*> getDependencyNodes() const;
+
+	std::string getName() const;
 
 	void write(bool input);
 
@@ -31,6 +29,6 @@ private:
 
 private:
 	bool state = LOW;
-	bool evaluated = false;
+	std::string name;
 };
 
