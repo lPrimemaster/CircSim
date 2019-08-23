@@ -10,4 +10,5 @@
 namespace loader
 {
 	GLuint loadVS_FS(const std::string& name);
+	GLuint loadVS_GS_FS(const std::string& name);
 }

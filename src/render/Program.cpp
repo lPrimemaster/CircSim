@@ -1,6 +1,16 @@
 #include "Program.h"
 
-Program::Program(const std::string& shaderFileName) : programID(loader::loadVS_FS(shaderFileName)) {  }
+Program::Program(const std::string& shaderFileName, int flags)
+{
+	if (flags & ADD_GEOM_SHADER)
+	{
+		programID = loader::loadVS_GS_FS(shaderFileName);
+	}
+	else
+	{
+		programID = loader::loadVS_FS(shaderFileName);
+	}
+}
 
 Program::~Program()
 {

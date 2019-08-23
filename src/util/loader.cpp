@@ -1,4 +1,5 @@
 #include "loader.h"
+#include <cstdarg>
 #include <fstream>
 #include <sstream>
 
@@ -43,12 +44,21 @@ GLuint compileShader(const GLchar* source, GLenum type)
 	return shader;
 }
 
-GLuint createProgram(GLuint vertexShader, GLuint fragmentShader)
+GLuint createProgram(size_t argsize, ...)
 {
+	va_list ap;
+	va_start(ap, argsize);
+
 	GLuint program = glCreateProgram();
 
-	glAttachShader(program, vertexShader);
-	glAttachShader(program, fragmentShader);
+	GLuint shader = va_arg(ap, GLuint);
+	glAttachShader(program, shader);
+
+	for (int i = 1; i < argsize; i++)
+	{
+		GLuint ishader = va_arg(ap, GLuint);
+		glAttachShader(program, ishader);
+	}
 
 	glLinkProgram(program);
 
@@ -62,6 +72,8 @@ GLuint createProgram(GLuint vertexShader, GLuint fragmentShader)
 		std::cerr << "Linking program failed: " + std::string(infolog) << std::endl;
 		throw std::runtime_error("Error linking program: " + std::string(infolog));
 	}
+
+	va_end(ap);
 
 	return program;
 }
@@ -95,7 +107,7 @@ GLuint loader::loadVS_FS(const std::string& name)
 	GLuint programID;
 	try
 	{
-		programID = createProgram(vsID, fsID);
+		programID = createProgram(2, vsID, fsID);
 	}
 	catch (std::runtime_error & e)
 	{
@@ -105,6 +117,53 @@ GLuint loader::loadVS_FS(const std::string& name)
 	}
 
 	glDeleteShader(vsID);
+	glDeleteShader(fsID);
+
+	return programID;
+}
+
+GLuint loader::loadVS_GS_FS(const std::string& name)
+{
+	std::string vSource, gSource, fSource;
+	try
+	{
+		vSource = getSource(name, "vert");
+		gSource = getSource(name, "geom");
+		fSource = getSource(name, "frag");
+	}
+	catch (std::runtime_error& e)
+	{
+		std::cerr << e.what() << std::endl;
+		std::cout << e.what() << std::endl;
+	}
+
+	GLuint vsID, gsID, fsID;
+	try
+	{
+		vsID = compileShader(vSource.c_str(), GL_VERTEX_SHADER);
+		gsID = compileShader(gSource.c_str(), GL_GEOMETRY_SHADER);
+		fsID = compileShader(fSource.c_str(), GL_FRAGMENT_SHADER);
+	}
+	catch (std::runtime_error& e)
+	{
+		std::cerr << e.what() << std::endl;
+		std::cout << e.what() << std::endl;
+		exit(-10);
+	}
+	GLuint programID;
+	try
+	{
+		programID = createProgram(3, vsID, gsID, fsID);
+	}
+	catch (std::runtime_error& e)
+	{
+		std::cerr << e.what() << std::endl;
+		std::cout << e.what() << std::endl;
+		exit(-10);
+	}
+
+	glDeleteShader(vsID);
+	glDeleteShader(gsID);
 	glDeleteShader(fsID);
 
 	return programID;

@@ -141,12 +141,15 @@
     <ClCompile Include="src\Node.cpp" />
     <ClCompile Include="src\Registry.cpp" />
     <ClCompile Include="src\render\Camera.cpp" />
+    <ClCompile Include="src\render\GateRenderer.cpp" />
     <ClCompile Include="src\render\GLWrapper.cpp" />
+    <ClCompile Include="src\render\GridRenderer.cpp" />
     <ClCompile Include="src\render\gui\Gui.cpp" />
     <ClCompile Include="src\render\Program.cpp" />
     <ClCompile Include="src\render\Renderer.cpp" />
     <ClCompile Include="src\states\Playing.cpp" />
     <ClCompile Include="src\util\loader.cpp" />
+    <ClCompile Include="src\util\math.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="deps\imgui\imconfig.h" />
@@ -166,13 +169,16 @@
     <ClInclude Include="src\Node.h" />
     <ClInclude Include="src\Registry.h" />
     <ClInclude Include="src\render\Camera.h" />
+    <ClInclude Include="src\render\GateRenderer.h" />
     <ClInclude Include="src\render\GLWrapper.h" />
+    <ClInclude Include="src\render\GridRenderer.h" />
     <ClInclude Include="src\render\gui\Gui.h" />
     <ClInclude Include="src\render\Program.h" />
     <ClInclude Include="src\render\Renderer.h" />
     <ClInclude Include="src\states\Playing.h" />
     <ClInclude Include="src\states\State.h" />
     <ClInclude Include="src\util\loader.h" />
+    <ClInclude Include="src\util\math.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\color.frag.glsl" />

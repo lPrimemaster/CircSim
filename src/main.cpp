@@ -13,6 +13,9 @@ int main(int argc, char* argv[])
 {
 	//Todo : Use main thread for drawing and create as necessary to the circuit evaluation
 	GLWrapper wrapper;
+
+	Registry::registerAllBasicGeometry();
+
 	Playing pstate;
 
 	CSim csim;
@@ -21,6 +24,8 @@ int main(int argc, char* argv[])
 	wrapper.run(&pstate, &csim);
 
 	nt.join();
+
+	Registry::unregisterAllBasicGeometry();
 
 	return 0;
 }

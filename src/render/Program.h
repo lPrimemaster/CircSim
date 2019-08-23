@@ -2,12 +2,14 @@
 #include <iostream>
 #include "../util/loader.h"
 
+#define ADD_GEOM_SHADER 0x01
+
 /* This class could use inheritance for multiple program capabilities, but meh */
 
 class Program
 {
 public:
-	Program(const std::string& shaderFileName);
+	Program(const std::string& shaderFileName, int flags);
 	~Program();
 
 	void bind() const;

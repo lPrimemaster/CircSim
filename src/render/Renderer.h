@@ -11,21 +11,22 @@
 class Renderer
 {
 public:
-	Renderer();
+	Renderer(const std::string& program, int flags);
+	Renderer(const std::string& program);
 	~Renderer();
 
 	void push(Component* c);
-	void pop(Component* c);
-
 	void pushList(Component** list, size_t size);
 
-	void render();
-	void setProjectViewMatrix(const glm::mat4& pvm);
+	void pop(Component* c);
+	void popList(Component** list, size_t size);
 
-private:
+	void setPVMatrix(const glm::mat4& pvm);
+
+	virtual void render() = 0;
+
+protected:
 	std::vector<Component*> comps;
 	glm::mat4 pvm;
-
-private:
 	Program p;
 };

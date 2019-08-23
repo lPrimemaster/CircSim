@@ -43,7 +43,7 @@ NGateDef::NGateDef()
 	components[6]->transform().update(out_line_start, 0.0f, Cscale);
 	components[6]->setColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 
-	components[7]->transform().update(out_line_start, 0.0f, Cscale + 0.002f);
+	components[7]->transform().update(out_line_start, 0.0f, Cscale);
 	components[7]->setColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
 }

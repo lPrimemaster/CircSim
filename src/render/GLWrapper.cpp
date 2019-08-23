@@ -26,7 +26,7 @@ GLWrapper::GLWrapper()
 	}
 
 	glfwMakeContextCurrent(window);
-	//glfwSwapInterval(0); //No cap for test performance
+	//glfwSwapInterval(0); //No cap for performance test
 
 	glewExperimental = true;
 	GLenum status = glewInit();
@@ -40,6 +40,8 @@ GLWrapper::GLWrapper()
 	}
 
 	glEnable(GL_MULTISAMPLE);
+	/*glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);*/
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
