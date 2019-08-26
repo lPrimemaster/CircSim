@@ -1,8 +1,6 @@
 #include "Playing.h"
 #include <typeinfo>
 
-NGateDef* gate[1] = { nullptr };
-
 #define DEBUG
 
 #ifdef DEBUG
@@ -26,8 +24,8 @@ static void debug(bool* close, GLFWwindow* window, State* state)
 
 	if (p_open)
 	{
-		const float DISTANCE = 10.0f;
-		static int corner = 0;
+		static constexpr float DISTANCE = 10.0f;
+		static constexpr int corner = 0;
 
 		ImGuiIO& io = ImGui::GetIO();
 		ImVec2 window_pos = ImVec2((corner & 1) ? io.DisplaySize.x - DISTANCE : DISTANCE, (corner & 2) ? io.DisplaySize.y - DISTANCE : DISTANCE);
@@ -40,21 +38,27 @@ static void debug(bool* close, GLFWwindow* window, State* state)
 		{
 			ImGui::Text("    [Statistics]");
 			ImGui::Separator();
+			ImGui::Text("Engine");
 			ImGui::TextColored(ImColor(1.0f, 1.0f, 0.0f), "Framerate: %9.4f\n", io.Framerate);
 			ImGui::TextColored(ImColor(1.0f, 0.0f, 1.0f), "Frametime: %9.4f\n", 1000.0f / io.Framerate);
+			ImGui::TextColored(ImColor(1.0f, 1.0f, 0.0f), "ScreenScale: %9.4f\n", playing->getZScaling());
+			ImGui::TextColored(ImColor(1.0f, 0.0f, 1.0f), "ScreenSize: <%9.4f> <%9.4f>\n", io.DisplaySize.x, io.DisplaySize.y);
+			ImGui::TextColored(ImColor(1.0f, 1.0f, 0.0f), "LineCardinality: <%u>\n", playing->card);
 
 			glm::vec2 mouse_pos = glm::vec2(io.MousePos.x, io.MousePos.y);
 
 			ImGui::Separator();
-
 			glm::vec2 mouse_world_pos = math::screenToWorld(mouse_pos, playing->getIPVMatrix());
 
-			ImGui::TextColored(ImColor(0.0f, 1.0f, 1.0f), "World  Pos: <%9.4f> | <%9.4f>\n", mouse_world_pos.x, mouse_world_pos.y);
-			ImGui::TextColored(ImColor(0.0f, 1.0f, 1.0f), "Screen Pos: <%9.4f> | <%9.4f>\n", mouse_pos.x, mouse_pos.y);
+			ImGui::Text("Coordinates");
+			ImGui::TextColored(ImColor(0.0f, 1.0f, 1.0f), "World Pos: <%9.4f> <%9.4f>\n", mouse_world_pos.x, mouse_world_pos.y);
+			ImGui::TextColored(ImColor(0.0f, 1.0f, 1.0f), "Screen Pos: <%9.4f> <%9.4f>\n", mouse_pos.x, mouse_pos.y);
 
 			ImGui::Separator();
-
-			ImGui::TextColored(ImColor(0.7f, 0.2f, 0.0f), "Line Width: <%9.4f>\n", -0.250f / (0.05f * (playing->getZScaling() - 1.0f)));
+			auto stats = Geometry::getStatistics();
+			ImGui::Text("Geometry Registry");
+			ImGui::TextColored(ImColor(0.2f, 0.7f, 0.3f), "Bucket count: <%d>\n", stats.first);
+			ImGui::TextColored(ImColor(0.2f, 0.7f, 0.3f), "Memory (kbytes): <%2.2f>\n", stats.second / 1024.0f);
 		}
 		ImGui::End();
 	}
@@ -89,6 +93,7 @@ void Playing::handle(GLWrapper* gw)
 	static double last_cursor_x = 0.0;
 	static double last_cursor_y = 0.0;
 
+	//This scaling configuration adds 0.2 to X with in world space every zscale unit
 	float abs_y_scl_weighted = abs(z_scl) * 0.1f;
 
 	if (rmb_state == GLFW_PRESS)
@@ -109,7 +114,11 @@ void Playing::handle(GLWrapper* gw)
 		ly -= weight_y * (abs_y_scl_weighted + 1.0);
 	}
 
-	point->transform().update(glm::vec2(lx, ly));
+	glm::vec2 tranlation_vec = glm::vec2(lx, ly);
+
+	point->transform().update(tranlation_vec);
+
+	card = grid_renderer.updateGrid(abs_y_scl_weighted, tranlation_vec, wh);
 
 	//Update aspect ratio and scales
 	float aspect = (wh.x / wh.y);
@@ -150,12 +159,11 @@ void Playing::update(GLWrapper* gw)
 	auto registered_nodes = gw->getSimulation()->getRegisteredNodes();
 	for (auto rn : registered_nodes)
 	{
-		for (int i = 0; i < 1; i++)
+		for (int i = 0; i < 10; i++)
 		{
 			gate[i]->updateInput(rn.second->getState()); //Batch this later for speed
 		}
 	}
-
 
 	grid_renderer.setPVMatrix(pview_mat);
 	gate_renderer.setPVMatrix(pview_mat);
@@ -182,7 +190,7 @@ void Playing::initialize(GLWrapper* gw)
 	{
 		grid[i] = new Component("Line");
 		grid[i]->transform().update(glm::vec2((float)i / 5.0f - 1.0f, 1.0f), glm::vec2((float)i / 5.0f - 1.0f, -1.0f));
-		grid[i]->setColor(glm::vec4(0.5f));
+		grid[i]->setColor(glm::vec4(0.2f));
 		grid_renderer.push(grid[i]);
 	}
 
@@ -190,11 +198,11 @@ void Playing::initialize(GLWrapper* gw)
 	{
 		grid[i + 10] = new Component("Line");
 		grid[i + 10]->transform().update(glm::vec2(-1.0f, (float)i / 5.0f - 1.0f), glm::vec2(1.0f, (float)i / 5.0f - 1.0f));
-		grid[i + 10]->setColor(glm::vec4(0.5f));
+		grid[i + 10]->setColor(glm::vec4(0.2f));
 		grid_renderer.push(grid[i + 10]);
 	}
 
-	for (int i = 0; i < 1; i++)
+	for (int i = 0; i < 10; i++)
 	{
 		glm::vec2 in;
 		glm::vec2 out;
@@ -215,15 +223,17 @@ void Playing::initialize(GLWrapper* gw)
 
 	auto lamb = [&](bool* close, GLFWwindow* window, State* state)
 	{
-		if (ImGui::Begin("GridRenderer Values"))
+		static constexpr float DISTANCE = 10.0f;
+		static constexpr int corner = 1;
+
+		ImGuiIO& io = ImGui::GetIO();
+		ImVec2 window_pos = ImVec2((corner & 1) ? io.DisplaySize.x - DISTANCE : DISTANCE, (corner & 2) ? io.DisplaySize.y - DISTANCE : DISTANCE);
+		ImVec2 window_pos_pivot = ImVec2((corner & 1) ? 1.0f : 0.0f, (corner & 2) ? 1.0f : 0.0f);
+		ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
+		if (ImGui::Begin("GridRenderer Values", NULL, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav))
 		{
 			ImGui::Text("Line values\n");
-			ImGui::SliderFloat("lw", &grid_renderer.getLW(), 0.0f, 0.01f, "%.5f");
-
-			GLint range[2];
-			glGetIntegerv(GL_LINE_WIDTH_RANGE, range); // or GL_ALIASED_LINE_WIDTH_RANGE
-
-			ImGui::Text("Max line width: [%d, %d]\n", range[0], range[1]);
+			ImGui::SliderFloat("Width [lw]", &grid_renderer.getLW(), 0.0f, 0.01f, "%.5f");
 		}
 		ImGui::End();
 	};
@@ -242,7 +252,7 @@ void Playing::cleanUp()
 		delete grid[i];
 	}
 
-	for (int i = 0; i < 1; i++)
+	for (int i = 0; i < 10; i++)
 	{
 		delete gate[i];
 	}

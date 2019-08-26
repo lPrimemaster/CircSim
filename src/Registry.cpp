@@ -29,7 +29,6 @@ void Registry::registerAllBasicGeometry()
 
 	//Force a small load factor about 5 / 30 ~ 0.167
 	Geometry::rehash(30);
-	Geometry::getStatistics();
 }
 
 void Registry::unregisterAllBasicGeometry()

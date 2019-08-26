@@ -15,6 +15,7 @@ class Playing : public State
 {
 public:
 	friend void scroll_callback(GLFWwindow* window, double xoff, double yoff);
+	friend void debug(bool* close, GLFWwindow* window, State* state);
 
 	void draw(GLWrapper* gw) override;
 	void handle(GLWrapper* gw) override;
@@ -39,9 +40,11 @@ private:
 	static double lx;
 	static double ly;
 
+	unsigned card;
+
 	Component* point = nullptr;
 	Component* point_in = nullptr;
 	Component* grid[20] = { nullptr };
-	//NGateDef* gate[100] = { nullptr };
+	NGateDef* gate[10] = { nullptr };
 };
 

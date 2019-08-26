@@ -4,6 +4,7 @@ std::unordered_map<std::string, Geometry*> Geometry::rGeometries;
 
 Geometry::Geometry(DrawType type, std::vector<glm::vec2> points)
 {
+	GLuint vbo = 0;
 	this->size = points.size();
 	this->type = type;
 	this->gpuByteSize = points.size() * sizeof(glm::vec2);
@@ -17,10 +18,17 @@ Geometry::Geometry(DrawType type, std::vector<glm::vec2> points)
 	glEnableVertexAttribArray(0);
 	glBindVertexArray(0);
 
+	Buffer buf;
+	buf.id = vbo;
+	buf.target = GL_ARRAY_BUFFER;
+	buf.gpuSize = this->gpuByteSize;
+
+	buffers[VBO] = buf;
 }
 
 Geometry::Geometry(DrawType type, float* points, const size_t size)
 {
+	GLuint vbo = 0;
 	this->size = size / 2;
 	this->type = type;
 	this->gpuByteSize = size * sizeof(float);
@@ -33,12 +41,23 @@ Geometry::Geometry(DrawType type, float* points, const size_t size)
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
 	glEnableVertexAttribArray(0);
 	glBindVertexArray(0);
+
+	Buffer buf;
+	buf.id = vbo;
+	buf.target = GL_ARRAY_BUFFER;
+	buf.gpuSize = this->gpuByteSize;
+
+	buffers[VBO] = buf;
 }
 
 Geometry::~Geometry()
 {
 	glDeleteVertexArrays(1, &vao);
-	glDeleteBuffers(1, &vbo);
+
+	for (auto b : buffers)
+	{
+		glDeleteBuffers(1, &b.id);
+	}
 }
 
 void Geometry::unregisterGeometry(const std::string& name)
@@ -46,7 +65,7 @@ void Geometry::unregisterGeometry(const std::string& name)
 	delete rGeometries[name];
 }
 
-void Geometry::getStatistics()
+std::pair<size_t, size_t> Geometry::getStatistics()
 {
 	size_t bCount = rGeometries.bucket_count();
 	size_t tbSize = 0;
@@ -55,8 +74,7 @@ void Geometry::getStatistics()
 		tbSize += g.second->gpuByteSize;
 	}
 
-	std::cerr << "Registered Geometry gpu (bytes) = " << tbSize << std::endl;
-	std::cerr << "Geometry hash table bucket count = " << bCount << std::endl;
+	return std::make_pair(bCount, tbSize);
 }
 
 void Geometry::rehash(size_t value)

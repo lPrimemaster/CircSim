@@ -2,13 +2,15 @@
 #include "GridRenderer.h"
 #include "gui/Gui.h"
 
+//TODO : Adding other shader stages should be automated by searching in the directory for extensions
 GridRenderer::GridRenderer() : Renderer("aa_lines", ADD_GEOM_SHADER)
 {
-	bg_line = Geometry::getRegisteredGeometry("Line");
+	generateGrid();
 }
 
 GridRenderer::~GridRenderer()
 {
+	Geometry::unregisterGeometry("Grid");
 }
 
 void GridRenderer::render()
@@ -17,17 +19,81 @@ void GridRenderer::render()
 	p.loadMatrix4f("PView", pvm);
 	p.loadFloat("lineWidth", lw);
 
-	for (auto c : comps)
-	{
-		p.loadVector4f("color", c->getColor());
-		p.loadMatrix4f("Model", c->transform().getTransform());
-
-		bg_line->bind();
-		glDrawArraysInstanced(GL_LINES, 0, 2, 1);
-	}
+	p.loadVector4f("color", glm::vec4(0.2f));
+	static Geometry* g = Geometry::getRegisteredGeometry("Grid"); //Avoid multiple calls
+	g->bind();
+	glDrawArrays(GL_LINES, 0, totalGenLines * 2);
 }
 
 float& GridRenderer::getLW()
 {
 	return lw;
+}
+
+unsigned GridRenderer::updateGrid(float zscale, glm::vec2 tvec, glm::vec2 sdim)
+{
+	float aspect_ratio = sdim.x / sdim.y;
+
+	float wspace_width = 2.0f + zscale * 2.0f;
+	float wspace_height = wspace_width / aspect_ratio;
+
+	float half_width = wspace_width / 2.0f;
+	float half_height = wspace_height / 2.0f;
+
+	float barrierXLow = tvec.x - half_width;
+	float barrierYLow = tvec.y - half_height;
+	float barrierXHigh = tvec.x + half_width;
+	float barrierYHigh = tvec.y + half_height;
+
+	unsigned gridXCardinality = (unsigned)ceilf(wspace_width * 5.0f) + 1;
+	unsigned gridYCardinality = (unsigned)ceilf(wspace_height * 5.0f) + 1;
+
+	//This does not take into account the scale factor line dimming / vanishing effect
+	totalGenLines = gridXCardinality + gridYCardinality;
+
+	/* Calculate where the lines should be on the screen -> minimizing rendering */
+	/* Find the nearest 0.2 multiple on the borders */
+
+	float ubarrierXLow = floorf(barrierXLow);
+	float ubarrierYLow = floorf(barrierYLow);
+	float ubarrierXHigh = floorf(barrierXHigh);
+	float ubarrierYHigh = floorf(barrierYHigh);
+
+	float decimalBarrierLX = barrierXLow - ubarrierXLow;
+	float decimalBarrierLY = barrierYLow - ubarrierYLow;
+
+	float decimalBarrierHX = barrierXHigh - ubarrierXHigh;
+	float decimalBarrierHY = barrierYHigh - ubarrierYHigh;
+
+	float nearestLowX = (float)((int)ceilf(decimalBarrierLX * 5) / 5.0f) + ubarrierXLow;
+	float nearestLowY = (float)((int)ceilf(decimalBarrierLY * 5) / 5.0f) + ubarrierYLow;
+
+	float nearestHighX = (float)((int)floorf(decimalBarrierHX * 5) / 5.0f) + ubarrierXHigh;
+	float nearestHighY = (float)((int)floorf(decimalBarrierHY * 5) / 5.0f) + ubarrierYHigh;
+
+	offsets.resize(totalGenLines * 2); //FIX ME: For test only - use array later
+
+	for (int i = 0; i < gridXCardinality; i++)
+	{
+		float xval = (float)i * 0.2f + nearestLowX;
+		offsets[2 * i] = glm::vec2(xval, barrierYHigh);
+		offsets[2 * i + 1] = glm::vec2(xval, barrierYLow);
+	}
+
+	for (int i = 0; i < gridYCardinality; i++)
+	{
+		float yval = (float)i * 0.2f + nearestLowY;
+		offsets[2 * (i + gridXCardinality)] = glm::vec2(barrierXLow, yval);
+		offsets[2 * (i + gridXCardinality) + 1] = glm::vec2(barrierXHigh, yval);
+	}
+
+	Geometry::updateDynamicGeometry("Grid", offsets);
+
+	return totalGenLines;
+}
+
+void GridRenderer::generateGrid()
+{
+	offsets.resize(40);
+	Geometry::registerGeometry(new Geometry(Geometry::LINES, offsets), "Grid");
 }
