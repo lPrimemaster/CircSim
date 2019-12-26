@@ -15,11 +15,11 @@ public:
 	Renderer(const std::string& program);
 	~Renderer();
 
-	void push(Component* c);
-	void pushList(Component** list, size_t size);
+	virtual void push(Component* c);
+	virtual void pushList(Component** list, size_t size);
 
-	void pop(Component* c);
-	void popList(Component** list, size_t size);
+	virtual void pop(Component* c);
+	virtual void popList(Component** list, size_t size);
 
 	void setPVMatrix(const glm::mat4& pvm);
 

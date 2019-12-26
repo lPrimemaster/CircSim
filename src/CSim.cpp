@@ -36,8 +36,8 @@ void CSim::calculateStates()
 	S_0.setDependencyNode(&Q_0);
 	R_0.setDependencyNode(&Q0);
 
-	S_0.setDependencyNode(&S0);
 	R_0.setDependencyNode(&R0);
+	S_0.setDependencyNode(&S0);
 
 	Q0.setDependencyNode(&S_0);
 	Q0.setDependencyNode(&Q_0);

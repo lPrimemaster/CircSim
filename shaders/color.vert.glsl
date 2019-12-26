@@ -16,5 +16,4 @@ void main()
 	worldPos = vec3(wp);
 
 	gl_Position = PView * wp;
-	//gl_Position = wp;
 }

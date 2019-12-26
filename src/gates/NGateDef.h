@@ -1,12 +1,14 @@
 #pragma once
 #include <iostream>
+#include <vector>
 #include "../geometry/Component.h"
+#include "InOutType.h"
 
-class NGateDef
+class Gate : public InOutType<1, 1>
 {
 public:
-	NGateDef();
-	~NGateDef();
+	Gate();
+	~Gate();
 
 	void update(const glm::vec2 in, const glm::vec2 out);
 	void updateInput(const unsigned state);

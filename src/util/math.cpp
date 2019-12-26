@@ -7,13 +7,11 @@ glm::vec2 unprojectPoint(glm::vec3 ndc, glm::mat4 transform)
 	return glm::vec2(projPos.x, projPos.y) / projPos.w;
 }
 
-glm::vec2 math::screenToWorld(glm::vec2 coord, glm::mat4 ipvmat)
+glm::vec2 math::screenToWorld(glm::vec2 wdim, glm::vec2 coord, glm::mat4 ipvmat)
 {
 	//Get framebuffer size
-	ImGuiIO& io = ImGui::GetIO();
-
-	float w = io.DisplaySize.x;
-	float h = io.DisplaySize.y;
+	float w = wdim.x;
+	float h = wdim.y;
 	float r = w / h;
 
 	//Coord to NDC (y inverted)
@@ -23,4 +21,12 @@ glm::vec2 math::screenToWorld(glm::vec2 coord, glm::mat4 ipvmat)
 	glm::vec3 mworld = ipvmat * glm::vec4(ndc_x, -ndc_y, 0.0f, 1.0f);
 
 	return glm::vec2(mworld);
+}
+
+glm::vec2 math::snapToGrid(glm::vec2 location, float gridSX, float gridSY)
+{
+	float x_snap = roundf(location.x / gridSX) * gridSX;
+	float y_snap = roundf(location.y / gridSY) * gridSY;
+
+	return glm::vec2(x_snap, y_snap);
 }

@@ -36,7 +36,16 @@ static void debug(bool* close, GLFWwindow* window, State* state)
 
 		if (ImGui::Begin("DebugWindow", &p_open, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav))
 		{
+			glm::vec2 mouse_pos = glm::vec2(io.MousePos.x, io.MousePos.y);
+			glm::vec2 mouse_world_pos = playing->frame_mouse_pos;
+
 			ImGui::Text("    [Statistics]");
+			ImGui::Separator();
+			ImGui::Text("Game");
+			ImGui::TextColored(ImColor(1.0f, 1.0f, 0.0f), "Gate #: %u\n", 10 + playing->gate_tracker.size());
+
+			ChunkCoord cc = ChunkManager::getChunkIndexAtPosition(mouse_world_pos);
+
 			ImGui::Separator();
 			ImGui::Text("Engine");
 			ImGui::TextColored(ImColor(1.0f, 1.0f, 0.0f), "Framerate: %9.4f\n", io.Framerate);
@@ -44,12 +53,10 @@ static void debug(bool* close, GLFWwindow* window, State* state)
 			ImGui::TextColored(ImColor(1.0f, 1.0f, 0.0f), "ScreenScale: %9.4f\n", playing->getZScaling());
 			ImGui::TextColored(ImColor(1.0f, 0.0f, 1.0f), "ScreenSize: <%9.4f> <%9.4f>\n", io.DisplaySize.x, io.DisplaySize.y);
 			ImGui::TextColored(ImColor(1.0f, 1.0f, 0.0f), "LineCardinality: <%u>\n", playing->card);
-
-			glm::vec2 mouse_pos = glm::vec2(io.MousePos.x, io.MousePos.y);
+			ImGui::TextColored(ImColor(1.0f, 0.0f, 1.0f), "Chunk: <%p>\n", ChunkManager::getChunkAtPosition(mouse_world_pos));
+			ImGui::TextColored(ImColor(1.0f, 1.0f, 0.0f), "Chunk Index: <%d> <%d>\n", cc.chunk_id_x, cc.chunk_id_y);
 
 			ImGui::Separator();
-			glm::vec2 mouse_world_pos = math::screenToWorld(mouse_pos, playing->getIPVMatrix());
-
 			ImGui::Text("Coordinates");
 			ImGui::TextColored(ImColor(0.0f, 1.0f, 1.0f), "World Pos: <%9.4f> <%9.4f>\n", mouse_world_pos.x, mouse_world_pos.y);
 			ImGui::TextColored(ImColor(0.0f, 1.0f, 1.0f), "Screen Pos: <%9.4f> <%9.4f>\n", mouse_pos.x, mouse_pos.y);
@@ -69,12 +76,6 @@ float Playing::z_scl = 0.0f;
 double Playing::lx = 0.0;
 double Playing::ly = 0.0;
 
-void scroll_callback(GLFWwindow * window, double xoff, double yoff)
-{
-	//Cull the selection to a certain zoom only
-	Playing::z_scl += (Playing::z_scl < 0 ? yoff : yoff < 0 ? yoff : 0);
-}
-
 void Playing::draw(GLWrapper* gw)
 {
 	grid_renderer.render();
@@ -89,9 +90,6 @@ void Playing::handle(GLWrapper* gw)
 	auto window = gw->getWindow();
 	int rmb_state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT);
 	glm::vec2 wh = gw->getWindowDim();
-
-	static double last_cursor_x = 0.0;
-	static double last_cursor_y = 0.0;
 
 	//This scaling configuration adds 0.2 to X with in world space every zscale unit
 	float abs_y_scl_weighted = abs(z_scl) * 0.1f;
@@ -114,11 +112,7 @@ void Playing::handle(GLWrapper* gw)
 		ly -= weight_y * (abs_y_scl_weighted + 1.0);
 	}
 
-	glm::vec2 tranlation_vec = glm::vec2(lx, ly);
-
-	point->transform().update(tranlation_vec);
-
-	card = grid_renderer.updateGrid(abs_y_scl_weighted, tranlation_vec, wh);
+	card = grid_renderer.updateGrid(abs_y_scl_weighted, glm::vec2(lx, ly), wh);
 
 	//Update aspect ratio and scales
 	float aspect = (wh.x / wh.y);
@@ -152,11 +146,16 @@ void Playing::handle(GLWrapper* gw)
 			glfwSetCursorPos(window, last_cursor_x, last_cursor_y);
 		}
 	}
+
+	//Calculate the mouse position for this frame
+	frame_mouse_pos = math::screenToWorld(wh, glm::vec2(last_cursor_x, last_cursor_y), ipview_mat);
 }
 
 void Playing::update(GLWrapper* gw)
 {
+#ifdef DEBUG
 	auto registered_nodes = gw->getSimulation()->getRegisteredNodes();
+
 	for (auto rn : registered_nodes)
 	{
 		for (int i = 0; i < 10; i++)
@@ -164,44 +163,88 @@ void Playing::update(GLWrapper* gw)
 			gate[i]->updateInput(rn.second->getState()); //Batch this later for speed
 		}
 	}
+#endif // DEBUG
 
 	grid_renderer.setPVMatrix(pview_mat);
 	gate_renderer.setPVMatrix(pview_mat);
 }
 
+void Playing::scroll_callback(GLFWwindow* window, double xoff, double yoff)
+{
+	//Cull the selection to a certain zoom only
+	Playing::z_scl += (Playing::z_scl < 0 ? yoff : yoff < 0 ? yoff : 0);
+}
+
+//TODO: Remember to check if the mouse is on a legal location
+//TODO: Remember to check if the gate is on a legal location
+//TODO: Create a lower alpha og the gate while on placemente mode (key not released)
+//TODO: Don't hard code grid spacings, as well as the gate min length draw check
+//TODO: Enable snapping only in horizontal or vertical modes
+void Playing::click_callback(GLFWwindow* window, int button, int action, int mods)
+{
+	static int lastButtonClick = button;
+	static glm::vec2 initial_pos;
+
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+	{
+		initial_pos = math::snapToGrid(frame_mouse_pos, 0.2f, 0.2f);
+	}
+	else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
+	{
+		glm::vec2 pos_release_snap = math::snapToGrid(frame_mouse_pos, 0.2f, 0.2f);
+		if (glm::distance(initial_pos, pos_release_snap) >= 0.2f * 3.0f) //TODO: Check if this works on the math.h -> comparing floating points
+		{
+			createGate(initial_pos, pos_release_snap);
+		}
+		else
+		{
+			//Do something?
+			//Don't create a gate in a single point in space, duh!
+		}
+	}
+
+	lastButtonClick = button;
+}
+
+void Playing::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	//TODO: Maybe switch to a switch statement (HA!)
+
+	if (key == GLFW_KEY_Z && action == GLFW_PRESS && (mods & GLFW_MOD_CONTROL))
+	{
+		if (gate_tracker.size() > 0)
+		{
+			auto it = gate_tracker.end();
+			gate_renderer.popList((*--it)->getComponentList(), Gate::GetComponentListSize());
+			delete *it;
+			gate_tracker.pop_back();
+		}
+	}
+}
+
 void Playing::initialize(GLWrapper* gw)
 {
+	ChunkManager::allocateStart();
+
+	ChunkManager::createChunkAtPosition(glm::vec2(7, 0));
+	ChunkManager::createChunkAtPosition(glm::vec2(7, 7));
+	ChunkManager::createChunkAtPosition(glm::vec2(-7, 0));
+	ChunkManager::createChunkAtPosition(glm::vec2(0, 7));
+	ChunkManager::createChunkAtPosition(glm::vec2(0, -7));
+	ChunkManager::createChunkAtPosition(glm::vec2(-7, -7));
+
+	StateInfo si;
+	si.state = this;
+	si.derived_state = PLAYING;
+
 	Gui::setContext(gw->getWindow());
-	glfwSetScrollCallback(gw->getWindow(), scroll_callback);
+	InputManager::setActiveWindow(gw->getWindow());
+	InputManager::setCallbackControllerState(si);
 
 	glLineWidth(2.5f);
 	glPointSize(7.0f);
 
-	point = new Component("Point");
-	point->transform().update(glm::vec2(0.0f, 0.0f));
-	point->setColor(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));
-
-	point_in = new Component("Point");
-	point_in->transform().update(glm::vec2(0.0f, 0.0f));
-	point_in->setColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
-
-
-	for (int i = 0; i < 10; i++)
-	{
-		grid[i] = new Component("Line");
-		grid[i]->transform().update(glm::vec2((float)i / 5.0f - 1.0f, 1.0f), glm::vec2((float)i / 5.0f - 1.0f, -1.0f));
-		grid[i]->setColor(glm::vec4(0.2f));
-		grid_renderer.push(grid[i]);
-	}
-
-	for (int i = 0; i < 10; i++)
-	{
-		grid[i + 10] = new Component("Line");
-		grid[i + 10]->transform().update(glm::vec2(-1.0f, (float)i / 5.0f - 1.0f), glm::vec2(1.0f, (float)i / 5.0f - 1.0f));
-		grid[i + 10]->setColor(glm::vec4(0.2f));
-		grid_renderer.push(grid[i + 10]);
-	}
-
+#ifdef DEBUG
 	for (int i = 0; i < 10; i++)
 	{
 		glm::vec2 in;
@@ -213,12 +256,11 @@ void Playing::initialize(GLWrapper* gw)
 		out.x = (float)i;
 		out.y = 1.0f;
 
-		gate[i] = new NGateDef();
+		gate[i] = new Gate();
 		gate[i]->update(in, out);
-		gate_renderer.pushList(gate[i]->getComponentList(), NGateDef::GetComponentListSize());
+		gate_renderer.pushList(gate[i]->getComponentList(), Gate::GetComponentListSize());
 	}
 
-#ifdef DEBUG
 	Gui::Get().pushWindow(debug);
 
 	auto lamb = [&](bool* close, GLFWwindow* window, State* state)
@@ -239,26 +281,27 @@ void Playing::initialize(GLWrapper* gw)
 	};
 
 	Gui::Get().pushWindow(lamb);
-#endif
-
-	//renderer.push(point); //Mid screen ref
-	//renderer.push(point_in); //Center reference
+#endif // DEBUG
 }
 
 void Playing::cleanUp()
 {
-	for (int i = 0; i < 20; i++)
-	{
-		delete grid[i];
-	}
-
 	for (int i = 0; i < 10; i++)
 	{
 		delete gate[i];
 	}
 
-	delete point;
-	delete point_in;
+	for (auto gate : gate_tracker)
+	{
+		delete gate;
+	}
+
+	ChunkManager::deleteChunkAtPosition(glm::vec2(7, 0));
+	ChunkManager::deleteChunkAtPosition(glm::vec2(7, 7));
+	ChunkManager::deleteChunkAtPosition(glm::vec2(-7, 0));
+	ChunkManager::deleteChunkAtPosition(glm::vec2(0, 7));
+	ChunkManager::deleteChunkAtPosition(glm::vec2(0, -7));
+	ChunkManager::deleteChunkAtPosition(glm::vec2(-7, -7));
 }
 
 const glm::mat4 Playing::getPVMatrix() const
@@ -269,6 +312,19 @@ const glm::mat4 Playing::getPVMatrix() const
 const glm::mat4 Playing::getIPVMatrix() const
 {
 	return ipview_mat;
+}
+
+const glm::vec2 Playing::getMousePositionWorldSpace() const
+{
+	return frame_mouse_pos;
+}
+
+void Playing::createGate(glm::vec2 in, glm::vec2 out)
+{
+	Gate* gate = new Gate();
+	gate->update(in, out);
+	gate_renderer.pushList(gate->getComponentList(), Gate::GetComponentListSize());
+	gate_tracker.push_back(gate);
 }
 
 const glm::vec2 Playing::getTranslation()

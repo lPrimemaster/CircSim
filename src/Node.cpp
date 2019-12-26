@@ -1,4 +1,5 @@
 #include "Node.h"
+#include "gates/NGateDef.h"
 
 Node::Node(const std::string name)
 {

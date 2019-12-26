@@ -25,6 +25,27 @@
     <Filter Include="ImGui\Header">
       <UniqueIdentifier>{80d58854-d53b-4733-adef-1224a8d89977}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\features">
+      <UniqueIdentifier>{72e8828a-630b-44ea-b0ce-fa453cb5dae0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gates">
+      <UniqueIdentifier>{2a201119-edb3-49bd-8289-1de55a384729}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\geometry">
+      <UniqueIdentifier>{ae210731-78b9-49e5-8d24-ec416a88922f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\render">
+      <UniqueIdentifier>{a782fa85-87db-4aaa-8c10-8148b43a07f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\states">
+      <UniqueIdentifier>{7b9f3682-4a81-4a04-bb9c-c61a12ee2bbf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\util">
+      <UniqueIdentifier>{2a3a63f7-d275-44ea-8648-31e7475406c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\render\gui">
+      <UniqueIdentifier>{ccd0f823-b54e-410d-b600-ab120cb6c0ec}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -99,6 +120,18 @@
     <ClCompile Include="src\render\GateRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\util\InputManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\memtrace.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\features\Chunk.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\features\ChunkManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\CSim.h">
@@ -107,46 +140,7 @@
     <ClInclude Include="src\Node.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\render\GLWrapper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\render\Program.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\util\loader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\states\State.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\states\Playing.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\features\Backgrid.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\geometry\Geometry.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\geometry\Transform.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\geometry\Component.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\render\Renderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\render\Camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Registry.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\gates\NGateDef.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\render\gui\Gui.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="deps\imgui\imconfig.h">
@@ -173,21 +167,78 @@
     <ClInclude Include="deps\imgui\imgui_impl_opengl3.h">
       <Filter>ImGui\Header</Filter>
     </ClInclude>
-    <ClInclude Include="src\util\math.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\features\Backgrid.h">
+      <Filter>Header Files\features</Filter>
     </ClInclude>
-    <ClInclude Include="src\render\GridRenderer.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\features\Chunk.h">
+      <Filter>Header Files\features</Filter>
+    </ClInclude>
+    <ClInclude Include="src\features\ChunkManager.h">
+      <Filter>Header Files\features</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gates\NGateDef.h">
+      <Filter>Header Files\gates</Filter>
+    </ClInclude>
+    <ClInclude Include="src\geometry\Component.h">
+      <Filter>Header Files\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="src\geometry\Geometry.h">
+      <Filter>Header Files\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="src\geometry\Transform.h">
+      <Filter>Header Files\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render\gui\Gui.h">
+      <Filter>Header Files\render\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render\Camera.h">
+      <Filter>Header Files\render</Filter>
     </ClInclude>
     <ClInclude Include="src\render\GateRenderer.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\render</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render\GLWrapper.h">
+      <Filter>Header Files\render</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render\GridRenderer.h">
+      <Filter>Header Files\render</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render\Program.h">
+      <Filter>Header Files\render</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render\Renderer.h">
+      <Filter>Header Files\render</Filter>
+    </ClInclude>
+    <ClInclude Include="src\states\Playing.h">
+      <Filter>Header Files\states</Filter>
+    </ClInclude>
+    <ClInclude Include="src\states\State.h">
+      <Filter>Header Files\states</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\HashTable.h">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\InputManager.h">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\loader.h">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\math.h">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\memtrace.h">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gates\InOutType.h">
+      <Filter>Header Files\gates</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\color.frag.glsl">
+    <None Include="shaders\color.vert.glsl">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="shaders\color.vert.glsl">
+    <None Include="shaders\color.frag.glsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

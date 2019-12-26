@@ -9,6 +9,8 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
+#include "../util/memtrace.h"
+
 #pragma warning( disable : 6386 )
 
 struct Buffer

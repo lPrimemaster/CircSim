@@ -4,10 +4,12 @@
 #include "render/GLWrapper.h"
 #include "states/Playing.h"
 
+#include "util/memtrace.h"
+
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <thread>
-
+#include <fstream>
 
 int main(int argc, char* argv[])
 {

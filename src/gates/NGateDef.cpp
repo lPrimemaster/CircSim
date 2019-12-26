@@ -1,6 +1,6 @@
 #include "NGateDef.h"
 
-NGateDef::NGateDef()
+Gate::Gate()
 {
 	//Defaults
 	components[0] = new Component("Line"); //Input  Line
@@ -48,7 +48,7 @@ NGateDef::NGateDef()
 
 }
 
-NGateDef::~NGateDef()
+Gate::~Gate()
 {
 	delete components[0];
 	delete components[1];
@@ -60,7 +60,7 @@ NGateDef::~NGateDef()
 	delete components[7];
 }
 
-void NGateDef::update(const glm::vec2 in, const glm::vec2 out)
+void Gate::update(const glm::vec2 in, const glm::vec2 out)
 {
 	this->in = in;
 	this->out = out;
@@ -94,7 +94,7 @@ void NGateDef::update(const glm::vec2 in, const glm::vec2 out)
 	components[7]->transform().update(out_line_start, 0.0f, Cscale + 0.002f);
 }
 
-void NGateDef::updateInput(const unsigned state)
+void Gate::updateInput(const unsigned state)
 {
 	if (state)
 	{
@@ -111,7 +111,7 @@ void NGateDef::updateInput(const unsigned state)
 	//state ? components[6]->setColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)) : components[6]->setColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 }
 
-glm::vec2 NGateDef::getTriangleCenter()
+glm::vec2 Gate::getTriangleCenter()
 {
 	return (out + in) / 2.0f;
 }

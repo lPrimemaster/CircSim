@@ -4,6 +4,8 @@
 #include <unordered_map>
 #include "Node.h"
 
+#include "util/memtrace.h"
+
 #ifdef _WIN32
 #include <Windows.h>
 #endif

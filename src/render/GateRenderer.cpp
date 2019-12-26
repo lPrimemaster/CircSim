@@ -6,6 +6,8 @@ GateRenderer::~GateRenderer()
 {
 }
 
+//TODO: Instance render the sections of the gate
+//TODO: Create a single gate mesh, not 6 distinct components
 void GateRenderer::render()
 {
 	p.bind();

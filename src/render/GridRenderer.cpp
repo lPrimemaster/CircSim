@@ -3,9 +3,11 @@
 #include "gui/Gui.h"
 
 //TODO : Adding other shader stages should be automated by searching in the directory for extensions
+//TODO : Adding pre shader calculation to reduce cpu memory usage -> redundant values
 GridRenderer::GridRenderer() : Renderer("aa_lines", ADD_GEOM_SHADER)
 {
 	generateGrid();
+	offsets = (float*)malloc(sizeof(float) * totalGenLines * 4); //C type cast
 }
 
 GridRenderer::~GridRenderer()
@@ -71,29 +73,42 @@ unsigned GridRenderer::updateGrid(float zscale, glm::vec2 tvec, glm::vec2 sdim)
 	float nearestHighX = (float)((int)floorf(decimalBarrierHX * 5) / 5.0f) + ubarrierXHigh;
 	float nearestHighY = (float)((int)floorf(decimalBarrierHY * 5) / 5.0f) + ubarrierYHigh;
 
-	offsets.resize(totalGenLines * 2); //FIX ME: For test only - use array later
+	//Fix for memory usage -> offsets just repeat after the unit (...) [ realloc is expensive =( ]
+	float* n_offset = (float*)realloc(offsets, sizeof(float) * totalGenLines * 4); //uysing C type cast
+
+	if (n_offset)
+	{
+		offsets = n_offset;
+	}
+	else
+	{
+		//Handle the error
+	}
 
 	for (int i = 0; i < gridXCardinality; i++)
 	{
 		float xval = (float)i * 0.2f + nearestLowX;
-		offsets[2 * i] = glm::vec2(xval, barrierYHigh);
-		offsets[2 * i + 1] = glm::vec2(xval, barrierYLow);
+		offsets[4 * i] = xval;
+		offsets[4 * i + 1] = barrierYHigh;
+		offsets[4 * i + 2] = xval; //redundant
+		offsets[4 * i + 3] = barrierYLow;
 	}
 
 	for (int i = 0; i < gridYCardinality; i++)
 	{
 		float yval = (float)i * 0.2f + nearestLowY;
-		offsets[2 * (i + gridXCardinality)] = glm::vec2(barrierXLow, yval);
-		offsets[2 * (i + gridXCardinality) + 1] = glm::vec2(barrierXHigh, yval);
+		offsets[4 * (i + gridXCardinality)] = barrierXLow;
+		offsets[4 * (i + gridXCardinality) + 1] = yval;
+		offsets[4 * (i + gridXCardinality) + 2] = barrierXHigh;
+		offsets[4 * (i + gridXCardinality) + 3] = yval; //redundant
 	}
 
-	Geometry::updateDynamicGeometry("Grid", offsets);
+	Geometry::updateDynamicGeometry("Grid", offsets, totalGenLines * 4);
 
 	return totalGenLines;
 }
 
 void GridRenderer::generateGrid()
 {
-	offsets.resize(40);
-	Geometry::registerGeometry(new Geometry(Geometry::LINES, offsets), "Grid");
+	Geometry::registerGeometry(new Geometry(Geometry::LINES, offsets, totalGenLines * 4), "Grid");
 }
