@@ -3,12 +3,13 @@
 #include <vector>
 #include "../geometry/Component.h"
 #include "InOutType.h"
+#include "Gate.h"
 
-class Gate : public InOutType<1, 1>
+class NotGate : public Gate, public InOutType<1, 1>
 {
 public:
-	Gate();
-	~Gate();
+	NotGate();
+	~NotGate();
 
 	void update(const glm::vec2 in, const glm::vec2 out);
 	void updateInput(const unsigned state);
@@ -26,6 +27,21 @@ public:
 	static const inline size_t GetComponentListSize()
 	{
 		return 8;
+	}
+
+protected:
+	inline void defineConnectorDependencies() override
+	{
+		out_ports[0].dep_conector.push_back(&in_ports[0]);
+	}
+
+	inline void updateConnectors() override
+	{
+		out_ports[0].Type = Connector::IO::OUTPUT;
+		out_ports[0].position = out;
+
+		in_ports[0].Type = Connector::IO::INPUT;
+		in_ports[0].position = in;
 	}
 
 private:

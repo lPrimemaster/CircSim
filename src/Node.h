@@ -5,10 +5,9 @@
 #define LOW  0
 #define HIGH 1
 
-class Gate;
+class NotGate;
 
 /* The nodes must be evaluated in a specifically determined hierarchical manner to avoid a re-evaluation requirement */
-
 class Node
 {
 public:

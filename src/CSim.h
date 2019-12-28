@@ -24,7 +24,7 @@ public:
 	std::unordered_map<uintptr_t, Node*> getRegisteredNodes() const;
 
 private:
-	void calculateNode(Node* node);
+	inline void calculateNode(Node* node);
 
 private:
 	//List of all in and out nodes of the system

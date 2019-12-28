@@ -1,7 +1,9 @@
 #include "NGateDef.h"
 
-Gate::Gate()
+NotGate::NotGate()
 {
+	defineConnectorDependencies();
+
 	//Defaults
 	components[0] = new Component("Line"); //Input  Line
 	components[1] = new Component("Line"); //Output Line
@@ -46,9 +48,10 @@ Gate::Gate()
 	components[7]->transform().update(out_line_start, 0.0f, Cscale);
 	components[7]->setColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
+	updateConnectors();
 }
 
-Gate::~Gate()
+NotGate::~NotGate()
 {
 	delete components[0];
 	delete components[1];
@@ -60,7 +63,7 @@ Gate::~Gate()
 	delete components[7];
 }
 
-void Gate::update(const glm::vec2 in, const glm::vec2 out)
+void NotGate::update(const glm::vec2 in, const glm::vec2 out)
 {
 	this->in = in;
 	this->out = out;
@@ -92,9 +95,11 @@ void Gate::update(const glm::vec2 in, const glm::vec2 out)
 	components[6]->transform().update(out_line_start, 0.0f, Cscale);
 
 	components[7]->transform().update(out_line_start, 0.0f, Cscale + 0.002f);
+
+	updateConnectors();
 }
 
-void Gate::updateInput(const unsigned state)
+void NotGate::updateInput(const unsigned state)
 {
 	if (state)
 	{
@@ -111,7 +116,7 @@ void Gate::updateInput(const unsigned state)
 	//state ? components[6]->setColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)) : components[6]->setColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 }
 
-glm::vec2 Gate::getTriangleCenter()
+glm::vec2 NotGate::getTriangleCenter()
 {
 	return (out + in) / 2.0f;
 }

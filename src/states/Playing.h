@@ -9,6 +9,7 @@
 
 //Test purposes only
 #include "../features/ChunkManager.h"
+#include "../features/GateManager.h"
 
 #include "../render/gui/Gui.h"
 
@@ -42,7 +43,7 @@ public:
 	const glm::vec2 getMousePositionWorldSpace() const;
 
 	//TODO: This shouldn't exist here! -> Each Chunk should manage its own gates
-	void createGate(glm::vec2 in, glm::vec2 out);
+	NotGate* createNotGate(glm::vec2 in, glm::vec2 out);
 
 	static const glm::vec2 getTranslation();
 	static const float getZScaling();
@@ -65,8 +66,10 @@ private:
 
 	unsigned card;
 
-	Gate* gate[10] = { nullptr }; //Test gates
+	bool update_next;
 
 	//TODO: This shouldn't exist here! -> Each Chunk should manage its own gates
-	std::vector<Gate*> gate_tracker;
+	std::vector<NotGate*> gate_tracker;
+
+	std::vector<Node*> require_update;
 };

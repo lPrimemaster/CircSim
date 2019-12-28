@@ -132,6 +132,9 @@
     <ClCompile Include="src\features\ChunkManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\features\GateManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\CSim.h">
@@ -232,6 +235,12 @@
     </ClInclude>
     <ClInclude Include="src\gates\InOutType.h">
       <Filter>Header Files\gates</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gates\Gate.h">
+      <Filter>Header Files\gates</Filter>
+    </ClInclude>
+    <ClInclude Include="src\features\GateManager.h">
+      <Filter>Header Files\features</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

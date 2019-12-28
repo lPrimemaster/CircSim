@@ -2,6 +2,7 @@
 #include <iostream>
 #include "../gates/NGateDef.h"
 #include "../util/HashTable.h"
+#include "../CSim.h"
 #include <vector>
 #include <future>
 
@@ -9,13 +10,12 @@
 
 struct ChunkCoord : public Hashable
 {
-	int chunk_id_x;
-	int chunk_id_y;
+	int chunk_id_x = 0;
+	int chunk_id_y = 0;
 
 	size_t operator()(const Hashable& h) const override
 	{
-		//TODO: PLEASE CHANGE THIS LATER FOR A BETTER HASH FUNC
-		return (std::hash<int>()(chunk_id_x) ^ std::hash<int>()(chunk_id_y));
+		return ((chunk_id_y * 0x1f1f1f1f) ^ chunk_id_x);
 	}
 
 	bool operator==(const Hashable& rhs) const override
@@ -26,32 +26,29 @@ struct ChunkCoord : public Hashable
 
 };
 
-struct GateIOResult
-{
-	bool has_from = false;
-	bool has_to = false;
-
-	glm::vec2 from;
-	glm::vec2 to;
-};
-
 //TODO: Each chunk should manage its own gates - and not to be done inside the main state
 class Chunk
 {
 public:
+	friend class ChunkManager;
+
 	Chunk(ChunkCoord coord);
 	Chunk(int x, int y);
 	~Chunk() = default;
 
 	bool isInside(glm::vec2 value);
-	GateIOResult getConnections(Gate* gate);
-	void insertGate(Gate* gate);
-	void deleteGate(Gate* gate);
+
+	void insertConnector(Connector* c);
+	void deleteConnector(Connector* c);
 
 	bool isEmpty() const;
 
 private:
-	std::vector<Gate*> gate_list;
+	void updateNodeInternal(Connector* c, Connector* d);
+
+private:
+	std::vector<Connector*> connector_list;
+	std::vector<Connector*> connector_update;
 
 	ChunkCoord coord;
 };

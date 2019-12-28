@@ -156,11 +156,20 @@ void Playing::update(GLWrapper* gw)
 #ifdef DEBUG
 	auto registered_nodes = gw->getSimulation()->getRegisteredNodes();
 
+	if (!require_update.empty())
+	{
+		for (auto re : require_update)
+		{
+			gw->getSimulation()->registerNode(re);
+		}
+		require_update.clear();
+	}
+
 	for (auto rn : registered_nodes)
 	{
-		for (int i = 0; i < 10; i++)
+		for (auto g : gate_tracker)
 		{
-			gate[i]->updateInput(rn.second->getState()); //Batch this later for speed
+			g->updateInput(g->getInputs()[0].node->getState());
 		}
 	}
 #endif // DEBUG
@@ -194,7 +203,9 @@ void Playing::click_callback(GLFWwindow* window, int button, int action, int mod
 		glm::vec2 pos_release_snap = math::snapToGrid(frame_mouse_pos, 0.2f, 0.2f);
 		if (glm::distance(initial_pos, pos_release_snap) >= 0.2f * 3.0f) //TODO: Check if this works on the math.h -> comparing floating points
 		{
-			createGate(initial_pos, pos_release_snap);
+			NotGate* gate = createNotGate(initial_pos, pos_release_snap);
+			GateManager::addGate(gate);
+			require_update = ChunkManager::updateConnectorNode(&(gate->getOutputs()[0]));
 		}
 		else
 		{
@@ -215,23 +226,26 @@ void Playing::key_callback(GLFWwindow* window, int key, int scancode, int action
 		if (gate_tracker.size() > 0)
 		{
 			auto it = gate_tracker.end();
-			gate_renderer.popList((*--it)->getComponentList(), Gate::GetComponentListSize());
+			gate_renderer.popList((*--it)->getComponentList(), NotGate::GetComponentListSize());
 			delete *it;
 			gate_tracker.pop_back();
 		}
+	}
+
+	if (key == GLFW_KEY_I && action == GLFW_PRESS)
+	{
+		//Break out just to check
+		ChunkCoord cc;
+		cc.chunk_id_x = 0;
+		cc.chunk_id_y = 0;
+
+		ChunkManager::getChunkAtPosition(cc);
 	}
 }
 
 void Playing::initialize(GLWrapper* gw)
 {
 	ChunkManager::allocateStart();
-
-	ChunkManager::createChunkAtPosition(glm::vec2(7, 0));
-	ChunkManager::createChunkAtPosition(glm::vec2(7, 7));
-	ChunkManager::createChunkAtPosition(glm::vec2(-7, 0));
-	ChunkManager::createChunkAtPosition(glm::vec2(0, 7));
-	ChunkManager::createChunkAtPosition(glm::vec2(0, -7));
-	ChunkManager::createChunkAtPosition(glm::vec2(-7, -7));
 
 	StateInfo si;
 	si.state = this;
@@ -245,22 +259,6 @@ void Playing::initialize(GLWrapper* gw)
 	glPointSize(7.0f);
 
 #ifdef DEBUG
-	for (int i = 0; i < 10; i++)
-	{
-		glm::vec2 in;
-		glm::vec2 out;
-
-		in.x = (float)i;
-		in.y = 0.0f;
-
-		out.x = (float)i;
-		out.y = 1.0f;
-
-		gate[i] = new Gate();
-		gate[i]->update(in, out);
-		gate_renderer.pushList(gate[i]->getComponentList(), Gate::GetComponentListSize());
-	}
-
 	Gui::Get().pushWindow(debug);
 
 	auto lamb = [&](bool* close, GLFWwindow* window, State* state)
@@ -286,22 +284,12 @@ void Playing::initialize(GLWrapper* gw)
 
 void Playing::cleanUp()
 {
-	for (int i = 0; i < 10; i++)
-	{
-		delete gate[i];
-	}
-
 	for (auto gate : gate_tracker)
 	{
 		delete gate;
 	}
 
-	ChunkManager::deleteChunkAtPosition(glm::vec2(7, 0));
-	ChunkManager::deleteChunkAtPosition(glm::vec2(7, 7));
-	ChunkManager::deleteChunkAtPosition(glm::vec2(-7, 0));
-	ChunkManager::deleteChunkAtPosition(glm::vec2(0, 7));
-	ChunkManager::deleteChunkAtPosition(glm::vec2(0, -7));
-	ChunkManager::deleteChunkAtPosition(glm::vec2(-7, -7));
+	ChunkManager::deleteChunkAtPosition(glm::vec2(0, 0));
 }
 
 const glm::mat4 Playing::getPVMatrix() const
@@ -319,12 +307,13 @@ const glm::vec2 Playing::getMousePositionWorldSpace() const
 	return frame_mouse_pos;
 }
 
-void Playing::createGate(glm::vec2 in, glm::vec2 out)
+NotGate* Playing::createNotGate(glm::vec2 in, glm::vec2 out)
 {
-	Gate* gate = new Gate();
+	NotGate* gate = new NotGate();
 	gate->update(in, out);
-	gate_renderer.pushList(gate->getComponentList(), Gate::GetComponentListSize());
+	gate_renderer.pushList(gate->getComponentList(), NotGate::GetComponentListSize());
 	gate_tracker.push_back(gate);
+	return gate;
 }
 
 const glm::vec2 Playing::getTranslation()
