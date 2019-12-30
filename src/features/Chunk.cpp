@@ -25,19 +25,33 @@ bool Chunk::isInside(glm::vec2 value)
 
 void Chunk::insertConnector(Connector* c)
 {
-	connector_list.push_back(c);
+	if (!c->isInteractible())
+		connector_list.push_back(c);
+	else
+		interactors_list.push_back(dynamic_cast<InteractConnector*>(c));
 }
 
 void Chunk::deleteConnector(Connector* c)
 {
-	auto found = std::find(connector_list.cbegin(), connector_list.cend(), c);
-	if (found != connector_list.cend())
+	if (!c->isInteractible())
 	{
-		connector_list.erase(found);
+		auto found = std::find(connector_list.cbegin(), connector_list.cend(), c);
+		if (found != connector_list.cend())
+		{
+			connector_list.erase(found);
+		}
+	}
+	else
+	{
+		auto found = std::find(interactors_list.cbegin(), interactors_list.cend(), c);
+		if (found != interactors_list.cend())
+		{
+			interactors_list.erase(found);
+		}
 	}
 }
 
 bool Chunk::isEmpty() const
 {
-	return connector_list.empty();
+	return connector_list.empty() && interactors_list.empty();
 }

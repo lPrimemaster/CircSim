@@ -3,7 +3,9 @@
 #include "State.h"
 #include "../render/GateRenderer.h"
 #include "../render/GridRenderer.h"
+#include "../gates/Gate.h"
 #include "../gates/NGateDef.h"
+#include "../gates/SwitchGate.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include "../util/math.h"
 
@@ -69,7 +71,7 @@ private:
 	bool update_next;
 
 	//TODO: This shouldn't exist here! -> Each Chunk should manage its own gates
-	std::vector<NotGate*> gate_tracker;
+	std::vector<Gate*> gate_tracker;
 
 	std::vector<Node*> require_update;
 };

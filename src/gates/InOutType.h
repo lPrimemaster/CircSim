@@ -2,6 +2,7 @@
 #include <glm/glm.hpp>
 #include <vector>
 #include <array>
+#include "../util/math.h"
 #include "../Node.h"
 
 struct Connector
@@ -26,6 +27,16 @@ struct Connector
 		node = nullptr;
 	}
 
+	virtual const bool isInteractible() const
+	{
+		return interactible;
+	}
+
+	virtual void updateState(bool input)
+	{
+		//Do nothing
+	}
+
 	bool operator==(const Connector& rhs) const
 	{
 		return (Type == rhs.Type);
@@ -46,18 +57,76 @@ struct Connector
 		return (position == with.position);
 	}
 
-	//TODO: Add the place the chunk is? Or are calculations not heavy ??
 	std::vector<Connector*> dep_conector;
 
 	Node* node;
+
+	bool interactible = false;
+};
+
+struct InteractConnector : public Connector
+{
+	InteractConnector() : Connector()
+	{
+		interactible = true;
+	}
+
+	InteractConnector(IO type, glm::vec2 pos) : Connector(type, pos)
+	{
+		interactible = true;
+	}
+
+	virtual const bool isInteractible() const override
+	{
+		return true;
+	}
+
+	virtual inline bool checkMouse(glm::vec2 mouse_world) = 0;
+
+	virtual inline void onClick() = 0;
+
+	virtual void updateState(bool input)
+	{
+		node->write(input);
+	}
+
+	float click_area_of_effect = 0.04f;
+
+	bool state = false;
+};
+
+struct SwitchConnector : public InteractConnector
+{
+	SwitchConnector(float aoe = 0.04f) : InteractConnector()
+	{
+		click_area_of_effect = aoe;
+	}
+
+	SwitchConnector(IO type, glm::vec2 pos, float aoe = 0.04f) : InteractConnector(type, pos)
+	{
+		click_area_of_effect = aoe;
+	}
+
+	inline bool checkMouse(glm::vec2 mouse_world) override
+	{
+		return math::isInsideRadius(mouse_world, position, click_area_of_effect);
+	}
+
+	inline void onClick() override
+	{
+		updateState(!state);
+		state = !state;
+	}
+
+	float click_area_of_effect = 0.04f;
 };
 
 template<size_t inputs, size_t outputs>
 class InOutType
 {
 public:
-	using InArray = std::array<Connector, inputs>;
-	using OutArray = std::array<Connector, outputs>;
+	using InArray = std::array<Connector*, inputs>;
+	using OutArray = std::array<Connector*, outputs>;
 
 	InOutType() = default;
 	virtual ~InOutType() {  };

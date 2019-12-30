@@ -114,6 +114,7 @@ void ChunkManager::allocateStart()
 	loaded.try_emplace(cc, new Chunk(cc));
 }
 
+//Deprecated
 void ChunkManager::populateChunks(std::vector<Gate*>* global_list)
 {
 	//Iterate trough all gates and put them into their specific chunk - generated at run time
@@ -148,6 +149,7 @@ std::vector<Node*> ChunkManager::updateConnectorNode(Connector* c)
 
 	std::vector<Node*> need_registry;
 	//Check if there is any node already in the connector position
+
 	for (auto con : chunk->connector_list)
 	{
 		if (con->node != nullptr && con->isOverlapped(*c))
@@ -157,14 +159,17 @@ std::vector<Node*> ChunkManager::updateConnectorNode(Connector* c)
 	//Then no node was found in this chunk that could be related to this connector
 	if (c->node == nullptr)
 	{
+		//TODO: Change this to a hex value naming system
 		c->node = new Node(math::generateRandomID());
+		std::cout << "Created node : " << c->node->getName() << std::endl;
 		need_registry.push_back(c->node);
 	}
 
 	//Check connector dependencies and do the same
 	for (auto cd : c->dep_conector)
 	{
-		for (auto con : chunk->connector_list)
+		Chunk* dep_chunk = getChunkAtPosition(cd->position);
+		for (auto con : dep_chunk->connector_list)
 		{
 			if (con->node != nullptr && con->isOverlapped(*cd))
 				cd->node = con->node;
@@ -172,7 +177,9 @@ std::vector<Node*> ChunkManager::updateConnectorNode(Connector* c)
 
 		if (cd->node == nullptr)
 		{
+			//TODO: Change this to a hex value naming system
 			cd->node = new Node(math::generateRandomID());
+			std::cout << "Created node : " << cd->node->getName() << std::endl;
 			need_registry.push_back(cd->node);
 		}
 
@@ -181,7 +188,57 @@ std::vector<Node*> ChunkManager::updateConnectorNode(Connector* c)
 			c->node->setDependencyNode(cd->node);
 		}
 	}
+	std::cout << "\n\n";
+	return need_registry;
+}
 
+std::vector<Node*> ChunkManager::updateInteractConnectorNode(InteractConnector* c)
+{
+	//Check where is this connector at
+	Chunk* chunk = getChunkAtPosition(c->position);
+
+	std::vector<Node*> need_registry;
+	//Check if there is any node already in the connector position
+
+	for (auto con : chunk->interactors_list)
+	{
+		if (con->node != nullptr && con->isOverlapped(*c))
+			c->node = con->node;
+	}
+
+	//Then no node was found in this chunk that could be related to this connector
+	if (c->node == nullptr)
+	{
+		//TODO: Change this to a hex value naming system
+		c->node = new Node(math::generateRandomID());
+		std::cout << "Created node : " << c->node->getName() << std::endl;
+		need_registry.push_back(c->node);
+	}
+
+	//For now interactor connectors don't have dependencies
+	//Check connector dependencies and do the same
+	//for (auto cd : c->dep_conector)
+	//{
+	//	Chunk* dep_chunk = getChunkAtPosition(cd->position);
+	//	for (auto con : dep_chunk->interactors_list)
+	//	{
+	//		if (con->node != nullptr && con->isOverlapped(*cd))
+	//			cd->node = con->node;
+	//	}
+
+	//	if (cd->node == nullptr)
+	//	{
+	//		//TODO: Change this to a hex value naming system
+	//		cd->node = new Node(math::generateRandomID());
+	//		need_registry.push_back(cd->node);
+	//	}
+
+	//	if (cd->node)
+	//	{
+	//		c->node->setDependencyNode(cd->node);
+	//	}
+	//}
+	std::cout << "\n\n";
 	return need_registry;
 }
 

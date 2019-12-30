@@ -143,6 +143,7 @@
     <ClCompile Include="src\features\ChunkManager.cpp" />
     <ClCompile Include="src\features\GateManager.cpp" />
     <ClCompile Include="src\gates\NGateDef.cpp" />
+    <ClCompile Include="src\gates\SwitchGate.cpp" />
     <ClCompile Include="src\geometry\Geometry.cpp" />
     <ClCompile Include="src\geometry\Transform.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -178,6 +179,7 @@
     <ClInclude Include="src\gates\Gate.h" />
     <ClInclude Include="src\gates\InOutType.h" />
     <ClInclude Include="src\gates\NGateDef.h" />
+    <ClInclude Include="src\gates\SwitchGate.h" />
     <ClInclude Include="src\geometry\Component.h" />
     <ClInclude Include="src\geometry\Geometry.h" />
     <ClInclude Include="src\geometry\Transform.h" />

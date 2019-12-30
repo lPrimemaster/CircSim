@@ -32,6 +32,7 @@ public:
 	static void populateChunks(std::vector<Gate*>* global_list);
 
 	static std::vector<Node*> updateConnectorNode(Connector* c);
+	static std::vector<Node*> updateInteractConnectorNode(InteractConnector* c);
 
 private:
 	static void workerPopulate(std::vector<Gate*>::iterator start, std::vector<Gate*>::iterator end);

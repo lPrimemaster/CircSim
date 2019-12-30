@@ -61,6 +61,9 @@ NotGate::~NotGate()
 	delete components[5];
 	delete components[6];
 	delete components[7];
+
+	delete out_ports[0];
+	delete in_ports[0];
 }
 
 void NotGate::update(const glm::vec2 in, const glm::vec2 out)

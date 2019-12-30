@@ -26,7 +26,6 @@ struct ChunkCoord : public Hashable
 
 };
 
-//TODO: Each chunk should manage its own gates - and not to be done inside the main state
 class Chunk
 {
 public:
@@ -38,6 +37,11 @@ public:
 
 	bool isInside(glm::vec2 value);
 
+	inline std::vector<InteractConnector*> getInteractorsList() const
+	{
+		return interactors_list;
+	}
+
 	void insertConnector(Connector* c);
 	void deleteConnector(Connector* c);
 
@@ -48,7 +52,8 @@ private:
 
 private:
 	std::vector<Connector*> connector_list;
-	std::vector<Connector*> connector_update;
+	std::vector<InteractConnector*> interactors_list;
+	std::vector<Gate*> gate_list;
 
 	ChunkCoord coord;
 };

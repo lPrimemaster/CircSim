@@ -135,6 +135,9 @@
     <ClCompile Include="src\features\GateManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\gates\SwitchGate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\CSim.h">
@@ -241,6 +244,9 @@
     </ClInclude>
     <ClInclude Include="src\features\GateManager.h">
       <Filter>Header Files\features</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gates\SwitchGate.h">
+      <Filter>Header Files\gates</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

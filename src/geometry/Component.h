@@ -1,11 +1,12 @@
 #pragma once
+#include <iostream>
 #include "Transform.h"
 
 class Component
 {
 public:
 	Component(const std::string& geometry) : assigned_geometry(geometry) {  };
-	~Component() = default;
+	virtual ~Component() = default;
 
 	inline Transform& transform()
 	{

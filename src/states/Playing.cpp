@@ -42,7 +42,7 @@ static void debug(bool* close, GLFWwindow* window, State* state)
 			ImGui::Text("    [Statistics]");
 			ImGui::Separator();
 			ImGui::Text("Game");
-			ImGui::TextColored(ImColor(1.0f, 1.0f, 0.0f), "Gate #: %u\n", 10 + playing->gate_tracker.size());
+			ImGui::TextColored(ImColor(1.0f, 1.0f, 0.0f), "Gate #: %u\n", playing->gate_tracker.size());
 
 			ChunkCoord cc = ChunkManager::getChunkIndexAtPosition(mouse_world_pos);
 
@@ -165,12 +165,12 @@ void Playing::update(GLWrapper* gw)
 		require_update.clear();
 	}
 
-	for (auto rn : registered_nodes)
+	for (auto g : gate_tracker)
 	{
-		for (auto g : gate_tracker)
-		{
-			g->updateInput(g->getInputs()[0].node->getState());
-		}
+		if (g->childType() == typeid(SwitchGate))
+			g->convert<SwitchGate>()->updateInput(g->convert<SwitchGate>()->getInputs()[0]->node->getState());
+		else
+			g->convert<NotGate>()->updateInput(g->convert<NotGate>()->getInputs()[0]->node->getState());
 	}
 #endif // DEBUG
 
@@ -186,13 +186,28 @@ void Playing::scroll_callback(GLFWwindow* window, double xoff, double yoff)
 
 //TODO: Remember to check if the mouse is on a legal location
 //TODO: Remember to check if the gate is on a legal location
-//TODO: Create a lower alpha og the gate while on placemente mode (key not released)
+//TODO: Create a lower alpha of the gate while on placemente mode (key not released)
 //TODO: Don't hard code grid spacings, as well as the gate min length draw check
 //TODO: Enable snapping only in horizontal or vertical modes
 void Playing::click_callback(GLFWwindow* window, int button, int action, int mods)
 {
 	static int lastButtonClick = button;
 	static glm::vec2 initial_pos;
+
+	//Check if button is inside a gate -> activate interaction
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+	{
+		Chunk* curr_chunk = ChunkManager::getChunkAtPosition(frame_mouse_pos);
+		for (auto ic : curr_chunk->getInteractorsList())
+		{
+			if (ic->checkMouse(frame_mouse_pos))
+			{
+				ic->onClick();
+				break; //Admit gates don't overlap
+			}
+		}
+	}
+
 
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
 	{
@@ -203,9 +218,24 @@ void Playing::click_callback(GLFWwindow* window, int button, int action, int mod
 		glm::vec2 pos_release_snap = math::snapToGrid(frame_mouse_pos, 0.2f, 0.2f);
 		if (glm::distance(initial_pos, pos_release_snap) >= 0.2f * 3.0f) //TODO: Check if this works on the math.h -> comparing floating points
 		{
-			NotGate* gate = createNotGate(initial_pos, pos_release_snap);
-			GateManager::addGate(gate);
-			require_update = ChunkManager::updateConnectorNode(&(gate->getOutputs()[0]));
+			if (!(mods & GLFW_MOD_SHIFT))
+			{
+				NotGate* Ngate = createNotGate(initial_pos, pos_release_snap);
+				GateManager::addGate(Ngate);
+				require_update = ChunkManager::updateConnectorNode(Ngate->getOutputs()[0]);
+			}
+			else
+			{
+				SwitchGate* gate = new SwitchGate();
+				gate->update(initial_pos, pos_release_snap);
+				gate_renderer.pushList(gate->getComponentList(), gate->getComponentListSize());
+				gate_tracker.push_back(gate);
+				GateManager::addGate(gate);
+				auto ucn = ChunkManager::updateConnectorNode(gate->getOutputs()[0]);
+				auto uicn = ChunkManager::updateInteractConnectorNode(dynamic_cast<InteractConnector*>(gate->getInputs()[0]));
+				require_update.insert(require_update.end(), ucn.begin(), ucn.end());
+				require_update.insert(require_update.end(), uicn.begin(), uicn.end());
+			}
 		}
 		else
 		{
@@ -219,14 +249,12 @@ void Playing::click_callback(GLFWwindow* window, int button, int action, int mod
 
 void Playing::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	//TODO: Maybe switch to a switch statement (HA!)
-
 	if (key == GLFW_KEY_Z && action == GLFW_PRESS && (mods & GLFW_MOD_CONTROL))
 	{
 		if (gate_tracker.size() > 0)
 		{
 			auto it = gate_tracker.end();
-			gate_renderer.popList((*--it)->getComponentList(), NotGate::GetComponentListSize());
+			gate_renderer.popList((*--it)->getComponentList(), (*--it)->getComponentListSize());
 			delete *it;
 			gate_tracker.pop_back();
 		}
@@ -311,7 +339,7 @@ NotGate* Playing::createNotGate(glm::vec2 in, glm::vec2 out)
 {
 	NotGate* gate = new NotGate();
 	gate->update(in, out);
-	gate_renderer.pushList(gate->getComponentList(), NotGate::GetComponentListSize());
+	gate_renderer.pushList(gate->getComponentList(), gate->getComponentListSize());
 	gate_tracker.push_back(gate);
 	return gate;
 }

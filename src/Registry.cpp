@@ -27,8 +27,19 @@ void Registry::registerAllBasicGeometry()
 
 	Geometry::registerGeometry(new Geometry(Geometry::FAN, points_b, 202), "Circle");
 
-	//Force a small load factor about 5 / 30 ~ 0.167
-	Geometry::rehash(30);
+
+	float points_c[12];
+	points_c[0] = -1.0f; points_c[1] = 1.0f;
+	points_c[2] = 1.0f; points_c[3] = 1.0f;
+	points_c[4] = 1.0f; points_c[5] = -1.0f;
+	points_c[6] = 1.0f; points_c[7] = -1.0f;
+	points_c[8] = -1.0f; points_c[9] = -1.0f;
+	points_c[10] = -1.0f; points_c[11] = 1.0f;
+
+	Geometry::registerGeometry(new Geometry(Geometry::TRIANGLES, points_c, 12), "Rectangle");
+
+	//Force a small load factor about 6 / 36 ~ 0.167
+	Geometry::rehash(36);
 }
 
 void Registry::unregisterAllBasicGeometry()
@@ -38,4 +49,5 @@ void Registry::unregisterAllBasicGeometry()
 	Geometry::unregisterGeometry("Triangle");
 	Geometry::unregisterGeometry("Circunference");
 	Geometry::unregisterGeometry("Circle");
+	Geometry::unregisterGeometry("Rectangle");
 }
