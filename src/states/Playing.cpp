@@ -80,8 +80,9 @@ void Playing::draw(GLWrapper* gw)
 {
 	grid_renderer.render();
 	gate_renderer.render();
-	Gui::Get().newFrame();
-	Gui::Get().render(gw->getWindow(), this);
+	gui_renderer.render();
+	DebugGui::Get().newFrame();
+	DebugGui::Get().render(gw->getWindow(), this);
 }
 
 void Playing::handle(GLWrapper* gw)
@@ -153,9 +154,6 @@ void Playing::handle(GLWrapper* gw)
 
 void Playing::update(GLWrapper* gw)
 {
-#ifdef DEBUG
-	auto registered_nodes = gw->getSimulation()->getRegisteredNodes();
-
 	if (!require_update.empty())
 	{
 		for (auto re : require_update)
@@ -172,10 +170,20 @@ void Playing::update(GLWrapper* gw)
 		else
 			g->convert<NotGate>()->updateInput(g->convert<NotGate>()->getInputs()[0]->node->getState());
 	}
-#endif // DEBUG
+
+	glm::vec2 wDims = gw->getWindowDim();
+	static glm::vec2 last = wDims;
 
 	grid_renderer.setPVMatrix(pview_mat);
 	gate_renderer.setPVMatrix(pview_mat);
+	gui_renderer.setPVMatrix(glm::ortho(0.0f, wDims.x, 0.0f, wDims.y)); //This is only the projection matrix instead
+
+	//Call everything that should reajust with the viewport resize
+	if (wDims != last)
+	{
+		gui_renderer.adjustWindows(GUI_LOCK_RIGHT);
+		last = wDims;
+	}
 }
 
 void Playing::scroll_callback(GLFWwindow* window, double xoff, double yoff)
@@ -193,17 +201,21 @@ void Playing::click_callback(GLFWwindow* window, int button, int action, int mod
 {
 	static int lastButtonClick = button;
 	static glm::vec2 initial_pos;
+	static bool initial_pos_is_set = false;
 
 	//Check if button is inside a gate -> activate interaction
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
 	{
 		Chunk* curr_chunk = ChunkManager::getChunkAtPosition(frame_mouse_pos);
-		for (auto ic : curr_chunk->getInteractorsList())
+		if (curr_chunk != nullptr)
 		{
-			if (ic->checkMouse(frame_mouse_pos))
+			for (auto ic : curr_chunk->getInteractorsList())
 			{
-				ic->onClick();
-				break; //Admit gates don't overlap
+				if (ic->checkMouse(frame_mouse_pos))
+				{
+					ic->onClick();
+					break; //Admit gates don't overlap
+				}
 			}
 		}
 	}
@@ -212,9 +224,11 @@ void Playing::click_callback(GLFWwindow* window, int button, int action, int mod
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
 	{
 		initial_pos = math::snapToGrid(frame_mouse_pos, 0.2f, 0.2f);
+		initial_pos_is_set = true;
 	}
-	else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
+	else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE && initial_pos_is_set)
 	{
+		initial_pos_is_set = false;
 		glm::vec2 pos_release_snap = math::snapToGrid(frame_mouse_pos, 0.2f, 0.2f);
 		if (glm::distance(initial_pos, pos_release_snap) >= 0.2f * 3.0f) //TODO: Check if this works on the math.h -> comparing floating points
 		{
@@ -253,21 +267,11 @@ void Playing::key_callback(GLFWwindow* window, int key, int scancode, int action
 	{
 		if (gate_tracker.size() > 0)
 		{
-			auto it = gate_tracker.end();
-			gate_renderer.popList((*--it)->getComponentList(), (*--it)->getComponentListSize());
+			auto it = gate_tracker.end() - 1;
+			gate_renderer.popList((*it)->getComponentList(), (*it)->getComponentListSize());
 			delete *it;
 			gate_tracker.pop_back();
 		}
-	}
-
-	if (key == GLFW_KEY_I && action == GLFW_PRESS)
-	{
-		//Break out just to check
-		ChunkCoord cc;
-		cc.chunk_id_x = 0;
-		cc.chunk_id_y = 0;
-
-		ChunkManager::getChunkAtPosition(cc);
 	}
 }
 
@@ -279,15 +283,17 @@ void Playing::initialize(GLWrapper* gw)
 	si.state = this;
 	si.derived_state = PLAYING;
 
-	Gui::setContext(gw->getWindow());
+	DebugGui::setContext(gw->getWindow());
 	InputManager::setActiveWindow(gw->getWindow());
 	InputManager::setCallbackControllerState(si);
+
+	gui_renderer.addWindow(new GuiWindow());
 
 	glLineWidth(2.5f);
 	glPointSize(7.0f);
 
 #ifdef DEBUG
-	Gui::Get().pushWindow(debug);
+	DebugGui::Get().pushWindow(debug);
 
 	auto lamb = [&](bool* close, GLFWwindow* window, State* state)
 	{
@@ -306,7 +312,7 @@ void Playing::initialize(GLWrapper* gw)
 		ImGui::End();
 	};
 
-	Gui::Get().pushWindow(lamb);
+	DebugGui::Get().pushWindow(lamb);
 #endif // DEBUG
 }
 

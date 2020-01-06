@@ -1,6 +1,5 @@
 #include "Renderer.h"
 #include "GridRenderer.h"
-#include "gui/Gui.h"
 
 //TODO : Adding other shader stages should be automated by searching in the directory for extensions
 //TODO : Adding pre shader calculation to reduce cpu memory usage -> redundant values
@@ -13,6 +12,7 @@ GridRenderer::GridRenderer() : Renderer("aa_lines", ADD_GEOM_SHADER)
 GridRenderer::~GridRenderer()
 {
 	Geometry::unregisterGeometry("Grid");
+	free(offsets);
 }
 
 void GridRenderer::render()
@@ -20,11 +20,12 @@ void GridRenderer::render()
 	p.bind();
 	p.loadMatrix4f("PView", pvm);
 	p.loadFloat("lineWidth", lw);
-
+	glDisable(GL_BLEND);
 	p.loadVector4f("color", glm::vec4(0.2f));
 	static Geometry* g = Geometry::getRegisteredGeometry("Grid"); //Avoid multiple calls
 	g->bind();
 	glDrawArrays(GL_LINES, 0, totalGenLines * 2);
+	glEnable(GL_BLEND);
 }
 
 float& GridRenderer::getLW()
@@ -110,5 +111,5 @@ unsigned GridRenderer::updateGrid(float zscale, glm::vec2 tvec, glm::vec2 sdim)
 
 void GridRenderer::generateGrid()
 {
-	Geometry::registerGeometry(new Geometry(Geometry::LINES, offsets, totalGenLines * 4), "Grid");
+	Geometry::registerGeometry(new Geometry(Geometry::LINES, offsets, totalGenLines * 4, 2, false, GL_DYNAMIC_DRAW), "Grid");  //FIX: this is a overhead
 }

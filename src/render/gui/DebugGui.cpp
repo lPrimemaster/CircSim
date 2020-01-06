@@ -1,8 +1,8 @@
-#include "Gui.h"
+#include "DebugGui.h"
 
-GLFWwindow* Gui::window = nullptr;
+GLFWwindow* DebugGui::window = nullptr;
 
-Gui::Gui(GLFWwindow* window)
+DebugGui::DebugGui(GLFWwindow* window)
 {
 	window_hash.rehash(30);
 
@@ -19,21 +19,21 @@ Gui::Gui(GLFWwindow* window)
 	ImGui_ImplOpenGL3_Init("#version 450");
 }
 
-Gui::~Gui()
+DebugGui::~DebugGui()
 {
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
 }
 
-void Gui::newFrame() const
+void DebugGui::newFrame() const
 {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 }
 
-void Gui::render(GLFWwindow* window, State* state) const
+void DebugGui::render(GLFWwindow* window, State* state) const
 {
 	for (auto w : window_hash)
 	{
@@ -45,20 +45,20 @@ void Gui::render(GLFWwindow* window, State* state) const
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void Gui::pushWindow(std::function<void(bool*, GLFWwindow*, State*)> body)
+void DebugGui::pushWindow(std::function<void(bool*, GLFWwindow*, State*)> body)
 {
 	static unsigned window_push_ct = 0;
 	auto pair = std::make_pair(body, new bool(true));
 	window_hash.emplace(window_push_ct++, pair);
 }
 
-void Gui::popWindow(unsigned id)
+void DebugGui::popWindow(unsigned id)
 {
 	delete window_hash.at(id).second;
 	window_hash.erase(id);
 }
 
-bool* Gui::getWindowState(unsigned id)
+bool* DebugGui::getWindowState(unsigned id)
 {
 	return window_hash.at(id).second;
 }

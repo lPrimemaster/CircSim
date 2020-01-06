@@ -82,7 +82,8 @@ void SwitchGate::update(const glm::vec2 center, const glm::vec2 out)
 	glm::vec2 normalized_perpendicular = glm::vec2(normalized_direction.y, -normalized_direction.x);
 	glm::vec2 weighted_perpendicular = 0.2f * normalized_perpendicular;
 
-	float turn_deg = std::acosf(glm::dot(normalized_direction, glm::vec2(1.0f, 0.0f))) * RAD_2_DEG;
+	float turn_deg = normalized_direction.y > 0 ? std::acosf(glm::dot(normalized_direction, glm::vec2(1.0f, 0.0f))) * RAD_2_DEG 
+		: -std::acosf(glm::dot(normalized_direction, glm::vec2(1.0f, 0.0f))) * RAD_2_DEG;
 
 	glm::vec2 right_side = center + weighted_direction;
 	glm::vec2 left_side = center - weighted_direction;

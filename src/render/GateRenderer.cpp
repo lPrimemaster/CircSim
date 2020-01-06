@@ -14,7 +14,7 @@ void GateRenderer::render()
 	p.loadMatrix4f("PView", pvm);
 	for (auto c : comps)
 	{
-		Geometry* geo = Geometry::getRegisteredGeometry(c->geometryName());
+		Geometry* geo = Geometry::getRegisteredGeometry(c->geometryName()); //FIX: this is a overhead
 		p.loadVector4f("color", c->getColor());
 		p.loadMatrix4f("Model", c->transform().getTransform());
 

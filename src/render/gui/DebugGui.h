@@ -12,21 +12,21 @@
 #include "../../../deps/imgui/imgui_impl_opengl3.h"
 
 
-class Gui
+class DebugGui
 {
 private:
-	Gui(GLFWwindow* window);
-	~Gui();
+	DebugGui(GLFWwindow* window);
+	~DebugGui();
 
 public:
 	inline static void setContext(GLFWwindow* window)
 	{
-		Gui::window = window;
+		DebugGui::window = window;
 	}
 
-	inline static Gui& Get()
+	inline static DebugGui& Get()
 	{
-		static Gui instance = Gui(window);
+		static DebugGui instance = DebugGui(window);
 		return instance;
 	}
 

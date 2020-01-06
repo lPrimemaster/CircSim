@@ -3,6 +3,8 @@
 #include "State.h"
 #include "../render/GateRenderer.h"
 #include "../render/GridRenderer.h"
+#include "../render/GuiRenderer.h"
+
 #include "../gates/Gate.h"
 #include "../gates/NGateDef.h"
 #include "../gates/SwitchGate.h"
@@ -13,7 +15,7 @@
 #include "../features/ChunkManager.h"
 #include "../features/GateManager.h"
 
-#include "../render/gui/Gui.h"
+#include "../render/gui/DebugGui.h"
 
 #include "../Registry.h"
 
@@ -53,6 +55,7 @@ public:
 private:
 	GateRenderer gate_renderer;
 	GridRenderer grid_renderer;
+	GuiRenderer gui_renderer;
 
 	glm::mat4 pview_mat;
 	glm::mat4 ipview_mat;

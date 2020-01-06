@@ -4,6 +4,16 @@
 #define ERROR_INIT -1
 #define ERROR_WINDOW -2
 
+#define DEBUG
+
+#ifdef DEBUG
+void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
+{
+	if(type == GL_DEBUG_TYPE_ERROR)
+		fprintf(stderr, "GL ERROR: type = 0x%x, severity = 0x%x, message = %s\n\n", type, severity, message);
+}
+#endif
+
 
 GLWrapper::GLWrapper()
 {
@@ -40,9 +50,17 @@ GLWrapper::GLWrapper()
 	}
 
 	glEnable(GL_MULTISAMPLE);
-	/*glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_BLEND);*/
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+	// During init, enable debug output
+#ifdef DEBUG
+	glEnable(GL_DEBUG_OUTPUT);
+	glDebugMessageCallback(MessageCallback, 0);
+#endif
 }
 
 

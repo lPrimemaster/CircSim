@@ -90,6 +90,8 @@ struct InteractConnector : public Connector
 		node->write(input);
 	}
 
+	Connector* output_interact = nullptr;
+
 	float click_area_of_effect = 0.04f;
 
 	bool state = false;
@@ -141,8 +143,6 @@ public:
 	{
 		return out_ports;
 	}
-
-	//Connector getOutbound
 
 protected:
 	//Must be called on Derived Constructor

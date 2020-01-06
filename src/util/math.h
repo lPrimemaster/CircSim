@@ -1,12 +1,23 @@
 #pragma once
 #include <iostream>
+#include <iomanip>
+#include <sstream>
 #include <functional>
 #include <glm/glm.hpp>
 #include <random>
-#include "../render/gui/Gui.h"
 
 #define PI_F 3.141592654f
 #define RAD_2_DEG 360.0f / (2 * PI_F)
+#define DEG_2_RAD 1.0f / RAD_2_DEG
+#define UP glm::vec3(0.0f, 0.0f, 1.0f)
+
+template<typename T>
+inline std::string int_to_hex(T i)
+{
+	std::stringstream stream;
+	stream << "0x" << std::setfill('0') << std::setw(sizeof(T) * 2) << std::hex << i;
+	return stream.str();
+}
 
 namespace math
 {
@@ -16,6 +27,12 @@ namespace math
 	glm::vec2 snapToGrid(glm::vec2 location, float gridSX, float gridSY);
 
 	bool isInsideRadius(glm::vec2 point, glm::vec2 center, float radius);
+
+	inline std::string generateHEX()
+	{
+		static int id = 0;
+		return int_to_hex(id++);
+	}
 
 	inline std::string generateRandomID() {
 		static std::random_device dev;

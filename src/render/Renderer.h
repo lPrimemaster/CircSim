@@ -21,7 +21,7 @@ public:
 	virtual void pop(Component* c);
 	virtual void popList(Component** list, size_t size);
 
-	void setPVMatrix(const glm::mat4& pvm);
+	virtual void setPVMatrix(const glm::mat4& pvm);
 
 	virtual void render() = 0;
 

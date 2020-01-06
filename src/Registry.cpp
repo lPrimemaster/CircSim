@@ -51,3 +51,30 @@ void Registry::unregisterAllBasicGeometry()
 	Geometry::unregisterGeometry("Circle");
 	Geometry::unregisterGeometry("Rectangle");
 }
+
+void Registry::registerAllGuiGeometry()
+{
+}
+
+void Registry::unregisterAllGuiGeometry()
+{
+}
+
+void Registry::registerAllTextures()
+{
+
+}
+
+void Registry::unregisterAllTextures()
+{
+}
+
+void Registry::registerAllCharAtlas()
+{
+	CharAtlas::registerCharAtlas(new CharAtlas("assets/fonts/PantonRustHeavy.ttf"), "PantonRustHeavy");
+}
+
+void Registry::unregisterAllCharAtlas()
+{
+	CharAtlas::unregisterCharAtlas("PantonRustHeavy");
+}

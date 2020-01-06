@@ -36,8 +36,7 @@ protected:
 		out_ports[0] = new Connector();
 		in_ports[0] = new SwitchConnector(Cscale);
 
-		auto loc = &(out_ports[0]->node);
-		loc = &(in_ports[0]->node);
+		dynamic_cast<SwitchConnector*>(in_ports[0])->output_interact = out_ports[0];
 	}
 
 	inline void updateConnectors() override
