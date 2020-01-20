@@ -1,5 +1,21 @@
 #include "Registry.h"
 
+Registry::Registry()
+{
+	registerAllBasicGeometry();
+	registerAllGuiGeometry();
+	registerAllTextures();
+	registerAllCharAtlas();
+}
+
+Registry::~Registry()
+{
+	unregisterAllBasicGeometry();
+	unregisterAllGuiGeometry();
+	unregisterAllTextures();
+	unregisterAllCharAtlas();
+}
+
 void Registry::registerAllBasicGeometry()
 {
 	Geometry::registerGeometry(new Geometry(Geometry::LINES, { glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 0.0f) }), "Line");
@@ -72,9 +88,11 @@ void Registry::unregisterAllTextures()
 void Registry::registerAllCharAtlas()
 {
 	CharAtlas::registerCharAtlas(new CharAtlas("assets/fonts/PantonRustHeavy.ttf"), "PantonRustHeavy");
+	CharAtlas::registerCharAtlas(new CharAtlas("assets/fonts/LucidaConsole.ttf"), "LucidaConsole");
 }
 
 void Registry::unregisterAllCharAtlas()
 {
 	CharAtlas::unregisterCharAtlas("PantonRustHeavy");
+	CharAtlas::unregisterCharAtlas("LucidaConsole");
 }

@@ -104,6 +104,14 @@ bool ChunkManager::deleteChunkAtPosition(glm::vec2 p)
 	return deleteChunkAtPosition(cc);
 }
 
+std::vector<Chunk*> ChunkManager::getAllLoadedChunks()
+{
+	auto map = loaded.getRawConst();
+	std::vector<Chunk*> ret;
+	std::transform(map.begin(), map.end(), std::back_inserter(ret), math::gMapSecond(map));
+	return ret;
+}
+
 void ChunkManager::allocateStart()
 {
 	//Home chunk

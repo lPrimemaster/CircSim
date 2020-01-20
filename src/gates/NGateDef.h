@@ -29,6 +29,15 @@ public:
 		return 8;
 	}
 
+	inline void changeAlpha(float alpha) override
+	{
+		for (int i = 0; i < 8; i++)
+		{
+			glm::vec4 oc = components[i]->getColor();
+			components[i]->setColor(glm::vec4(oc.r, oc.g, oc.b, alpha));
+		}
+	}
+
 protected:
 	inline void defineConnectorDependencies() override
 	{

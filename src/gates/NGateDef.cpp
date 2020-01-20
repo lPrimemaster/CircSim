@@ -49,6 +49,8 @@ NotGate::NotGate()
 	components[7]->setColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
 	updateConnectors();
+
+	bounding_limits = math::BRect(math::cartesianToPolar(direction).angle, in - weighted_perpendicular, glm::distance(in , out), 2 * glm::length(weighted_perpendicular));
 }
 
 NotGate::~NotGate()
@@ -100,6 +102,8 @@ void NotGate::update(const glm::vec2 in, const glm::vec2 out)
 	components[7]->transform().update(out_line_start, 0.0f, Cscale + 0.002f);
 
 	updateConnectors();
+
+	bounding_limits = math::BRect(math::cartesianToPolar(direction).angle, in - weighted_perpendicular, glm::distance(in, out), 2 * glm::length(weighted_perpendicular));
 }
 
 void NotGate::updateInput(const unsigned state)

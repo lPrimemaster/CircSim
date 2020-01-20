@@ -18,6 +18,6 @@ protected:
 
 private:
 	Texture* drawable_texture = nullptr;
-	Component* border = nullptr;
+	Component* quad = nullptr;
 };
 

@@ -79,6 +79,11 @@ CSim* GLWrapper::getSimulation() const
 	return simulation;
 }
 
+PSim* GLWrapper::getPhysics() const
+{
+	return physics;
+}
+
 glm::vec2 GLWrapper::getWindowDim() const
 {
 	return glm::vec2(windowW, windowH);
@@ -102,11 +107,12 @@ void GLWrapper::update(State* state)
 	state->update(this);
 }
 
-void GLWrapper::run(State* state, CSim* simulation)
+void GLWrapper::run(State* state, CSim* simulation, PSim* physics)
 {
 	//This needs to be moved / refactored to a diferend init scheme
 	state->initialize(this);
 	this->simulation = simulation;
+	this->physics = physics;
 
 	while (!glfwWindowShouldClose(window))
 	{

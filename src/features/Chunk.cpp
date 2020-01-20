@@ -51,6 +51,20 @@ void Chunk::deleteConnector(Connector* c)
 	}
 }
 
+void Chunk::insertGate(Gate* g)
+{
+	gate_list.push_back(g);
+}
+
+void Chunk::deleteGate(Gate* g)
+{
+	auto found = std::find(gate_list.cbegin(), gate_list.cend(), g);
+	if (found != gate_list.cend())
+	{
+		gate_list.erase(found);
+	}
+}
+
 bool Chunk::isEmpty() const
 {
 	return connector_list.empty() && interactors_list.empty();

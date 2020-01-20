@@ -92,6 +92,8 @@ void Playing::handle(GLWrapper* gw)
 	int rmb_state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT);
 	glm::vec2 wh = gw->getWindowDim();
 
+	auto physics = gw->getPhysics();
+
 	//This scaling configuration adds 0.2 to X with in world space every zscale unit
 	float abs_y_scl_weighted = abs(z_scl) * 0.1f;
 
@@ -150,6 +152,20 @@ void Playing::handle(GLWrapper* gw)
 
 	//Calculate the mouse position for this frame
 	frame_mouse_pos = math::screenToWorld(wh, glm::vec2(last_cursor_x, last_cursor_y), ipview_mat);
+
+	physics->setMouseAtomic(frame_mouse_pos);
+	physics->setCurrentActiveChunkAtomic(ChunkManager::getChunkAtPosition(frame_mouse_pos));
+
+
+	if (last_gates.not_gate != nullptr)
+	{
+		last_gates.not_gate->update(last_gates.last_pos, math::snapToGrid(frame_mouse_pos, 0.2f, 0.2f));
+		
+	}
+	else if (last_gates.switch_gate != nullptr)
+	{
+		last_gates.switch_gate->update(last_gates.last_pos, math::snapToGrid(frame_mouse_pos, 0.2f, 0.2f));
+	}
 }
 
 void Playing::update(GLWrapper* gw)
@@ -163,12 +179,21 @@ void Playing::update(GLWrapper* gw)
 		require_update.clear();
 	}
 
+	//TODO: Why not a callback later
 	for (auto g : gate_tracker)
 	{
 		if (g->childType() == typeid(SwitchGate))
-			g->convert<SwitchGate>()->updateInput(g->convert<SwitchGate>()->getInputs()[0]->node->getState());
+		{
+			SwitchGate* sg = g->convert<SwitchGate>();
+			if(sg->getInputs()[0]->node != nullptr)
+				sg->updateInput(sg->getInputs()[0]->node->getState());
+		}
 		else
-			g->convert<NotGate>()->updateInput(g->convert<NotGate>()->getInputs()[0]->node->getState());
+		{
+			NotGate* ng = g->convert<NotGate>();
+			if(ng->getInputs()[0]->node != nullptr)
+				ng->updateInput(ng->getInputs()[0]->node->getState());
+		}
 	}
 
 	glm::vec2 wDims = gw->getWindowDim();
@@ -196,12 +221,11 @@ void Playing::scroll_callback(GLFWwindow* window, double xoff, double yoff)
 //TODO: Remember to check if the gate is on a legal location
 //TODO: Create a lower alpha of the gate while on placemente mode (key not released)
 //TODO: Don't hard code grid spacings, as well as the gate min length draw check
-//TODO: Enable snapping only in horizontal or vertical modes
 void Playing::click_callback(GLFWwindow* window, int button, int action, int mods)
 {
 	static int lastButtonClick = button;
 	static glm::vec2 initial_pos;
-	static bool initial_pos_is_set = false;
+	static bool is_pressed = false;
 
 	//Check if button is inside a gate -> activate interaction
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
@@ -220,41 +244,85 @@ void Playing::click_callback(GLFWwindow* window, int button, int action, int mod
 		}
 	}
 
-
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
 	{
 		initial_pos = math::snapToGrid(frame_mouse_pos, 0.2f, 0.2f);
-		initial_pos_is_set = true;
+		is_pressed = true;
+		
+		if (!(mods & GLFW_MOD_SHIFT))
+		{
+			last_gates.not_gate = new NotGate();
+			last_gates.not_gate->changeAlpha(0.7f);
+			gate_renderer.pushList(last_gates.not_gate->getComponentList(), last_gates.not_gate->getComponentListSize());
+			gate_tracker.push_back(last_gates.not_gate);
+		}
+		else
+		{
+			last_gates.switch_gate = new SwitchGate();
+			last_gates.switch_gate->changeAlpha(0.7f);
+			gate_renderer.pushList(last_gates.switch_gate->getComponentList(), last_gates.switch_gate->getComponentListSize());
+			gate_tracker.push_back(last_gates.switch_gate);
+		}
+
+		last_gates.last_pos = initial_pos;
 	}
-	else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE && initial_pos_is_set)
+	else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE && is_pressed)
 	{
-		initial_pos_is_set = false;
+		is_pressed = false;
 		glm::vec2 pos_release_snap = math::snapToGrid(frame_mouse_pos, 0.2f, 0.2f);
 		if (glm::distance(initial_pos, pos_release_snap) >= 0.2f * 3.0f) //TODO: Check if this works on the math.h -> comparing floating points
 		{
+			Chunk* curr_chunk = ChunkManager::getChunkAtPosition(frame_mouse_pos);
+			if (!curr_chunk)
+			{
+				ChunkManager::createChunkAtPosition(frame_mouse_pos);
+				curr_chunk = ChunkManager::getChunkAtPosition(frame_mouse_pos);
+			}
+
 			if (!(mods & GLFW_MOD_SHIFT))
 			{
-				NotGate* Ngate = createNotGate(initial_pos, pos_release_snap);
-				GateManager::addGate(Ngate);
-				require_update = ChunkManager::updateConnectorNode(Ngate->getOutputs()[0]);
+				GateManager::addGate(last_gates.not_gate);
+				last_gates.not_gate->isFixed() = true;
+				last_gates.not_gate->changeAlpha(1.0f);
+				last_gates.not_gate->update(initial_pos, pos_release_snap);
+
+				curr_chunk->insertGate(last_gates.not_gate);
+
+				require_update = ChunkManager::updateConnectorNode(last_gates.not_gate->getOutputs()[0]);
+				last_gates.not_gate = nullptr;
 			}
 			else
 			{
-				SwitchGate* gate = new SwitchGate();
-				gate->update(initial_pos, pos_release_snap);
-				gate_renderer.pushList(gate->getComponentList(), gate->getComponentListSize());
-				gate_tracker.push_back(gate);
-				GateManager::addGate(gate);
-				auto ucn = ChunkManager::updateConnectorNode(gate->getOutputs()[0]);
-				auto uicn = ChunkManager::updateInteractConnectorNode(dynamic_cast<InteractConnector*>(gate->getInputs()[0]));
+				GateManager::addGate(last_gates.switch_gate);
+				last_gates.switch_gate->isFixed() = true;
+				last_gates.switch_gate->changeAlpha(1.0f);
+				last_gates.switch_gate->update(initial_pos, pos_release_snap);
+
+				curr_chunk->insertGate(last_gates.not_gate);
+
+				auto ucn = ChunkManager::updateConnectorNode(last_gates.switch_gate->getOutputs()[0]);
+				auto uicn = ChunkManager::updateInteractConnectorNode(dynamic_cast<InteractConnector*>(last_gates.switch_gate->getInputs()[0]));
 				require_update.insert(require_update.end(), ucn.begin(), ucn.end());
 				require_update.insert(require_update.end(), uicn.begin(), uicn.end());
+				last_gates.switch_gate = nullptr;
 			}
 		}
 		else
 		{
-			//Do something?
-			//Don't create a gate in a single point in space, duh!
+			if (last_gates.not_gate != nullptr)
+			{
+				gate_renderer.popList(last_gates.not_gate->getComponentList(), last_gates.not_gate->getComponentListSize());
+				gate_tracker.pop_back();
+				delete last_gates.not_gate;
+				last_gates.not_gate = nullptr;
+			}
+			else if(last_gates.switch_gate != nullptr)
+			{
+				gate_renderer.popList(last_gates.switch_gate->getComponentList(), last_gates.switch_gate->getComponentListSize());
+				gate_tracker.pop_back();
+				delete last_gates.switch_gate;
+				last_gates.switch_gate = nullptr;
+			}
 		}
 	}
 
@@ -339,15 +407,6 @@ const glm::mat4 Playing::getIPVMatrix() const
 const glm::vec2 Playing::getMousePositionWorldSpace() const
 {
 	return frame_mouse_pos;
-}
-
-NotGate* Playing::createNotGate(glm::vec2 in, glm::vec2 out)
-{
-	NotGate* gate = new NotGate();
-	gate->update(in, out);
-	gate_renderer.pushList(gate->getComponentList(), gate->getComponentListSize());
-	gate_tracker.push_back(gate);
-	return gate;
 }
 
 const glm::vec2 Playing::getTranslation()

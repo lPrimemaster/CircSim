@@ -27,6 +27,8 @@ public:
 	static bool deleteChunkAtPosition(ChunkCoord c);
 	static bool deleteChunkAtPosition(glm::vec2 p);
 
+	static std::vector<Chunk*> getAllLoadedChunks();
+
 	static void allocateStart();
 
 	static void populateChunks(std::vector<Gate*>* global_list);

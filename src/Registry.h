@@ -6,6 +6,10 @@
 class Registry
 {
 public:
+	Registry();
+	~Registry();
+
+public:
 	static void registerAllBasicGeometry();
 	static void unregisterAllBasicGeometry();
 

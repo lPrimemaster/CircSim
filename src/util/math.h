@@ -8,7 +8,7 @@
 
 #define PI_F 3.141592654f
 #define RAD_2_DEG 360.0f / (2 * PI_F)
-#define DEG_2_RAD 1.0f / RAD_2_DEG
+#define DEG_2_RAD 1.0f / (RAD_2_DEG)
 #define UP glm::vec3(0.0f, 0.0f, 1.0f)
 
 template<typename T>
@@ -19,12 +19,26 @@ inline std::string int_to_hex(T i)
 	return stream.str();
 }
 
+template< typename tPair >
+struct second_t {
+	typename tPair::second_type operator()(const tPair& p) const { return p.second; }
+};
+
 namespace math
 {
+	struct pvec2
+	{
+		float angle;
+		float distance;
+	};
+
 	glm::vec2 screenToWorld(glm::vec2 wdim, glm::vec2 coord, glm::mat4 ipvmat);
 
 	//TODO: Convert this to output ivec2 to avoid problems with equalitites later on
 	glm::vec2 snapToGrid(glm::vec2 location, float gridSX, float gridSY);
+
+	glm::vec2 polarToCartesian(float angle, float distance);
+	pvec2 cartesianToPolar(glm::vec2 vector);
 
 	bool isInsideRadius(glm::vec2 point, glm::vec2 center, float radius);
 
@@ -51,4 +65,70 @@ namespace math
 		}
 		return res;
 	}
+	
+	template<typename tMap>
+	inline second_t<typename tMap::value_type> gMapSecond(const tMap& m) { return second_t<typename tMap::value_type>(); }
+
+	struct Bounding
+	{
+		virtual inline bool intersect(const glm::vec2& point) = 0;
+	};
+
+	struct BElipse : public Bounding
+	{
+		inline bool intersect(const glm::vec2& point) override
+		{
+
+		}
+
+		inline bool intersect(const BElipse& bound)
+		{
+
+		}
+	};
+
+	struct BRect : public Bounding
+	{
+		BRect() { pivot = glm::vec2(0.0f); angle = 0.0f; xlAxis = 0.0f; ylAxis = 0.0f; }
+
+		BRect(float angle, glm::vec2 pivot, float xLength, float yLength)
+		{
+			this->angle = angle;
+			this->pivot = pivot;
+			xlAxis = xLength;
+			ylAxis = yLength;
+		}
+
+	private:
+		glm::vec2 pivot;
+		float angle;
+		float xlAxis;
+		float ylAxis;
+
+	public:
+		inline bool intersect(const glm::vec2& point) override
+		{
+			glm::vec2 rxL = polarToCartesian(angle, 1.0);
+			glm::vec2 ryL = polarToCartesian(90 * DEG_2_RAD + angle , 1.0);
+
+			glm::vec2 v = point - pivot;
+
+			float lxProj =  glm::dot(v, rxL);
+			float lyProj = -glm::dot(v, ryL);
+
+			if (0.0f < lxProj && lxProj < xlAxis)
+			{
+				if (0.0f < lyProj && lyProj < ylAxis)
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
+		inline bool intersect(const BRect& bound)
+		{
+
+		}
+	};
 }

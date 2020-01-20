@@ -46,9 +46,6 @@ public:
 	const glm::mat4 getIPVMatrix() const;
 	const glm::vec2 getMousePositionWorldSpace() const;
 
-	//TODO: This shouldn't exist here! -> Each Chunk should manage its own gates
-	NotGate* createNotGate(glm::vec2 in, glm::vec2 out);
-
 	static const glm::vec2 getTranslation();
 	static const float getZScaling();
 
@@ -77,4 +74,12 @@ private:
 	std::vector<Gate*> gate_tracker;
 
 	std::vector<Node*> require_update;
+
+	struct LGStruct
+	{
+		NotGate* not_gate = nullptr;
+		SwitchGate* switch_gate = nullptr;
+
+		glm::vec2 last_pos = glm::vec2(0.0f);
+	}last_gates;
 };

@@ -10,7 +10,7 @@
 
 GuiRenderer::GuiRenderer() : Renderer("gui")
 {
-	text_renderer.setDefaultFont("PantonRustHeavy");
+	text_renderer.setDefaultFont("LucidaConsole");
 	text_renderer.addText("CSim 1.0", glm::vec2(20.0f, 20.0f), glm::vec3(1.0f), 0.4f);
 	unsigned int indices[138] =
 	{
@@ -51,6 +51,8 @@ void GuiRenderer::render()
 	p.bind();
 	p.loadMatrix4f("proj", pvm);
 
+	glEnable(GL_BLEND);
+
 	//Think of using Attrib divisor but for now just keep these drawcalls
 	for (auto w : windows)
 	{
@@ -61,6 +63,8 @@ void GuiRenderer::render()
 	}
 
 	text_renderer.render();
+
+	glDisable(GL_BLEND);
 }
 
 void GuiRenderer::setPVMatrix(const glm::mat4& pvm)

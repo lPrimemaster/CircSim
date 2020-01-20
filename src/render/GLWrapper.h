@@ -2,6 +2,7 @@
 #include <iostream>
 #include "Program.h"
 #include "../CSim.h"
+#include "../PSim.h"
 
 class State;
 
@@ -13,6 +14,7 @@ public:
 
 	GLFWwindow* getWindow() const;
 	CSim* getSimulation() const;
+	PSim* getPhysics() const;
 
 	glm::vec2 getWindowDim() const;
 
@@ -24,11 +26,12 @@ protected:
 	void update(State * state);
 
 public:
-	void run(State * state, CSim * simulation);
+	void run(State * state, CSim * simulation, PSim* physics);
 
 private:
 	GLFWwindow* window = nullptr;
 	CSim* simulation = nullptr;
+	PSim* physics = nullptr;
 
 private:
 	int windowW = 0;

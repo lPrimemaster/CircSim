@@ -162,6 +162,9 @@
     <ClCompile Include="src\render\gui\Button.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\PSim.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\CSim.h">
@@ -289,6 +292,9 @@
     </ClInclude>
     <ClInclude Include="src\render\gui\Button.h">
       <Filter>Header Files\render\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PSim.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

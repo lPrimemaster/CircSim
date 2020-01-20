@@ -13,18 +13,34 @@ struct Connector
 	}Type;
 	glm::vec2 position;
 
-	Connector()
+	typedef int Flag;
+
+	Connector(Flag useMark = 1)
 	{
 		Type = IO::INPUT;
 		position = glm::vec2(0, 0);
 		node = nullptr;
+		if (useMark)
+			mark = new Component("Circle");
+		else
+			mark = nullptr;
 	}
 
-	Connector(IO type, glm::vec2 pos)
+	Connector(IO type, glm::vec2 pos, Flag useMark = 1)
 	{
 		Type = type;
 		position = pos;
 		node = nullptr;
+		if (useMark)
+			mark = new Component("Circle");
+		else
+			mark = nullptr;
+	}
+
+	~Connector()
+	{
+		if (mark)
+			delete mark;
 	}
 
 	virtual const bool isInteractible() const
@@ -60,13 +76,14 @@ struct Connector
 	std::vector<Connector*> dep_conector;
 
 	Node* node;
+	Component* mark;
 
 	bool interactible = false;
 };
 
 struct InteractConnector : public Connector
 {
-	InteractConnector() : Connector()
+	InteractConnector() : Connector(0)
 	{
 		interactible = true;
 	}

@@ -2,10 +2,10 @@
 
 Button::Button()
 {
-	border = new Component("Rectangle");
+	quad = new Component("Rectangle");
 }
 
 Button::~Button()
 {
-	delete border;
+	delete quad;
 }

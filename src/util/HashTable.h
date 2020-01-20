@@ -152,5 +152,10 @@ public:
 		return checkAlignment(key);
 #endif // PER_HASH
 	}
+
+	inline std::unordered_map <K, H, K> getRawConst() const
+	{
+		return table;
+	}
 };
 

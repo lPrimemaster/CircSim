@@ -1,6 +1,8 @@
 #include <iostream>
 
 #include "CSim.h"
+#include "PSim.h"
+
 #include "render/GLWrapper.h"
 #include "states/Playing.h"
 
@@ -18,20 +20,20 @@ int main(int argc, char* argv[])
 	//Todo : Use main thread for drawing and create as necessary to the circuit evaluation
 	GLWrapper wrapper;
 
-	Registry::registerAllBasicGeometry();
-	Registry::registerAllCharAtlas();
+	Registry registry_guard;
 
 	Playing pstate;
 
 	CSim csim;
-	std::thread nt(&CSim::calculateStates, &csim);
+	PSim psim;
 
-	wrapper.run(&pstate, &csim);
+	std::thread ct(&CSim::calculateStates, &csim);
+	std::thread pt(&PSim::calculateStates, &psim);
 
-	nt.join();
+	wrapper.run(&pstate, &csim, &psim);
 
-	Registry::unregisterAllCharAtlas();
-	Registry::unregisterAllBasicGeometry();
+	ct.join();
+	pt.join();
 
 	return 0;
 }

@@ -42,8 +42,21 @@ public:
 		return interactors_list;
 	}
 
+	inline std::vector<Connector*> getConnectorsList() const
+	{
+		return connector_list;
+	}
+
+	inline std::vector<Gate*> getGateList() const
+	{
+		return gate_list;
+	}
+
 	void insertConnector(Connector* c);
 	void deleteConnector(Connector* c);
+
+	void insertGate(Gate* g);
+	void deleteGate(Gate* g);
 
 	bool isEmpty() const;
 

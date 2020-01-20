@@ -9,7 +9,7 @@
 class Program
 {
 public:
-	Program(const std::string& shaderFileName, int flags);
+	explicit Program(const std::string& shaderFileName, int flags);
 	~Program();
 
 	void bind() const;
