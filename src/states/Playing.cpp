@@ -219,7 +219,6 @@ void Playing::scroll_callback(GLFWwindow* window, double xoff, double yoff)
 
 //TODO: Remember to check if the mouse is on a legal location
 //TODO: Remember to check if the gate is on a legal location
-//TODO: Create a lower alpha of the gate while on placemente mode (key not released)
 //TODO: Don't hard code grid spacings, as well as the gate min length draw check
 void Playing::click_callback(GLFWwindow* window, int button, int action, int mods)
 {
@@ -227,7 +226,9 @@ void Playing::click_callback(GLFWwindow* window, int button, int action, int mod
 	static glm::vec2 initial_pos;
 	static bool is_pressed = false;
 
-	//Check if button is inside a gate -> activate interaction
+	//Check if button is inside a connector -> activate interaction
+	//TODO: This can change to a gate list - the gate then does verify the connector in question
+	//FIX: What if a connector is inside two chunks (same problem for a gate)
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
 	{
 		Chunk* curr_chunk = ChunkManager::getChunkAtPosition(frame_mouse_pos);
