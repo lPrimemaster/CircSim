@@ -14,6 +14,7 @@
 //Test purposes only
 #include "../features/ChunkManager.h"
 #include "../features/GateManager.h"
+#include "../features/ConnectorManager.h"
 
 #include "../render/gui/DebugGui.h"
 

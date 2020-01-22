@@ -123,8 +123,8 @@ void Playing::handle(GLWrapper* gw)
 	glm::vec3 inv_wscale = glm::vec3(1.0f + abs_y_scl_weighted, (1.0f + abs_y_scl_weighted) / aspect, 0.0f);
 
 	//Write view matrix
-	pview_mat = glm::scale(glm::mat4(), weighted_scale) * glm::translate(glm::mat4(), glm::vec3(-lx, -ly, 0.0f));
-	ipview_mat = glm::translate(glm::mat4(), glm::vec3(lx, ly, 0.0f)) * glm::scale(glm::mat4(), inv_wscale);
+	pview_mat = glm::scale(glm::mat4(1.0f), weighted_scale) * glm::translate(glm::mat4(1.0f), glm::vec3(-lx, -ly, 0.0f));
+	ipview_mat = glm::translate(glm::mat4(1.0f), glm::vec3(lx, ly, 0.0f)) * glm::scale(glm::mat4(1.0f), inv_wscale);
 
 	//Get last cursor position before draw
 	glfwGetCursorPos(window, &last_cursor_x, &last_cursor_y);
@@ -280,7 +280,7 @@ void Playing::click_callback(GLFWwindow* window, int button, int action, int mod
 				curr_chunk = ChunkManager::getChunkAtPosition(frame_mouse_pos);
 			}
 
-			if (!(mods & GLFW_MOD_SHIFT))
+			if (last_gates.not_gate)
 			{
 				GateManager::addGate(last_gates.not_gate);
 				last_gates.not_gate->isFixed() = true;
@@ -289,7 +289,7 @@ void Playing::click_callback(GLFWwindow* window, int button, int action, int mod
 
 				curr_chunk->insertGate(last_gates.not_gate);
 
-				require_update = ChunkManager::updateConnectorNode(last_gates.not_gate->getOutputs()[0]);
+				require_update = ConnectorManager::updateConnectorNode(last_gates.not_gate->getOutputs()[0]);
 				last_gates.not_gate = nullptr;
 			}
 			else
@@ -299,10 +299,10 @@ void Playing::click_callback(GLFWwindow* window, int button, int action, int mod
 				last_gates.switch_gate->changeAlpha(1.0f);
 				last_gates.switch_gate->update(initial_pos, pos_release_snap);
 
-				curr_chunk->insertGate(last_gates.not_gate);
+				curr_chunk->insertGate(last_gates.switch_gate);
 
-				auto ucn = ChunkManager::updateConnectorNode(last_gates.switch_gate->getOutputs()[0]);
-				auto uicn = ChunkManager::updateInteractConnectorNode(dynamic_cast<InteractConnector*>(last_gates.switch_gate->getInputs()[0]));
+				auto ucn = ConnectorManager::updateConnectorNode(last_gates.switch_gate->getOutputs()[0]);
+				auto uicn = ConnectorManager::updateInteractConnectorNode(dynamic_cast<InteractConnector*>(last_gates.switch_gate->getInputs()[0]));
 				require_update.insert(require_update.end(), ucn.begin(), ucn.end());
 				require_update.insert(require_update.end(), uicn.begin(), uicn.end());
 				last_gates.switch_gate = nullptr;

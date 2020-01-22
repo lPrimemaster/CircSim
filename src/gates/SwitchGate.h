@@ -4,7 +4,7 @@
 #include "../geometry/Component.h"
 #include "InOutType.h"
 #include "Gate.h"
-#include "../util/math.h"
+//#include "../util/math.h"
 
 class SwitchGate : public Gate, public InOutType<1, 1>
 {

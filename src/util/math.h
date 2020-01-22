@@ -74,19 +74,6 @@ namespace math
 		virtual inline bool intersect(const glm::vec2& point) = 0;
 	};
 
-	struct BElipse : public Bounding
-	{
-		inline bool intersect(const glm::vec2& point) override
-		{
-
-		}
-
-		inline bool intersect(const BElipse& bound)
-		{
-
-		}
-	};
-
 	struct BRect : public Bounding
 	{
 		BRect() { pivot = glm::vec2(0.0f); angle = 0.0f; xlAxis = 0.0f; ylAxis = 0.0f; }
@@ -104,6 +91,9 @@ namespace math
 		float angle;
 		float xlAxis;
 		float ylAxis;
+
+	private:
+		//Transform debug_t;
 
 	public:
 		inline bool intersect(const glm::vec2& point) override
@@ -130,5 +120,17 @@ namespace math
 		{
 
 		}
+
+		/*inline Transform& convertToTransform()
+		{
+			glm::vec2 hxL = polarToCartesian(angle, xlAxis / 2);
+			glm::vec2 hyL = polarToCartesian(90 * DEG_2_RAD + angle, ylAxis / 2);
+			glm::vec2 center = pivot + hxL + hyL;
+
+			debug_t.update(center, angle * RAD_2_DEG);
+			debug_t.scale(glm::vec2(xlAxis, ylAxis));
+
+			return debug_t;
+		}*/
 	};
 }

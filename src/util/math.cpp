@@ -42,7 +42,7 @@ math::pvec2 math::cartesianToPolar(glm::vec2 vector)
 	ret.distance = glm::length(vector);
 	ret.angle = std::atan(vector.y / vector.x);
 
-	if (vector.y < 0.0f)
+	if (vector.x < 0.0f)
 	{
 		ret.angle += PI_F;
 	}

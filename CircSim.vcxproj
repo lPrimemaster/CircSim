@@ -142,6 +142,7 @@
     <ClCompile Include="src\features\Backgrid.cpp" />
     <ClCompile Include="src\features\Chunk.cpp" />
     <ClCompile Include="src\features\ChunkManager.cpp" />
+    <ClCompile Include="src\features\ConnectorManager.cpp" />
     <ClCompile Include="src\features\GateManager.cpp" />
     <ClCompile Include="src\gates\NGateDef.cpp" />
     <ClCompile Include="src\gates\SwitchGate.cpp" />
@@ -182,6 +183,7 @@
     <ClInclude Include="src\features\Backgrid.h" />
     <ClInclude Include="src\features\Chunk.h" />
     <ClInclude Include="src\features\ChunkManager.h" />
+    <ClInclude Include="src\features\ConnectorManager.h" />
     <ClInclude Include="src\features\GateManager.h" />
     <ClInclude Include="src\gates\Gate.h" />
     <ClInclude Include="src\gates\InOutType.h" />

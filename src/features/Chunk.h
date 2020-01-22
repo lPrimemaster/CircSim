@@ -30,6 +30,7 @@ class Chunk
 {
 public:
 	friend class ChunkManager;
+	friend class ConnectorManager;
 
 	Chunk(ChunkCoord coord);
 	Chunk(int x, int y);
