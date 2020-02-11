@@ -53,7 +53,8 @@ SwitchGate::SwitchGate()
 
 	updateConnectors();
 
-	bounding_limits = math::BRect(math::cartesianToPolar(direction).angle, bottom_left, glm::distance(left_side, out), 2 * glm::length(weighted_perpendicular));
+	bounding_limits = math::BRect(math::cartesianToPolar(direction).angle, bottom_left, glm::distance(left_side, right_side), 2 * glm::length(weighted_perpendicular));
+	true_bounding_limits = math::BRect(math::cartesianToPolar(direction).angle, bottom_left, glm::distance(left_side, out), 2 * glm::length(weighted_perpendicular));
 }
 
 SwitchGate::~SwitchGate()
@@ -108,7 +109,8 @@ void SwitchGate::update(const glm::vec2 center, const glm::vec2 out)
 
 	updateConnectors();
 
-	bounding_limits = math::BRect(turn_rad, bottom_left, glm::distance(left_side, out), 2 * glm::length(weighted_perpendicular));
+	bounding_limits = math::BRect(turn_rad, bottom_left, glm::distance(left_side, right_side), 2 * glm::length(weighted_perpendicular));
+	true_bounding_limits = math::BRect(math::cartesianToPolar(direction).angle, bottom_left, glm::distance(left_side, out), 2 * glm::length(weighted_perpendicular));
 }
 
 void SwitchGate::updateInput(const unsigned state)

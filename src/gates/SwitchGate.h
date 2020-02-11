@@ -6,6 +6,9 @@
 #include "Gate.h"
 //#include "../util/math.h"
 
+#define GCC(i) components[i]->getColor()
+#define GET_COLOR_INIT_LIST() { GCC(0), GCC(1), GCC(2), GCC(3), GCC(4), GCC(5), GCC(6), GCC(7) }
+
 class SwitchGate : public Gate, public InOutType<1, 1>
 {
 public:
@@ -39,6 +42,26 @@ public:
 		}
 	}
 
+	inline void changeColor(glm::vec3 color = glm::vec3(0.0f))
+	{
+		static glm::vec4 original_color[8] = GET_COLOR_INIT_LIST();
+
+		if (color == glm::vec3(0.0f))
+		{
+			for (int i = 0; i < 8; i++)
+			{
+				components[i]->setColor(original_color[i]);
+			}
+			return;
+		}
+
+		for (int i = 0; i < 8; i++)
+		{
+			glm::vec4 oc = components[i]->getColor();
+			components[i]->setColor(glm::vec4(color, oc.a));
+		}
+	}
+
 protected:
 	inline void defineConnectorDependencies() override
 	{
@@ -66,3 +89,5 @@ private:
 	const float Cscale = 0.04f;
 };
 
+#undef GCC(i)
+#undef GET_COLOR_INIT_LIST()

@@ -154,6 +154,7 @@
     <ClCompile Include="src\Registry.cpp" />
     <ClCompile Include="src\render\Camera.cpp" />
     <ClCompile Include="src\render\chars\CharAtlas.cpp" />
+    <ClCompile Include="src\render\DebugRenderer.cpp" />
     <ClCompile Include="src\render\GateRenderer.cpp" />
     <ClCompile Include="src\render\GLWrapper.cpp" />
     <ClCompile Include="src\render\GridRenderer.cpp" />
@@ -198,6 +199,7 @@
     <ClInclude Include="src\Registry.h" />
     <ClInclude Include="src\render\Camera.h" />
     <ClInclude Include="src\render\chars\CharAtlas.h" />
+    <ClInclude Include="src\render\DebugRenderer.h" />
     <ClInclude Include="src\render\GateRenderer.h" />
     <ClInclude Include="src\render\GLWrapper.h" />
     <ClInclude Include="src\render\GridRenderer.h" />

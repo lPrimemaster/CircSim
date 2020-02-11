@@ -44,6 +44,17 @@ inline void PSim::calculateMouseIntersection()
 				{
 					std::cout << "Mouse intersect with gate! [" << count++ << "]" << std::endl;
 				}
+
+				//FIX: Get this out of here - it's not necessary at all - only at gate creation/motion
+				for (auto other : gates)
+				{
+					if (other == gate) continue;
+
+					if (bound.intersect(other->getBoundings()))
+					{
+						std::cout << "Gate intersect with gate! [" << count++ << "]" << std::endl;
+					}
+				}
 			}
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(10));

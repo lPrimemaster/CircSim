@@ -168,6 +168,9 @@
     <ClCompile Include="src\features\ConnectorManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\render\DebugRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\CSim.h">
@@ -301,6 +304,9 @@
     </ClInclude>
     <ClInclude Include="src\features\ConnectorManager.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render\DebugRenderer.h">
+      <Filter>Header Files\render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

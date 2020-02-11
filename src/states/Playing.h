@@ -4,6 +4,7 @@
 #include "../render/GateRenderer.h"
 #include "../render/GridRenderer.h"
 #include "../render/GuiRenderer.h"
+#include "../render/DebugRenderer.h"
 
 #include "../gates/Gate.h"
 #include "../gates/NGateDef.h"
@@ -54,13 +55,14 @@ private:
 	GateRenderer gate_renderer;
 	GridRenderer grid_renderer;
 	GuiRenderer gui_renderer;
+	DebugRenderer debug_renderer;
 
 	glm::mat4 pview_mat;
 	glm::mat4 ipview_mat;
 
 	static float z_scl; //FIX: No need for static vars here
-	static double lx; //FIX: No need for static vars here
-	static double ly; //FIX: No need for static vars here
+	static float lx; //FIX: No need for static vars here
+	static float ly; //FIX: No need for static vars here
 
 	glm::vec2 frame_mouse_pos;
 
@@ -82,5 +84,6 @@ private:
 		SwitchGate* switch_gate = nullptr;
 
 		glm::vec2 last_pos = glm::vec2(0.0f);
+		bool drop = true;
 	}last_gates;
 };

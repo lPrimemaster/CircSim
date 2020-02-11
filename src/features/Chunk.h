@@ -13,6 +13,9 @@ struct ChunkCoord : public Hashable
 	int chunk_id_x = 0;
 	int chunk_id_y = 0;
 
+	ChunkCoord() = default;
+	ChunkCoord(std::initializer_list<int> l) { chunk_id_x = *l.begin(); chunk_id_y = *(l.begin() + 1); }
+
 	size_t operator()(const Hashable& h) const override
 	{
 		return ((chunk_id_y * 0x1f1f1f1f) ^ chunk_id_x);

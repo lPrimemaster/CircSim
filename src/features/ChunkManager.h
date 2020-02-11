@@ -29,6 +29,8 @@ public:
 
 	static std::vector<Chunk*> getAllLoadedChunks();
 
+	static std::vector<ChunkCoord> getValidNeighbourChunks(ChunkCoord c, math::BRect true_gate_bounds);
+
 	static void allocateStart();
 
 	static void populateChunks(std::vector<Gate*>* global_list);

@@ -19,6 +19,8 @@ public:
 
 	virtual inline void changeAlpha(float alpha) = 0;
 
+	virtual inline void changeColor(glm::vec3 color) = 0;
+
 	virtual const inline size_t getComponentListSize() = 0;
 
 	inline const std::type_info& childType() const
@@ -38,6 +40,11 @@ public:
 		return bounding_limits;
 	}
 
+	inline math::BRect getTrueBoundings() const
+	{
+		return true_bounding_limits;
+	}
+
 	inline bool& isFixed()
 	{
 		return fixed;
@@ -46,5 +53,6 @@ public:
 protected:
 	bool fixed = false;
 	math::BRect bounding_limits;
+	math::BRect true_bounding_limits;
 };
 

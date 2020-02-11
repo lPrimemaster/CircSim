@@ -73,18 +73,20 @@ static void debug(bool* close, GLFWwindow* window, State* state)
 #endif
 
 float Playing::z_scl = 0.0f;
-double Playing::lx = 0.0;
-double Playing::ly = 0.0;
+float Playing::lx = 0.0;
+float Playing::ly = 0.0;
 
 void Playing::draw(GLWrapper* gw)
 {
 	grid_renderer.render();
 	gate_renderer.render();
+	debug_renderer.render();
 	gui_renderer.render();
 	DebugGui::Get().newFrame();
 	DebugGui::Get().render(gw->getWindow(), this);
 }
 
+//TODO: Smooth zoom in
 void Playing::handle(GLWrapper* gw)
 {
 	//Handle looking at
@@ -94,16 +96,17 @@ void Playing::handle(GLWrapper* gw)
 
 	auto physics = gw->getPhysics();
 
+	double new_cursor_x = 0.0;
+	double new_cursor_y = 0.0;
+	glfwGetCursorPos(window, &new_cursor_x, &new_cursor_y);
+
 	//This scaling configuration adds 0.2 to X with in world space every zscale unit
-	float abs_y_scl_weighted = abs(z_scl) * 0.1f;
+	float abs_y_scl_weighted = abs(z_scl) * 0.5f; //0.1f old value
+	static float last_z_scale = abs_y_scl_weighted;
+	const float threshold = 0.0f; //Camera speed threshold
 
 	if (rmb_state == GLFW_PRESS)
 	{
-		double new_cursor_x = 0.0;
-		double new_cursor_y = 0.0;
-
-		glfwGetCursorPos(window, &new_cursor_x, &new_cursor_y);
-
 		double delta_x = last_cursor_x - new_cursor_x;
 		double delta_y = last_cursor_y - new_cursor_y;
 
@@ -111,8 +114,8 @@ void Playing::handle(GLWrapper* gw)
 		double weight_y = delta_y * 2.0 / wh.x;
 
 		//Weighted speed based on distance over "z" axis
-		lx += weight_x * (abs_y_scl_weighted + 1.0);
-		ly -= weight_y * (abs_y_scl_weighted + 1.0);
+		lx += weight_x * (abs_y_scl_weighted + 1.0 + threshold);
+		ly -= weight_y * (abs_y_scl_weighted + 1.0 + threshold);
 	}
 
 	card = grid_renderer.updateGrid(abs_y_scl_weighted, glm::vec2(lx, ly), wh);
@@ -126,8 +129,39 @@ void Playing::handle(GLWrapper* gw)
 	pview_mat = glm::scale(glm::mat4(1.0f), weighted_scale) * glm::translate(glm::mat4(1.0f), glm::vec3(-lx, -ly, 0.0f));
 	ipview_mat = glm::translate(glm::mat4(1.0f), glm::vec3(lx, ly, 0.0f)) * glm::scale(glm::mat4(1.0f), inv_wscale);
 
-	//Get last cursor position before draw
-	glfwGetCursorPos(window, &last_cursor_x, &last_cursor_y);
+	//Calculate the mouse position for this frame
+	frame_mouse_pos = math::screenToWorld(wh, glm::vec2(last_cursor_x, last_cursor_y), ipview_mat);
+
+	//Move zoom according to mouse position
+	if (last_z_scale != abs_y_scl_weighted)
+	{
+		float amt = abs_y_scl_weighted - last_z_scale;
+
+		glm::vec2 window_center_sspace = wh / 2.0f;
+		glm::vec2 window_center_wspace = math::screenToWorld(wh, window_center_sspace, ipview_mat);
+		glm::vec2 mouse_screen_space = glm::vec2(new_cursor_x, new_cursor_y);
+
+		const float speed_exp = 1.3f;
+
+		if (amt < 0.0f)
+		{
+			glm::vec2 target = window_center_wspace - frame_mouse_pos;
+			float exp_value = abs_y_scl_weighted != 0.0f ? std::powf(abs_y_scl_weighted, speed_exp) * 0.05f : 0.0f;
+			glm::vec2 ntarget = glm::normalize(target) * exp_value;
+
+			if (glm::length(mouse_screen_space - window_center_sspace) > 50.0f)
+			{
+				lx += amt * ntarget.x;
+				ly += amt * ntarget.y;
+			}
+		}
+
+		last_z_scale = abs_y_scl_weighted;
+	}
+
+	//Set last cursor position before draw
+	last_cursor_x = new_cursor_x;
+	last_cursor_y = new_cursor_y;
 
 	//Keep mouse inside the screen when dragging the scene
 	if (rmb_state == GLFW_PRESS)
@@ -150,21 +184,73 @@ void Playing::handle(GLWrapper* gw)
 		}
 	}
 
-	//Calculate the mouse position for this frame
-	frame_mouse_pos = math::screenToWorld(wh, glm::vec2(last_cursor_x, last_cursor_y), ipview_mat);
-
 	physics->setMouseAtomic(frame_mouse_pos);
-	physics->setCurrentActiveChunkAtomic(ChunkManager::getChunkAtPosition(frame_mouse_pos));
 
+	glm::vec2 snappped_pos = math::snapToGrid(frame_mouse_pos, 0.2f, 0.2f);
+
+	Chunk* curr_chunk = ChunkManager::getChunkAtPosition(snappped_pos);
+
+	physics->setCurrentActiveChunkAtomic(curr_chunk);
+
+	static int count = 0;
+
+	bool intersect = false;
 
 	if (last_gates.not_gate != nullptr)
 	{
-		last_gates.not_gate->update(last_gates.last_pos, math::snapToGrid(frame_mouse_pos, 0.2f, 0.2f));
-		
+		last_gates.not_gate->update(last_gates.last_pos, snappped_pos);
+
+		if (curr_chunk != nullptr)
+		{
+			for (auto g : curr_chunk->getGateList())
+			{
+				if (last_gates.not_gate->getBoundings().intersect(g->getBoundings()))
+				{
+					intersect = true;
+					break;
+				}
+			}
+		}
+
+		if (intersect)
+		{
+			last_gates.not_gate->changeColor(glm::vec3(0.7f, 0.0f, 0.0f));
+			last_gates.drop = false;
+		}
+		else
+		{
+			//Calling this reverts to the original colors
+			last_gates.drop = true;
+			last_gates.not_gate->changeColor();
+		}
 	}
 	else if (last_gates.switch_gate != nullptr)
 	{
 		last_gates.switch_gate->update(last_gates.last_pos, math::snapToGrid(frame_mouse_pos, 0.2f, 0.2f));
+
+		if (curr_chunk != nullptr)
+		{
+			for (auto g : curr_chunk->getGateList())
+			{
+				if (last_gates.switch_gate->getBoundings().intersect(g->getBoundings()))
+				{
+					intersect = true;
+					break;
+				}
+			}
+		}
+
+		if (intersect)
+		{
+			last_gates.switch_gate->changeColor(glm::vec3(0.7f, 0.0f, 0.0f));
+			last_gates.drop = false;
+		}
+		else
+		{
+			//Calling this reverts to the original colors
+			last_gates.drop = true;
+			last_gates.switch_gate->changeColor();
+		}
 	}
 }
 
@@ -201,6 +287,7 @@ void Playing::update(GLWrapper* gw)
 
 	grid_renderer.setPVMatrix(pview_mat);
 	gate_renderer.setPVMatrix(pview_mat);
+	debug_renderer.setPVMatrix(pview_mat);
 	gui_renderer.setPVMatrix(glm::ortho(0.0f, wDims.x, 0.0f, wDims.y)); //This is only the projection matrix instead
 
 	//Call everything that should reajust with the viewport resize
@@ -273,39 +360,67 @@ void Playing::click_callback(GLFWwindow* window, int button, int action, int mod
 		glm::vec2 pos_release_snap = math::snapToGrid(frame_mouse_pos, 0.2f, 0.2f);
 		if (glm::distance(initial_pos, pos_release_snap) >= 0.2f * 3.0f) //TODO: Check if this works on the math.h -> comparing floating points
 		{
-			Chunk* curr_chunk = ChunkManager::getChunkAtPosition(frame_mouse_pos);
-			if (!curr_chunk)
+			if (last_gates.drop)
 			{
-				ChunkManager::createChunkAtPosition(frame_mouse_pos);
-				curr_chunk = ChunkManager::getChunkAtPosition(frame_mouse_pos);
-			}
+				Chunk* curr_chunk = ChunkManager::getChunkAtPosition(pos_release_snap);
+				if (!curr_chunk)
+				{
+					ChunkManager::createChunkAtPosition(pos_release_snap);
+					curr_chunk = ChunkManager::getChunkAtPosition(pos_release_snap);
+				}
 
-			if (last_gates.not_gate)
-			{
-				GateManager::addGate(last_gates.not_gate);
-				last_gates.not_gate->isFixed() = true;
-				last_gates.not_gate->changeAlpha(1.0f);
-				last_gates.not_gate->update(initial_pos, pos_release_snap);
+				if (last_gates.not_gate)
+				{
+					auto func = [&](NotGate* g) 
+					{ 
+						require_update = ConnectorManager::updateConnectorNode(g->getOutputs()[0]); 
+					};
+					GateManager::createGate<NotGate>({ curr_chunk }, initial_pos, pos_release_snap, last_gates.not_gate, func);
 
-				curr_chunk->insertGate(last_gates.not_gate);
+					//TODO: Change this to a more practical application
+					Component* obb_draw = new Component("Rectangle");
+					obb_draw->transform().update(last_gates.not_gate->getBoundings().getOBBTransform());
+					obb_draw->setColor(glm::vec4(0.2f, 0.0f, 0.8f, 1.0f));
+					debug_renderer.push(obb_draw);
 
-				require_update = ConnectorManager::updateConnectorNode(last_gates.not_gate->getOutputs()[0]);
-				last_gates.not_gate = nullptr;
+					last_gates.not_gate = nullptr;
+				}
+				else if (last_gates.switch_gate)
+				{
+					auto func = [&](SwitchGate* g) 
+					{
+						auto ucn = ConnectorManager::updateConnectorNode(g->getOutputs()[0]);
+						auto uicn = ConnectorManager::updateInteractConnectorNode(dynamic_cast<InteractConnector*>(g->getInputs()[0]));
+						require_update.insert(require_update.end(), ucn.begin(), ucn.end());
+						require_update.insert(require_update.end(), uicn.begin(), uicn.end());
+					};
+					GateManager::createGate<SwitchGate>({ curr_chunk }, initial_pos, pos_release_snap, last_gates.switch_gate, func);	
+
+					//TODO: Change this to a more practical application
+					Component* obb_draw = new Component("Rectangle");
+					obb_draw->transform().update(last_gates.switch_gate->getBoundings().getOBBTransform());
+					obb_draw->setColor(glm::vec4(0.2f, 0.0f, 0.8f, 1.0f));
+					debug_renderer.push(obb_draw);
+
+					last_gates.switch_gate = nullptr;
+				}
 			}
 			else
 			{
-				GateManager::addGate(last_gates.switch_gate);
-				last_gates.switch_gate->isFixed() = true;
-				last_gates.switch_gate->changeAlpha(1.0f);
-				last_gates.switch_gate->update(initial_pos, pos_release_snap);
-
-				curr_chunk->insertGate(last_gates.switch_gate);
-
-				auto ucn = ConnectorManager::updateConnectorNode(last_gates.switch_gate->getOutputs()[0]);
-				auto uicn = ConnectorManager::updateInteractConnectorNode(dynamic_cast<InteractConnector*>(last_gates.switch_gate->getInputs()[0]));
-				require_update.insert(require_update.end(), ucn.begin(), ucn.end());
-				require_update.insert(require_update.end(), uicn.begin(), uicn.end());
-				last_gates.switch_gate = nullptr;
+				if (last_gates.not_gate)
+				{
+					gate_renderer.popList(last_gates.not_gate->getComponentList(), last_gates.not_gate->getComponentListSize());
+					gate_tracker.pop_back();
+					delete last_gates.not_gate;
+					last_gates.not_gate = nullptr;
+				}
+				else if (last_gates.switch_gate)
+				{
+					gate_renderer.popList(last_gates.not_gate->getComponentList(), last_gates.not_gate->getComponentListSize());
+					gate_tracker.pop_back();
+					delete last_gates.switch_gate;
+					last_gates.switch_gate = nullptr;
+				}
 			}
 		}
 		else

@@ -112,6 +112,33 @@ std::vector<Chunk*> ChunkManager::getAllLoadedChunks()
 	return ret;
 }
 
+std::vector<ChunkCoord> ChunkManager::getValidNeighbourChunks(ChunkCoord c, math::BRect true_gate_bounds)
+{
+	std::vector<ChunkCoord> neighbours;
+	
+	//Check for adjacent chunks
+	auto checkBoundsInside = [true_gate_bounds, &neighbours](ChunkCoord coord)
+	{
+		float lowX = coord.chunk_id_x * CHUNK_SIZE - CHUNK_SIZE / 2.0f;
+		float lowY = coord.chunk_id_y * CHUNK_SIZE - CHUNK_SIZE / 2.0f;
+
+		float highX = lowX + CHUNK_SIZE;
+		float highY = lowY + CHUNK_SIZE;
+
+		math::BRect chunk_bound = math::BRect(0, glm::vec2(lowX, highY), CHUNK_SIZE, CHUNK_SIZE);
+
+		if (chunk_bound.intersect(true_gate_bounds))
+			neighbours.push_back(coord);
+	};
+
+	checkBoundsInside({ c.chunk_id_x , c.chunk_id_y + 1 }); //Top
+	checkBoundsInside({ c.chunk_id_x , c.chunk_id_y - 1 }); //Bottom
+	checkBoundsInside({ c.chunk_id_x - 1 , c.chunk_id_y }); //Left
+	checkBoundsInside({ c.chunk_id_x + 1 , c.chunk_id_y }); //Right
+
+	return neighbours;
+}
+
 void ChunkManager::allocateStart()
 {
 	//Home chunk
