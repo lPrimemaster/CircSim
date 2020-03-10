@@ -171,6 +171,9 @@
     <ClCompile Include="src\render\DebugRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\util\Serializer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\CSim.h">
@@ -307,6 +310,9 @@
     </ClInclude>
     <ClInclude Include="src\render\DebugRenderer.h">
       <Filter>Header Files\render</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\Serializer.h">
+      <Filter>Header Files\util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -86,4 +86,10 @@ private:
 		glm::vec2 last_pos = glm::vec2(0.0f);
 		bool drop = true;
 	}last_gates;
+
+	struct MousePick
+	{
+		Gate* selected_gate = nullptr;
+		bool isMovable = false;
+	}mouse_pick;
 };

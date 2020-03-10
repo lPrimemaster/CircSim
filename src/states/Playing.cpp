@@ -133,6 +133,7 @@ void Playing::handle(GLWrapper* gw)
 	frame_mouse_pos = math::screenToWorld(wh, glm::vec2(last_cursor_x, last_cursor_y), ipview_mat);
 
 	//Move zoom according to mouse position
+	//FIX: Make this noticeable!
 	if (last_z_scale != abs_y_scl_weighted)
 	{
 		float amt = abs_y_scl_weighted - last_z_scale;
@@ -192,10 +193,10 @@ void Playing::handle(GLWrapper* gw)
 
 	physics->setCurrentActiveChunkAtomic(curr_chunk);
 
-	static int count = 0;
-
 	bool intersect = false;
 
+
+	//Handle Gate Placement
 	if (last_gates.not_gate != nullptr)
 	{
 		last_gates.not_gate->update(last_gates.last_pos, snappped_pos);
@@ -226,7 +227,7 @@ void Playing::handle(GLWrapper* gw)
 	}
 	else if (last_gates.switch_gate != nullptr)
 	{
-		last_gates.switch_gate->update(last_gates.last_pos, math::snapToGrid(frame_mouse_pos, 0.2f, 0.2f));
+		last_gates.switch_gate->update(last_gates.last_pos, snappped_pos);
 
 		if (curr_chunk != nullptr)
 		{
@@ -251,6 +252,14 @@ void Playing::handle(GLWrapper* gw)
 			last_gates.drop = true;
 			last_gates.switch_gate->changeColor();
 		}
+	}
+
+	//Handle Gate Movement
+	if (mouse_pick.selected_gate != nullptr && mouse_pick.isMovable)
+	{
+		//FIX: This should receive a state instead of doing this
+		//GateManager::updateAny(mouse_pick.selected_gate, snappped_pos);
+		std::cout << "Can MOVE!" << std::endl;
 	}
 }
 
@@ -316,22 +325,54 @@ void Playing::click_callback(GLFWwindow* window, int button, int action, int mod
 	//Check if button is inside a connector -> activate interaction
 	//TODO: This can change to a gate list - the gate then does verify the connector in question
 	//FIX: What if a connector is inside two chunks (same problem for a gate)
+
+	//Mouse interactions
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
 	{
 		Chunk* curr_chunk = ChunkManager::getChunkAtPosition(frame_mouse_pos);
+
 		if (curr_chunk != nullptr)
 		{
+			//Check if we clicked on a button or something like that
+			bool is_interactor_click = false;
 			for (auto ic : curr_chunk->getInteractorsList())
 			{
 				if (ic->checkMouse(frame_mouse_pos))
 				{
 					ic->onClick();
+					is_interactor_click = true;
 					break; //Admit gates don't overlap
+				}
+			}
+
+			//Check if we clicked only on the gate itself and wish to select / move it
+			mouse_pick.selected_gate = nullptr;
+			static Component obb_draw("Rectangle"); //Automatic storage
+			debug_renderer.pop(&obb_draw);
+			if (!is_interactor_click)
+			{
+				for (auto g : curr_chunk->getGateList())
+				{
+					if (g->getTrueBoundings().intersect(frame_mouse_pos))
+					{
+						mouse_pick.selected_gate = g;
+						mouse_pick.isMovable = true;
+
+						obb_draw.transform().update(mouse_pick.selected_gate->getTrueBoundings().getOBBTransform());
+						obb_draw.setColor(glm::vec4(0.2f, 0.0f, 0.8f, 0.8f));
+						debug_renderer.push(&obb_draw);
+						break; //Admit gates don't overlap
+					}
 				}
 			}
 		}
 	}
+	else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
+	{
+		mouse_pick.isMovable = false;
+	}
 
+	//Gate placement
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
 	{
 		initial_pos = math::snapToGrid(frame_mouse_pos, 0.2f, 0.2f);
@@ -371,17 +412,20 @@ void Playing::click_callback(GLFWwindow* window, int button, int action, int mod
 
 				if (last_gates.not_gate)
 				{
-					auto func = [&](NotGate* g) 
+					auto func = [&](NotGate* g)
 					{ 
 						require_update = ConnectorManager::updateConnectorNode(g->getOutputs()[0]); 
 					};
-					GateManager::createGate<NotGate>({ curr_chunk }, initial_pos, pos_release_snap, last_gates.not_gate, func);
+
+					auto chunks = ChunkManager::getAllOBBIntersect(ChunkManager::getChunkIndexAtPosition(pos_release_snap), last_gates.not_gate->getTrueBoundings());
+
+					GateManager::createGate<NotGate>(chunks, initial_pos, pos_release_snap, last_gates.not_gate, func);
 
 					//TODO: Change this to a more practical application
-					Component* obb_draw = new Component("Rectangle");
+					/*Component* obb_draw = new Component("Rectangle");
 					obb_draw->transform().update(last_gates.not_gate->getBoundings().getOBBTransform());
 					obb_draw->setColor(glm::vec4(0.2f, 0.0f, 0.8f, 1.0f));
-					debug_renderer.push(obb_draw);
+					debug_renderer.push(obb_draw);*/
 
 					last_gates.not_gate = nullptr;
 				}
@@ -394,13 +438,16 @@ void Playing::click_callback(GLFWwindow* window, int button, int action, int mod
 						require_update.insert(require_update.end(), ucn.begin(), ucn.end());
 						require_update.insert(require_update.end(), uicn.begin(), uicn.end());
 					};
-					GateManager::createGate<SwitchGate>({ curr_chunk }, initial_pos, pos_release_snap, last_gates.switch_gate, func);	
+
+					auto chunks = ChunkManager::getAllOBBIntersect(ChunkManager::getChunkIndexAtPosition(pos_release_snap), last_gates.switch_gate->getTrueBoundings());
+
+					GateManager::createGate<SwitchGate>(chunks, initial_pos, pos_release_snap, last_gates.switch_gate, func);
 
 					//TODO: Change this to a more practical application
-					Component* obb_draw = new Component("Rectangle");
+					/*Component* obb_draw = new Component("Rectangle");
 					obb_draw->transform().update(last_gates.switch_gate->getBoundings().getOBBTransform());
 					obb_draw->setColor(glm::vec4(0.2f, 0.0f, 0.8f, 1.0f));
-					debug_renderer.push(obb_draw);
+					debug_renderer.push(obb_draw);*/
 
 					last_gates.switch_gate = nullptr;
 				}
@@ -416,7 +463,7 @@ void Playing::click_callback(GLFWwindow* window, int button, int action, int mod
 				}
 				else if (last_gates.switch_gate)
 				{
-					gate_renderer.popList(last_gates.not_gate->getComponentList(), last_gates.not_gate->getComponentListSize());
+					gate_renderer.popList(last_gates.switch_gate->getComponentList(), last_gates.switch_gate->getComponentListSize());
 					gate_tracker.pop_back();
 					delete last_gates.switch_gate;
 					last_gates.switch_gate = nullptr;

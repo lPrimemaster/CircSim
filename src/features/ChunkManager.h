@@ -29,7 +29,8 @@ public:
 
 	static std::vector<Chunk*> getAllLoadedChunks();
 
-	static std::vector<ChunkCoord> getValidNeighbourChunks(ChunkCoord c, math::BRect true_gate_bounds);
+	static std::vector<ChunkCoord> getValidNeighbourChunks(ChunkCoord c, math::BRect obb);
+	static std::vector<Chunk*> getAllOBBIntersect(ChunkCoord first, math::BRect obb);
 
 	static void allocateStart();
 

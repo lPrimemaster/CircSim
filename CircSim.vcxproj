@@ -170,6 +170,7 @@
     <ClCompile Include="src\util\loader.cpp" />
     <ClCompile Include="src\util\math.cpp" />
     <ClCompile Include="src\util\memtrace.cpp" />
+    <ClCompile Include="src\util\Serializer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="deps\imgui\imconfig.h" />
@@ -217,6 +218,7 @@
     <ClInclude Include="src\util\loader.h" />
     <ClInclude Include="src\util\math.h" />
     <ClInclude Include="src\util\memtrace.h" />
+    <ClInclude Include="src\util\Serializer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\color.frag.glsl">

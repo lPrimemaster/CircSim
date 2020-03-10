@@ -39,21 +39,10 @@ inline void PSim::calculateMouseIntersection()
 			auto gates = ca->getGateList();
 			for (auto gate : gates)
 			{
-				auto bound = gate->getBoundings();
+				auto bound = gate->getTrueBoundings();
 				if (bound.intersect(glm::vec2(mouse_x.load(), mouse_y.load())))
 				{
-					std::cout << "Mouse intersect with gate! [" << count++ << "]" << std::endl;
-				}
-
-				//FIX: Get this out of here - it's not necessary at all - only at gate creation/motion
-				for (auto other : gates)
-				{
-					if (other == gate) continue;
-
-					if (bound.intersect(other->getBoundings()))
-					{
-						std::cout << "Gate intersect with gate! [" << count++ << "]" << std::endl;
-					}
+					//std::cout << "Mouse intersect with gate! [" << count++ << "]" << std::endl;
 				}
 			}
 		}

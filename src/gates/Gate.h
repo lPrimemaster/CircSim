@@ -13,6 +13,8 @@ public:
 	virtual void update(const glm::vec2 A, const glm::vec2 B) = 0;
 	virtual void updateInput(const unsigned state) = 0;
 
+	virtual inline glm::vec4 getAB() = 0;
+
 	virtual inline Component* getComponent(int index) = 0;
 
 	virtual inline Component** getComponentList() = 0;

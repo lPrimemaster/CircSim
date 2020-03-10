@@ -56,6 +56,8 @@ public:
 		return gate_list;
 	}
 
+	bool operator==(const Chunk& rhs) const;
+
 	void insertConnector(Connector* c);
 	void deleteConnector(Connector* c);
 

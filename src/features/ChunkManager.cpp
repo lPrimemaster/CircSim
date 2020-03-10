@@ -112,22 +112,22 @@ std::vector<Chunk*> ChunkManager::getAllLoadedChunks()
 	return ret;
 }
 
-std::vector<ChunkCoord> ChunkManager::getValidNeighbourChunks(ChunkCoord c, math::BRect true_gate_bounds)
+std::vector<ChunkCoord> ChunkManager::getValidNeighbourChunks(ChunkCoord c, math::BRect obb)
 {
 	std::vector<ChunkCoord> neighbours;
 	
 	//Check for adjacent chunks
-	auto checkBoundsInside = [true_gate_bounds, &neighbours](ChunkCoord coord)
+	auto checkBoundsInside = [obb, &neighbours](ChunkCoord coord)
 	{
-		float lowX = coord.chunk_id_x * CHUNK_SIZE - CHUNK_SIZE / 2.0f;
-		float lowY = coord.chunk_id_y * CHUNK_SIZE - CHUNK_SIZE / 2.0f;
+		float lowX = (2.0f * coord.chunk_id_x - 1) * CHUNK_SIZE;
+		float lowY = (2.0f * coord.chunk_id_y - 1) * CHUNK_SIZE;
 
-		float highX = lowX + CHUNK_SIZE;
-		float highY = lowY + CHUNK_SIZE;
+		float highX = lowX + CHUNK_SIZE * 2.0f;
+		float highY = lowY + CHUNK_SIZE * 2.0f;
 
-		math::BRect chunk_bound = math::BRect(0, glm::vec2(lowX, highY), CHUNK_SIZE, CHUNK_SIZE);
+		math::BRect chunk_bound = math::BRect(0, glm::vec2(lowX, highY), CHUNK_SIZE * 2.0f, CHUNK_SIZE * 2.0f);
 
-		if (chunk_bound.intersect(true_gate_bounds))
+		if (chunk_bound.intersect(obb))
 			neighbours.push_back(coord);
 	};
 
@@ -137,6 +137,63 @@ std::vector<ChunkCoord> ChunkManager::getValidNeighbourChunks(ChunkCoord c, math
 	checkBoundsInside({ c.chunk_id_x + 1 , c.chunk_id_y }); //Right
 
 	return neighbours;
+}
+
+struct OBB_Chunk_IntersectResult
+{
+	std::vector<ChunkCoord> visited;
+};
+
+std::vector<Chunk*> ChunkManager::getAllOBBIntersect(ChunkCoord first, math::BRect obb)
+{
+	OBB_Chunk_IntersectResult ocir;
+
+	ocir.visited.push_back(first);
+	auto vnc = getValidNeighbourChunks(first, obb);
+
+	while (!vnc.empty())
+	{
+		std::vector<ChunkCoord> local_coords;
+		for (auto it = vnc.begin(); it != vnc.end(); it++)
+		{
+			auto other = getValidNeighbourChunks(*it, obb);
+			local_coords.insert(local_coords.end(), other.begin(), other.end());
+		}
+
+		//Erase the neighbours that were already processed before
+		local_coords.erase(std::remove_if(local_coords.begin(), local_coords.end(), 
+			[&](ChunkCoord c) 
+			{ 
+				for (auto v : ocir.visited)
+				{
+					if (c == v)
+						return true;
+				}
+				return false;
+			}), local_coords.end());
+
+		//Add new valid chunks to visited list
+		ocir.visited.insert(ocir.visited.end(), vnc.begin(), vnc.end());
+
+		//Remove possible duplicates from adjacent chunks
+		math::removeDuplicates(local_coords);
+
+		vnc.clear();
+		vnc = local_coords;
+	}
+
+	std::vector<Chunk*> vchunks;
+
+	for (auto v : ocir.visited)
+	{
+		if (!checkChunkExists(v))
+		{
+			createChunkAtPosition(v);
+		}
+		vchunks.push_back(getChunkAtPosition(v));
+	}
+
+	return vchunks;
 }
 
 void ChunkManager::allocateStart()

@@ -13,10 +13,30 @@
 #include <thread>
 #include <fstream>
 
+//TEST
+#include "util/Serializer.h"
+
 //TODO: Check and fix (duh!) all 'FIX' tags
 //TODO: Run check tests with nsight to eliminate useless openGL API calls
 int main(int argc, char* argv[])
 {
+	//TEST
+	serializer::OutArchive out_ar;
+	std::vector<int> vo(100, 1);
+	out_ar.allocate(sizeof(int) * 102);
+	out_ar.process(3);
+	out_ar.process<std::vector<int>, int>(vo);
+
+	out_ar.save("test_save.bin");
+
+	serializer::InArchive in_ar;
+	in_ar.load("test_save.bin");
+	int x;
+	std::vector<int> vi;
+	in_ar.process(&x);
+	in_ar.process<std::vector<int>, int>(&vi);
+	std::cout << x << std::endl;
+
 	//Todo : Use main thread for drawing and create as necessary to the circuit evaluation
 	GLWrapper wrapper;
 

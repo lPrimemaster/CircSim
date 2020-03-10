@@ -67,6 +67,14 @@ namespace math
 		return res;
 	}
 
+	template<typename T>
+	inline void removeDuplicates(std::vector<T>& vec)
+	{
+		//FIX: std::unique assumes the range is already sorted ??
+		//std::unique assumes the range is already sorted ??
+		vec.erase(std::unique(vec.begin(), vec.end()), vec.end());
+	}
+
 	struct SATExtents
 	{
 #ifdef max
@@ -148,6 +156,7 @@ namespace math
 			return false;
 		}
 
+		//FIX: 90d angle error on intersect
 		inline bool intersect(const BRect& other)
 		{
 			const float pi_2rads = 90 * DEG_2_RAD;

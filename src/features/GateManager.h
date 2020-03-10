@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
 #include "../gates/Gate.h"
+#include "../gates/NGateDef.h"
+#include "../gates/SwitchGate.h"
 #include "ChunkManager.h"
 
 class GateManager
@@ -14,6 +16,8 @@ public:
 
 	template<typename T>
 	static void createGate(std::vector<Chunk*> in_chunks, glm::vec2 initial_pos, glm::vec2 release_pos, T* gate, std::function<void(T*)> creator);
+
+	static void updateAny(Gate* gate, glm::vec2 translation);
 
 private:
 	static std::vector<Gate*> global_gate_list;

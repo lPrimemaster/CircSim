@@ -17,6 +17,16 @@ public:
 	void update(const glm::vec2 in, const glm::vec2 out) override;
 	void updateInput(const unsigned state) override;
 
+	inline glm::vec4 getAB() override
+	{
+		glm::vec4 ret;
+		ret.x = in.x;
+		ret.y = in.y;
+		ret.z = out.x;
+		ret.w = out.y;
+		return ret;
+	}
+
 	inline Component* getComponent(int index) override
 	{
 		return components[index];
