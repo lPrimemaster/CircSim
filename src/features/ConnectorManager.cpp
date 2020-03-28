@@ -26,10 +26,22 @@ std::vector<Node*> ConnectorManager::updateConnectorNode(Connector* c)
 	//Check if there is any node already in the connector position
 	for (auto con : chunk->connector_list)
 	{
+		if (con == c) continue; //Ignore self
+
 		if (con->node != nullptr && con->isOverlapped(*c))
 		{
+			if (isOnly)
+			{
+				std::cout << "----------\n";
+				std::cout << "Delete Node" << "\nID == " << c->node->getName() << "\nType == " << typeid(Connector).name();
+				std::cout << "\n----------\n";
+
+				delete c->node;
+			}
+
 			c->node = con->node;
 			c->node->inc();
+			break;
 		}
 	}
 
@@ -67,10 +79,23 @@ std::vector<Node*> ConnectorManager::updateConnectorNode(Connector* c)
 		Chunk* dep_chunk = ChunkManager::getChunkAtPosition(cd->position);
 		for (auto con : dep_chunk->connector_list)
 		{
+			if (con == cd) continue; //Ignore self
+
 			if (con->node != nullptr && con->isOverlapped(*cd))
 			{
+				if (isOnly)
+				{
+					std::cout << "----------\n";
+					std::cout << "Delete Node" << "\nID == " << c->node->getName() << "\nType == " << typeid(Connector).name();
+					std::cout << "\n----------\n";
+
+					//FIX: This should delete the old connector (c) dependencies node, not the recentrly created one ...
+					delete cd->node;
+				}
+
 				cd->node = con->node;
 				cd->node->inc();
+				break;
 			}
 		}
 
@@ -92,7 +117,6 @@ std::vector<Node*> ConnectorManager::updateConnectorNode(Connector* c)
 			c->node->setDependencyNode(cd->node);
 		}
 	}
-	std::cout << "\n\n";
 	return need_registry;
 }
 
