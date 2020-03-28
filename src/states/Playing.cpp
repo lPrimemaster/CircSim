@@ -253,14 +253,6 @@ void Playing::handle(GLWrapper* gw)
 			last_gates.switch_gate->changeColor();
 		}
 	}
-
-	//Handle Gate Movement
-	if (mouse_pick.selected_gate != nullptr && mouse_pick.isMovable)
-	{
-		//FIX: This should receive a state instead of doing this
-		//GateManager::updateAny(mouse_pick.selected_gate, snappped_pos);
-		std::cout << "Can MOVE!" << std::endl;
-	}
 }
 
 void Playing::update(GLWrapper* gw)
@@ -370,121 +362,136 @@ void Playing::click_callback(GLFWwindow* window, int button, int action, int mod
 	else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
 	{
 		mouse_pick.isMovable = false;
+		// Node should be recalculated after move && Update Connector positions after mouse lift
+		/*auto& child_type = mouse_pick.selected_gate->childType();
+		if (child_type == typeid(NotGate))
+		{
+			auto* gate = mouse_pick.selected_gate->convert<NotGate>();
+			require_update = ConnectorManager::updateConnectorNode(gate->getOutputs()[0]);
+		}
+		else if (child_type == typeid(SwitchGate))
+		{
+			auto* gate = mouse_pick.selected_gate->convert<SwitchGate>();
+			require_update = ConnectorManager::updateConnectorNode(gate->getOutputs()[0]);
+		}*/
 	}
 
 	//Gate placement
-	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+	if (!mouse_pick.isMovable)
 	{
-		initial_pos = math::snapToGrid(frame_mouse_pos, 0.2f, 0.2f);
-		is_pressed = true;
-		
-		if (!(mods & GLFW_MOD_SHIFT))
+		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
 		{
-			last_gates.not_gate = new NotGate();
-			last_gates.not_gate->changeAlpha(0.7f);
-			gate_renderer.pushList(last_gates.not_gate->getComponentList(), last_gates.not_gate->getComponentListSize());
-			gate_tracker.push_back(last_gates.not_gate);
-		}
-		else
-		{
-			last_gates.switch_gate = new SwitchGate();
-			last_gates.switch_gate->changeAlpha(0.7f);
-			gate_renderer.pushList(last_gates.switch_gate->getComponentList(), last_gates.switch_gate->getComponentListSize());
-			gate_tracker.push_back(last_gates.switch_gate);
-		}
+			initial_pos = math::snapToGrid(frame_mouse_pos, 0.2f, 0.2f);
+			is_pressed = true;
 
-		last_gates.last_pos = initial_pos;
-	}
-	else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE && is_pressed)
-	{
-		is_pressed = false;
-		glm::vec2 pos_release_snap = math::snapToGrid(frame_mouse_pos, 0.2f, 0.2f);
-		if (glm::distance(initial_pos, pos_release_snap) >= 0.2f * 3.0f) //TODO: Check if this works on the math.h -> comparing floating points
-		{
-			if (last_gates.drop)
+			if (!(mods & GLFW_MOD_SHIFT))
 			{
-				Chunk* curr_chunk = ChunkManager::getChunkAtPosition(pos_release_snap);
-				if (!curr_chunk)
+				last_gates.not_gate = new NotGate();
+				last_gates.not_gate->changeAlpha(0.7f);
+				gate_renderer.pushList(last_gates.not_gate->getComponentList(), last_gates.not_gate->getComponentListSize());
+				gate_tracker.push_back(last_gates.not_gate);
+			}
+			else
+			{
+				last_gates.switch_gate = new SwitchGate();
+				last_gates.switch_gate->changeAlpha(0.7f);
+				gate_renderer.pushList(last_gates.switch_gate->getComponentList(), last_gates.switch_gate->getComponentListSize());
+				gate_tracker.push_back(last_gates.switch_gate);
+			}
+
+			last_gates.last_pos = initial_pos;
+		}
+		else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE && is_pressed)
+		{
+			is_pressed = false;
+			glm::vec2 pos_release_snap = math::snapToGrid(frame_mouse_pos, 0.2f, 0.2f);
+			if (glm::distance(initial_pos, pos_release_snap) >= 0.2f * 3.0f) //TODO: Check if this works on the math.h -> comparing floating points
+			{
+				if (last_gates.drop)
 				{
-					ChunkManager::createChunkAtPosition(pos_release_snap);
-					curr_chunk = ChunkManager::getChunkAtPosition(pos_release_snap);
-				}
-
-				if (last_gates.not_gate)
-				{
-					auto func = [&](NotGate* g)
-					{ 
-						require_update = ConnectorManager::updateConnectorNode(g->getOutputs()[0]); 
-					};
-
-					auto chunks = ChunkManager::getAllOBBIntersect(ChunkManager::getChunkIndexAtPosition(pos_release_snap), last_gates.not_gate->getTrueBoundings());
-
-					GateManager::createGate<NotGate>(chunks, initial_pos, pos_release_snap, last_gates.not_gate, func);
-
-					//TODO: Change this to a more practical application
-					/*Component* obb_draw = new Component("Rectangle");
-					obb_draw->transform().update(last_gates.not_gate->getBoundings().getOBBTransform());
-					obb_draw->setColor(glm::vec4(0.2f, 0.0f, 0.8f, 1.0f));
-					debug_renderer.push(obb_draw);*/
-
-					last_gates.not_gate = nullptr;
-				}
-				else if (last_gates.switch_gate)
-				{
-					auto func = [&](SwitchGate* g) 
+					Chunk* curr_chunk = ChunkManager::getChunkAtPosition(pos_release_snap);
+					if (!curr_chunk)
 					{
-						auto ucn = ConnectorManager::updateConnectorNode(g->getOutputs()[0]);
-						auto uicn = ConnectorManager::updateInteractConnectorNode(dynamic_cast<InteractConnector*>(g->getInputs()[0]));
-						require_update.insert(require_update.end(), ucn.begin(), ucn.end());
-						require_update.insert(require_update.end(), uicn.begin(), uicn.end());
-					};
+						ChunkManager::createChunkAtPosition(pos_release_snap);
+						curr_chunk = ChunkManager::getChunkAtPosition(pos_release_snap);
+					}
 
-					auto chunks = ChunkManager::getAllOBBIntersect(ChunkManager::getChunkIndexAtPosition(pos_release_snap), last_gates.switch_gate->getTrueBoundings());
+					if (last_gates.not_gate)
+					{
+						auto func = [&](NotGate* g)
+						{
+							require_update = ConnectorManager::updateConnectorNode(g->getOutputs()[0]);
+						};
 
-					GateManager::createGate<SwitchGate>(chunks, initial_pos, pos_release_snap, last_gates.switch_gate, func);
+						auto chunks = ChunkManager::getAllOBBIntersect(ChunkManager::getChunkIndexAtPosition(pos_release_snap), last_gates.not_gate->getTrueBoundings());
 
-					//TODO: Change this to a more practical application
-					/*Component* obb_draw = new Component("Rectangle");
-					obb_draw->transform().update(last_gates.switch_gate->getBoundings().getOBBTransform());
-					obb_draw->setColor(glm::vec4(0.2f, 0.0f, 0.8f, 1.0f));
-					debug_renderer.push(obb_draw);*/
+						GateManager::createGate<NotGate>(chunks, initial_pos, pos_release_snap, last_gates.not_gate, func);
 
-					last_gates.switch_gate = nullptr;
+						//TODO: Change this to a more practical application
+						/*Component* obb_draw = new Component("Rectangle");
+						obb_draw->transform().update(last_gates.not_gate->getBoundings().getOBBTransform());
+						obb_draw->setColor(glm::vec4(0.2f, 0.0f, 0.8f, 1.0f));
+						debug_renderer.push(obb_draw);*/
+
+						last_gates.not_gate = nullptr;
+					}
+					else if (last_gates.switch_gate)
+					{
+						auto func = [&](SwitchGate* g)
+						{
+							auto ucn = ConnectorManager::updateConnectorNode(g->getOutputs()[0]);
+							auto uicn = ConnectorManager::updateInteractConnectorNode(dynamic_cast<InteractConnector*>(g->getInputs()[0]));
+							require_update.insert(require_update.end(), ucn.begin(), ucn.end());
+							require_update.insert(require_update.end(), uicn.begin(), uicn.end());
+						};
+
+						auto chunks = ChunkManager::getAllOBBIntersect(ChunkManager::getChunkIndexAtPosition(pos_release_snap), last_gates.switch_gate->getTrueBoundings());
+
+						GateManager::createGate<SwitchGate>(chunks, initial_pos, pos_release_snap, last_gates.switch_gate, func);
+
+						//TODO: Change this to a more practical application
+						/*Component* obb_draw = new Component("Rectangle");
+						obb_draw->transform().update(last_gates.switch_gate->getBoundings().getOBBTransform());
+						obb_draw->setColor(glm::vec4(0.2f, 0.0f, 0.8f, 1.0f));
+						debug_renderer.push(obb_draw);*/
+
+						last_gates.switch_gate = nullptr;
+					}
+				}
+				else
+				{
+					if (last_gates.not_gate)
+					{
+						gate_renderer.popList(last_gates.not_gate->getComponentList(), last_gates.not_gate->getComponentListSize());
+						gate_tracker.pop_back();
+						delete last_gates.not_gate;
+						last_gates.not_gate = nullptr;
+					}
+					else if (last_gates.switch_gate)
+					{
+						gate_renderer.popList(last_gates.switch_gate->getComponentList(), last_gates.switch_gate->getComponentListSize());
+						gate_tracker.pop_back();
+						delete last_gates.switch_gate;
+						last_gates.switch_gate = nullptr;
+					}
 				}
 			}
 			else
 			{
-				if (last_gates.not_gate)
+				if (last_gates.not_gate != nullptr)
 				{
 					gate_renderer.popList(last_gates.not_gate->getComponentList(), last_gates.not_gate->getComponentListSize());
 					gate_tracker.pop_back();
 					delete last_gates.not_gate;
 					last_gates.not_gate = nullptr;
 				}
-				else if (last_gates.switch_gate)
+				else if (last_gates.switch_gate != nullptr)
 				{
 					gate_renderer.popList(last_gates.switch_gate->getComponentList(), last_gates.switch_gate->getComponentListSize());
 					gate_tracker.pop_back();
 					delete last_gates.switch_gate;
 					last_gates.switch_gate = nullptr;
 				}
-			}
-		}
-		else
-		{
-			if (last_gates.not_gate != nullptr)
-			{
-				gate_renderer.popList(last_gates.not_gate->getComponentList(), last_gates.not_gate->getComponentListSize());
-				gate_tracker.pop_back();
-				delete last_gates.not_gate;
-				last_gates.not_gate = nullptr;
-			}
-			else if(last_gates.switch_gate != nullptr)
-			{
-				gate_renderer.popList(last_gates.switch_gate->getComponentList(), last_gates.switch_gate->getComponentListSize());
-				gate_tracker.pop_back();
-				delete last_gates.switch_gate;
-				last_gates.switch_gate = nullptr;
 			}
 		}
 	}
@@ -502,6 +509,48 @@ void Playing::key_callback(GLFWwindow* window, int key, int scancode, int action
 			gate_renderer.popList((*it)->getComponentList(), (*it)->getComponentListSize());
 			delete *it;
 			gate_tracker.pop_back();
+		}
+	}
+}
+
+void Playing::move_callback(GLFWwindow* window, double xpos, double ypos)
+{
+	if (mouse_pick.isMovable)
+	{
+		int width, height;
+		glfwGetWindowSize(window, &width, &height);
+
+		glm::vec2 ncenter = math::screenToWorld(glm::vec2(width, height), glm::vec2(xpos, ypos), getIPVMatrix());
+
+		glm::vec4 io = mouse_pick.selected_gate->getAB();
+		glm::vec2 in = glm::vec2(io.x, io.y);
+		glm::vec2 out = glm::vec2(io.z, io.w);
+		glm::vec2 center = (in + out) / 2.0f;
+		glm::vec2 diff = out - center;
+
+		glm::vec2 nout = ncenter + diff;
+		glm::vec2 nin = ncenter - diff;
+
+		glm::vec2 snin = math::snapToGrid(nin, 0.2f, 0.2f);
+		glm::vec2 snout = math::snapToGrid(nout, 0.2f, 0.2f);
+
+		mouse_pick.selected_gate->update(snin, snout);	
+
+
+		// Node should be recalculated after move && Update Connector positions
+		if (snin != in)
+		{
+			auto& child_type = mouse_pick.selected_gate->childType();
+			if (child_type == typeid(NotGate))
+			{
+				auto* gate = mouse_pick.selected_gate->convert<NotGate>();
+				require_update = ConnectorManager::updateConnectorNode(gate->getOutputs()[0]);
+			}
+			else if (child_type == typeid(SwitchGate))
+			{
+				auto* gate = mouse_pick.selected_gate->convert<SwitchGate>();
+				require_update = ConnectorManager::updateConnectorNode(gate->getOutputs()[0]);
+			}
 		}
 	}
 }

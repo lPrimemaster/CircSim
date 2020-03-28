@@ -7,16 +7,34 @@ std::vector<Node*> ConnectorManager::updateConnectorNode(Connector* c)
 	Chunk* chunk = ChunkManager::getChunkAtPosition(c->position);
 
 	std::vector<Node*> need_registry;
-	//Check if there is any node already in the connector position
+	bool isOnly = false;
 
+	//FIX: This can be a problem when moving various coupled connectors at the same time
+	if (c->node != nullptr)
+	{
+		if (c->node->getConnectorsNum() != 0)
+		{
+			c->node->dec();
+			c->node = nullptr;
+		}
+		else
+		{
+			isOnly = true;
+		}
+	}
+
+	//Check if there is any node already in the connector position
 	for (auto con : chunk->connector_list)
 	{
 		if (con->node != nullptr && con->isOverlapped(*c))
+		{
 			c->node = con->node;
+			c->node->inc();
+		}
 	}
 
 	//Then no node was found in this chunk that could be related to this connector
-	if (c->node == nullptr)
+	if (c->node == nullptr && !isOnly)
 	{
 		//TODO: Change this to a hex value naming system
 		c->node = new Node(math::generateHEX());
@@ -31,14 +49,32 @@ std::vector<Node*> ConnectorManager::updateConnectorNode(Connector* c)
 	//Check connector dependencies and do the same
 	for (auto cd : c->dep_conector)
 	{
+		isOnly = false;
+		//FIX: This can be a problem when moving various coupled connectors at the same time
+		if (cd->node != nullptr)
+		{
+			if (cd->node->getConnectorsNum() != 0)
+			{
+				cd->node->dec();
+				cd->node = nullptr;
+			}
+			else
+			{
+				isOnly = true;
+			}
+		}
+
 		Chunk* dep_chunk = ChunkManager::getChunkAtPosition(cd->position);
 		for (auto con : dep_chunk->connector_list)
 		{
 			if (con->node != nullptr && con->isOverlapped(*cd))
+			{
 				cd->node = con->node;
+				cd->node->inc();
+			}
 		}
 
-		if (cd->node == nullptr)
+		if (cd->node == nullptr && !isOnly)
 		{
 			//TODO: Change this to a hex value naming system
 			cd->node = new Node(math::generateHEX());
@@ -52,6 +88,7 @@ std::vector<Node*> ConnectorManager::updateConnectorNode(Connector* c)
 
 		if (cd->node)
 		{
+			//FIX
 			c->node->setDependencyNode(cd->node);
 		}
 	}

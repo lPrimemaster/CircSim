@@ -20,6 +20,7 @@ private:
 	static void scroll_callback(GLFWwindow* window, double xoff, double yoff);
 	static void click_callback(GLFWwindow* window, int button, int action, int mods);
 	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+	static void move_callback(GLFWwindow* window, double xpos, double ypos);
 
 private:
 	InputManager() = delete;

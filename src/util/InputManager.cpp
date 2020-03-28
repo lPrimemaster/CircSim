@@ -17,6 +17,7 @@ void InputManager::setActiveWindow(GLFWwindow* window)
 	glfwSetScrollCallback(window, InputManager::scroll_callback);
 	glfwSetMouseButtonCallback(window, InputManager::click_callback);
 	glfwSetKeyCallback(window, InputManager::key_callback);
+	glfwSetCursorPosCallback(window, InputManager::move_callback);
 }
 
 void InputManager::setCallbackControllerState(StateInfo info)
@@ -72,7 +73,22 @@ void InputManager::key_callback(GLFWwindow* window, int key, int scancode, int a
 	{
 	case BASE: break; //TODO: Base class shouldn't be called what so ever (handle error)
 
-		CREATE_STATE(Playing, PLAYING, key_callback, window, key, scancode, action, mods);
+	CREATE_STATE(Playing, PLAYING, key_callback, window, key, scancode, action, mods);
+
+	default: break;
+	}
+}
+
+void InputManager::move_callback(GLFWwindow* window, double xpos, double ypos)
+{
+	//TODO: Is it okay to get it every time - on every single callback?
+	StateInfo* info = static_cast<StateInfo*>(glfwGetWindowUserPointer(window));
+
+	switch (info->derived_state)
+	{
+	case BASE: break; //TODO: Base class shouldn't be called what so ever (handle error)
+
+	CREATE_STATE(Playing, PLAYING, move_callback, window, xpos, ypos);
 
 	default: break;
 	}

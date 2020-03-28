@@ -88,7 +88,7 @@ struct InteractConnector : public Connector
 		interactible = true;
 	}
 
-	InteractConnector(IO type, glm::vec2 pos) : Connector(type, pos)
+	InteractConnector(IO type, glm::vec2 pos) : Connector(type, pos, 0)
 	{
 		interactible = true;
 	}

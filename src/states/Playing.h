@@ -38,6 +38,7 @@ public:
 	void scroll_callback(GLFWwindow* window, double xoff, double yoff) override;
 	void click_callback(GLFWwindow* window, int button, int action, int mods) override;
 	void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) override;
+	void move_callback(GLFWwindow* window, double xpos, double ypos) override;
 
 	void initialize(GLWrapper* gw) override;
 	void cleanUp() override;
