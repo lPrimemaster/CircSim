@@ -5,6 +5,7 @@
 #include <functional>
 #include <glm/glm.hpp>
 #include <random>
+#include "../geometry/Transform.h"
 
 #define PI_F 3.141592654f
 #define RAD_2_DEG 360.0f / (2 * PI_F)
@@ -65,26 +66,52 @@ namespace math
 		}
 		return res;
 	}
+
+	template<typename T>
+	inline void removeDuplicates(std::vector<T>& vec)
+	{
+		//FIX: std::unique assumes the range is already sorted ??
+		//std::unique assumes the range is already sorted ??
+		vec.erase(std::unique(vec.begin(), vec.end()), vec.end());
+	}
+
+	struct SATExtents
+	{
+#ifdef max
+#undef max
+#endif
+		float min = std::numeric_limits<float>::max();
+		float max = std::numeric_limits<float>::lowest();
+	};
+
+	inline SATExtents SATprojectExtents(glm::vec2 axis, std::vector<glm::vec2> set)
+	{
+		SATExtents extents;
+		for (auto point : set)
+		{
+			float proj = glm::dot(point, axis);
+			extents.min = (proj < extents.min ? proj : extents.min);
+			extents.max = (proj > extents.max ? proj : extents.max);
+		}
+		return extents;
+	}
 	
+	inline bool isBetweenOrdered(float val, float lowerBound, float upperBound)
+	{
+		return lowerBound < val && val < upperBound;
+	}
+
+	inline bool SAToverlap(SATExtents first, SATExtents second)
+	{
+		return isBetweenOrdered(second.min, first.min, first.max) || isBetweenOrdered(first.min, second.min, second.max);
+	}
+
 	template<typename tMap>
 	inline second_t<typename tMap::value_type> gMapSecond(const tMap& m) { return second_t<typename tMap::value_type>(); }
 
 	struct Bounding
 	{
 		virtual inline bool intersect(const glm::vec2& point) = 0;
-	};
-
-	struct BElipse : public Bounding
-	{
-		inline bool intersect(const glm::vec2& point) override
-		{
-
-		}
-
-		inline bool intersect(const BElipse& bound)
-		{
-
-		}
 	};
 
 	struct BRect : public Bounding
@@ -104,6 +131,9 @@ namespace math
 		float angle;
 		float xlAxis;
 		float ylAxis;
+
+	private:
+		::Transform debug_t;
 
 	public:
 		inline bool intersect(const glm::vec2& point) override
@@ -126,9 +156,68 @@ namespace math
 			return false;
 		}
 
-		inline bool intersect(const BRect& bound)
+		//FIX: 90d angle error on intersect
+		inline bool intersect(const BRect& other)
 		{
+			const float pi_2rads = 90 * DEG_2_RAD;
 
+			glm::vec2 xdir = polarToCartesian(angle, 1.0);
+			glm::vec2 ydir = polarToCartesian(pi_2rads + angle, 1.0);
+
+			auto pset = toPointSet();
+			auto pset_other = other.toPointSet();
+
+			SATExtents yExtents = SATprojectExtents(ydir, pset);
+			SATExtents yExtents_other = SATprojectExtents(ydir, pset_other);
+
+			if (!SAToverlap(yExtents, yExtents_other)) return false;
+
+			SATExtents xExtents = SATprojectExtents(xdir, pset);
+			SATExtents xExtents_other = SATprojectExtents(xdir, pset_other);
+
+			if (!SAToverlap(xExtents, xExtents_other)) return false;
+
+			//If not pick other's directions
+			xdir = polarToCartesian(other.angle, 1.0);
+			ydir = polarToCartesian(pi_2rads + other.angle, 1.0);
+
+			SATExtents yExtents_2 = SATprojectExtents(ydir, pset);
+			SATExtents yExtents_other_2 = SATprojectExtents(ydir, pset_other);
+
+			if (!SAToverlap(yExtents_2, yExtents_other_2)) return false;
+
+			SATExtents xExtents_2 = SATprojectExtents(xdir, pset);
+			SATExtents xExtents_other_2 = SATprojectExtents(xdir, pset_other);
+
+			//Finally
+			return SAToverlap(xExtents_2, xExtents_other_2);
+		}
+
+		inline std::vector<glm::vec2> toPointSet() const
+		{
+			std::vector<glm::vec2> set;
+
+			glm::vec2 rxL = polarToCartesian(angle, xlAxis);
+			glm::vec2 ryL = polarToCartesian(90 * DEG_2_RAD + angle, ylAxis);
+
+			set.push_back(pivot);
+			set.push_back(pivot + rxL);
+			set.push_back(pivot + rxL - ryL);
+			set.push_back(pivot - ryL);
+
+			return set;
+		}
+
+		inline Transform& getOBBTransform()
+		{
+			glm::vec2 hxL = polarToCartesian(angle, xlAxis / 2);
+			glm::vec2 hyL = polarToCartesian(90 * DEG_2_RAD + angle, ylAxis / 2);
+			glm::vec2 center = pivot + hxL - hyL;
+
+			debug_t.update(center, angle * RAD_2_DEG);
+			debug_t.scale(glm::vec2(xlAxis / 2, ylAxis / 2));
+
+			return debug_t;
 		}
 	};
 }

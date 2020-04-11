@@ -4,6 +4,7 @@
 #include "../render/GateRenderer.h"
 #include "../render/GridRenderer.h"
 #include "../render/GuiRenderer.h"
+#include "../render/DebugRenderer.h"
 
 #include "../gates/Gate.h"
 #include "../gates/NGateDef.h"
@@ -14,6 +15,7 @@
 //Test purposes only
 #include "../features/ChunkManager.h"
 #include "../features/GateManager.h"
+#include "../features/ConnectorManager.h"
 
 #include "../render/gui/DebugGui.h"
 
@@ -36,6 +38,7 @@ public:
 	void scroll_callback(GLFWwindow* window, double xoff, double yoff) override;
 	void click_callback(GLFWwindow* window, int button, int action, int mods) override;
 	void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) override;
+	void move_callback(GLFWwindow* window, double xpos, double ypos) override;
 
 	void initialize(GLWrapper* gw) override;
 	void cleanUp() override;
@@ -53,13 +56,14 @@ private:
 	GateRenderer gate_renderer;
 	GridRenderer grid_renderer;
 	GuiRenderer gui_renderer;
+	DebugRenderer debug_renderer;
 
 	glm::mat4 pview_mat;
 	glm::mat4 ipview_mat;
 
 	static float z_scl; //FIX: No need for static vars here
-	static double lx; //FIX: No need for static vars here
-	static double ly; //FIX: No need for static vars here
+	static float lx; //FIX: No need for static vars here
+	static float ly; //FIX: No need for static vars here
 
 	glm::vec2 frame_mouse_pos;
 
@@ -81,5 +85,12 @@ private:
 		SwitchGate* switch_gate = nullptr;
 
 		glm::vec2 last_pos = glm::vec2(0.0f);
+		bool drop = true;
 	}last_gates;
+
+	struct MousePick
+	{
+		Gate* selected_gate = nullptr;
+		bool isMovable = false;
+	}mouse_pick;
 };

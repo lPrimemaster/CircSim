@@ -50,7 +50,9 @@ NotGate::NotGate()
 
 	updateConnectors();
 
-	bounding_limits = math::BRect(math::cartesianToPolar(direction).angle, in - weighted_perpendicular, glm::distance(in , out), 2 * glm::length(weighted_perpendicular));
+	bounding_limits = math::BRect(math::cartesianToPolar(direction).angle, in_line_ending - weighted_perpendicular, glm::distance(in_line_ending, out_line_start + Cscale * normalized_direction), 2 * glm::length(weighted_perpendicular));
+	true_bounding_limits = math::BRect(math::cartesianToPolar(direction).angle, in - weighted_perpendicular, glm::distance(in, out), 2 * glm::length(weighted_perpendicular));
+	
 }
 
 NotGate::~NotGate()
@@ -103,7 +105,8 @@ void NotGate::update(const glm::vec2 in, const glm::vec2 out)
 
 	updateConnectors();
 
-	bounding_limits = math::BRect(math::cartesianToPolar(direction).angle, in - weighted_perpendicular, glm::distance(in, out), 2 * glm::length(weighted_perpendicular));
+	bounding_limits = math::BRect(math::cartesianToPolar(direction).angle, in_line_ending - weighted_perpendicular, glm::distance(in_line_ending, out_line_start + Cscale * normalized_direction), 2 * glm::length(weighted_perpendicular));
+	true_bounding_limits = math::BRect(math::cartesianToPolar(direction).angle, in - weighted_perpendicular, glm::distance(in, out), 2 * glm::length(weighted_perpendicular));
 }
 
 void NotGate::updateInput(const unsigned state)
@@ -112,12 +115,14 @@ void NotGate::updateInput(const unsigned state)
 	{
 		components[6]->setColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 		components[0]->setColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
-		components[1]->setColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+		//components[1]->setColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+		components[1]->setColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 	}
 	else
 	{
 		components[6]->setColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
-		components[0]->setColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+		//components[0]->setColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+		components[0]->setColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 		components[1]->setColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 	}
 	//state ? components[6]->setColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)) : components[6]->setColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));

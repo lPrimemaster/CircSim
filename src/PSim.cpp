@@ -31,6 +31,7 @@ inline void PSim::calculateIntersections()
 
 inline void PSim::calculateMouseIntersection()
 {
+	unsigned int count = 0;
 	while (true)
 	{
 		if (const Chunk* ca = current_active.load(); ca != nullptr)
@@ -38,11 +39,10 @@ inline void PSim::calculateMouseIntersection()
 			auto gates = ca->getGateList();
 			for (auto gate : gates)
 			{
-				auto bound = gate->getBoundings();
+				auto bound = gate->getTrueBoundings();
 				if (bound.intersect(glm::vec2(mouse_x.load(), mouse_y.load())))
 				{
-					//TODO: Do something
-					std::cout << "Mouse intersec with gate!" << std::endl;
+					//std::cout << "Mouse intersect with gate! [" << count++ << "]" << std::endl;
 				}
 			}
 		}

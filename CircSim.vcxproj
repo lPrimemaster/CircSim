@@ -76,13 +76,13 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>H:\Data\C++ Deps\glew-2.1.0\include;H:\Data\C++ Deps\glfw-3.2.1.bin.WIN32\include;H:\Data\C++ Deps\glm-0.9.8.5\glm;H:\Data\C++\CircSim\src\lib\FreeType\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>deps\glew-2.1.0\include;deps\glfw-3.3.2.bin.WIN32\include;deps\glm;src\lib\FreeType\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <AdditionalDependencies>opengl32.lib;glew32s.lib;glfw3.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>H:\Data\C++ Deps\glfw-3.2.1.bin.WIN32\lib-vc2015;H:\Data\C++ Deps\glew-2.1.0\lib\Release\Win32;H:\Data\C++\CircSim\src\lib\FreeType\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>deps\glfw-3.3.2.bin.WIN32\lib-vc2019;deps\glew-2.1.0\lib\Release\Win32;src\lib\FreeType\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -142,6 +142,7 @@
     <ClCompile Include="src\features\Backgrid.cpp" />
     <ClCompile Include="src\features\Chunk.cpp" />
     <ClCompile Include="src\features\ChunkManager.cpp" />
+    <ClCompile Include="src\features\ConnectorManager.cpp" />
     <ClCompile Include="src\features\GateManager.cpp" />
     <ClCompile Include="src\gates\NGateDef.cpp" />
     <ClCompile Include="src\gates\SwitchGate.cpp" />
@@ -153,6 +154,7 @@
     <ClCompile Include="src\Registry.cpp" />
     <ClCompile Include="src\render\Camera.cpp" />
     <ClCompile Include="src\render\chars\CharAtlas.cpp" />
+    <ClCompile Include="src\render\DebugRenderer.cpp" />
     <ClCompile Include="src\render\GateRenderer.cpp" />
     <ClCompile Include="src\render\GLWrapper.cpp" />
     <ClCompile Include="src\render\GridRenderer.cpp" />
@@ -168,6 +170,7 @@
     <ClCompile Include="src\util\loader.cpp" />
     <ClCompile Include="src\util\math.cpp" />
     <ClCompile Include="src\util\memtrace.cpp" />
+    <ClCompile Include="src\util\Serializer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="deps\imgui\imconfig.h" />
@@ -182,6 +185,7 @@
     <ClInclude Include="src\features\Backgrid.h" />
     <ClInclude Include="src\features\Chunk.h" />
     <ClInclude Include="src\features\ChunkManager.h" />
+    <ClInclude Include="src\features\ConnectorManager.h" />
     <ClInclude Include="src\features\GateManager.h" />
     <ClInclude Include="src\gates\Gate.h" />
     <ClInclude Include="src\gates\InOutType.h" />
@@ -196,6 +200,7 @@
     <ClInclude Include="src\Registry.h" />
     <ClInclude Include="src\render\Camera.h" />
     <ClInclude Include="src\render\chars\CharAtlas.h" />
+    <ClInclude Include="src\render\DebugRenderer.h" />
     <ClInclude Include="src\render\GateRenderer.h" />
     <ClInclude Include="src\render\GLWrapper.h" />
     <ClInclude Include="src\render\GridRenderer.h" />
@@ -213,6 +218,7 @@
     <ClInclude Include="src\util\loader.h" />
     <ClInclude Include="src\util\math.h" />
     <ClInclude Include="src\util\memtrace.h" />
+    <ClInclude Include="src\util\Serializer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\color.frag.glsl">

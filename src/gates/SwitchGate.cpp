@@ -52,6 +52,9 @@ SwitchGate::SwitchGate()
 	components[7]->setColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
 	updateConnectors();
+
+	bounding_limits = math::BRect(math::cartesianToPolar(direction).angle, bottom_left, glm::distance(left_side, right_side), 2 * glm::length(weighted_perpendicular));
+	true_bounding_limits = math::BRect(math::cartesianToPolar(direction).angle, bottom_left, glm::distance(left_side, out), 2 * glm::length(weighted_perpendicular));
 }
 
 SwitchGate::~SwitchGate()
@@ -82,8 +85,8 @@ void SwitchGate::update(const glm::vec2 center, const glm::vec2 out)
 	glm::vec2 normalized_perpendicular = glm::vec2(normalized_direction.y, -normalized_direction.x);
 	glm::vec2 weighted_perpendicular = 0.2f * normalized_perpendicular;
 
-	float turn_deg = normalized_direction.y > 0 ? std::acosf(glm::dot(normalized_direction, glm::vec2(1.0f, 0.0f))) * RAD_2_DEG 
-		: -std::acosf(glm::dot(normalized_direction, glm::vec2(1.0f, 0.0f))) * RAD_2_DEG;
+	float turn_rad = normalized_direction.y > 0 ? std::acosf(glm::dot(normalized_direction, glm::vec2(1.0f, 0.0f))) 
+		: -std::acosf(glm::dot(normalized_direction, glm::vec2(1.0f, 0.0f)));
 
 	glm::vec2 right_side = center + weighted_direction;
 	glm::vec2 left_side = center - weighted_direction;
@@ -99,12 +102,15 @@ void SwitchGate::update(const glm::vec2 center, const glm::vec2 out)
 	components[2]->transform().update(bottom_left, bottom_right);
 	components[3]->transform().update(bottom_left, top_left);
 	components[4]->transform().update(bottom_right, top_right);
-	components[5]->transform().update(center, turn_deg, Tscale); //Check this
+	components[5]->transform().update(center, turn_rad * RAD_2_DEG, Tscale); //Check this
 
 	components[6]->transform().update(center, 0.0f, Cscale);
 	components[7]->transform().update(center, 0.0f, Cscale + 0.002f);
 
 	updateConnectors();
+
+	bounding_limits = math::BRect(turn_rad, bottom_left, glm::distance(left_side, right_side), 2 * glm::length(weighted_perpendicular));
+	true_bounding_limits = math::BRect(math::cartesianToPolar(direction).angle, bottom_left, glm::distance(left_side, out), 2 * glm::length(weighted_perpendicular));
 }
 
 void SwitchGate::updateInput(const unsigned state)
@@ -117,7 +123,7 @@ void SwitchGate::updateInput(const unsigned state)
 	else
 	{
 		components[6]->setColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-		components[0]->setColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+		components[0]->setColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 	}
 	//state ? components[6]->setColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)) : components[6]->setColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 }

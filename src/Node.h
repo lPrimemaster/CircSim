@@ -23,8 +23,14 @@ public:
 
 	void write(bool input);
 
+	inline void inc() { nconnectors++; }
+	inline void dec() { nconnectors--; }
+
+	inline unsigned int getConnectorsNum() { return nconnectors; }
+
 private:
 	std::vector<Node*> dependencies;
+	unsigned int nconnectors = 0;
 
 private:
 	bool state = LOW;

@@ -29,12 +29,12 @@ public:
 
 	static std::vector<Chunk*> getAllLoadedChunks();
 
+	static std::vector<ChunkCoord> getValidNeighbourChunks(ChunkCoord c, math::BRect obb);
+	static std::vector<Chunk*> getAllOBBIntersect(ChunkCoord first, math::BRect obb);
+
 	static void allocateStart();
 
 	static void populateChunks(std::vector<Gate*>* global_list);
-
-	static std::vector<Node*> updateConnectorNode(Connector* c);
-	static std::vector<Node*> updateInteractConnectorNode(InteractConnector* c);
 
 private:
 	static void workerPopulate(std::vector<Gate*>::iterator start, std::vector<Gate*>::iterator end);

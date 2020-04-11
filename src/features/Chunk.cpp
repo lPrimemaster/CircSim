@@ -23,6 +23,11 @@ bool Chunk::isInside(glm::vec2 value)
 	return (lowX < value.x < highX && lowY < value.y < highY);
 }
 
+bool Chunk::operator==(const Chunk& rhs) const
+{
+	return this->coord == rhs.coord;
+}
+
 void Chunk::insertConnector(Connector* c)
 {
 	if (!c->isInteractible())

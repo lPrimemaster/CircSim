@@ -112,6 +112,90 @@ std::vector<Chunk*> ChunkManager::getAllLoadedChunks()
 	return ret;
 }
 
+std::vector<ChunkCoord> ChunkManager::getValidNeighbourChunks(ChunkCoord c, math::BRect obb)
+{
+	std::vector<ChunkCoord> neighbours;
+	
+	//Check for adjacent chunks
+	auto checkBoundsInside = [obb, &neighbours](ChunkCoord coord)
+	{
+		float lowX = (2.0f * coord.chunk_id_x - 1) * CHUNK_SIZE;
+		float lowY = (2.0f * coord.chunk_id_y - 1) * CHUNK_SIZE;
+
+		float highX = lowX + CHUNK_SIZE * 2.0f;
+		float highY = lowY + CHUNK_SIZE * 2.0f;
+
+		math::BRect chunk_bound = math::BRect(0, glm::vec2(lowX, highY), CHUNK_SIZE * 2.0f, CHUNK_SIZE * 2.0f);
+
+		if (chunk_bound.intersect(obb))
+			neighbours.push_back(coord);
+	};
+
+	checkBoundsInside({ c.chunk_id_x , c.chunk_id_y + 1 }); //Top
+	checkBoundsInside({ c.chunk_id_x , c.chunk_id_y - 1 }); //Bottom
+	checkBoundsInside({ c.chunk_id_x - 1 , c.chunk_id_y }); //Left
+	checkBoundsInside({ c.chunk_id_x + 1 , c.chunk_id_y }); //Right
+
+	return neighbours;
+}
+
+struct OBB_Chunk_IntersectResult
+{
+	std::vector<ChunkCoord> visited;
+};
+
+std::vector<Chunk*> ChunkManager::getAllOBBIntersect(ChunkCoord first, math::BRect obb)
+{
+	OBB_Chunk_IntersectResult ocir;
+
+	ocir.visited.push_back(first);
+	auto vnc = getValidNeighbourChunks(first, obb);
+
+	while (!vnc.empty())
+	{
+		std::vector<ChunkCoord> local_coords;
+		for (auto it = vnc.begin(); it != vnc.end(); it++)
+		{
+			auto other = getValidNeighbourChunks(*it, obb);
+			local_coords.insert(local_coords.end(), other.begin(), other.end());
+		}
+
+		//Erase the neighbours that were already processed before
+		local_coords.erase(std::remove_if(local_coords.begin(), local_coords.end(), 
+			[&](ChunkCoord c) 
+			{ 
+				for (auto v : ocir.visited)
+				{
+					if (c == v)
+						return true;
+				}
+				return false;
+			}), local_coords.end());
+
+		//Add new valid chunks to visited list
+		ocir.visited.insert(ocir.visited.end(), vnc.begin(), vnc.end());
+
+		//Remove possible duplicates from adjacent chunks
+		math::removeDuplicates(local_coords);
+
+		vnc.clear();
+		vnc = local_coords;
+	}
+
+	std::vector<Chunk*> vchunks;
+
+	for (auto v : ocir.visited)
+	{
+		if (!checkChunkExists(v))
+		{
+			createChunkAtPosition(v);
+		}
+		vchunks.push_back(getChunkAtPosition(v));
+	}
+
+	return vchunks;
+}
+
 void ChunkManager::allocateStart()
 {
 	//Home chunk
@@ -148,88 +232,6 @@ void ChunkManager::populateChunks(std::vector<Gate*>* global_list)
 	{
 		p.wait();
 	}
-}
-
-std::vector<Node*> ChunkManager::updateConnectorNode(Connector* c)
-{
-	//Check where is this connector at
-	Chunk* chunk = getChunkAtPosition(c->position);
-
-	std::vector<Node*> need_registry;
-	//Check if there is any node already in the connector position
-
-	for (auto con : chunk->connector_list)
-	{
-		if (con->node != nullptr && con->isOverlapped(*c))
-			c->node = con->node;
-	}
-
-	//Then no node was found in this chunk that could be related to this connector
-	if (c->node == nullptr)
-	{
-		//TODO: Change this to a hex value naming system
-		c->node = new Node(math::generateHEX());
-
-		std::cout << "----------\n";
-		std::cout << "New Node" << "\nID == " << c->node->getName() << "\nType == " << typeid(Connector).name();
-		std::cout << "\n----------\n";
-
-		need_registry.push_back(c->node);
-	}
-
-	//Check connector dependencies and do the same
-	for (auto cd : c->dep_conector)
-	{
-		Chunk* dep_chunk = getChunkAtPosition(cd->position);
-		for (auto con : dep_chunk->connector_list)
-		{
-			if (con->node != nullptr && con->isOverlapped(*cd))
-				cd->node = con->node;
-		}
-
-		if (cd->node == nullptr)
-		{
-			//TODO: Change this to a hex value naming system
-			cd->node = new Node(math::generateHEX());
-
-			std::cout << "----------\n";
-			std::cout << "New Node" << "\nID == " << cd->node->getName() << "\nType == " << typeid(Connector).name();
-			std::cout << "\n----------\n";
-
-			need_registry.push_back(cd->node);
-		}
-
-		if (cd->node)
-		{
-			c->node->setDependencyNode(cd->node);
-		}
-	}
-	std::cout << "\n\n";
-	return need_registry;
-}
-
-std::vector<Node*> ChunkManager::updateInteractConnectorNode(InteractConnector* c)
-{
-	//Check where is this connector at
-	Chunk* chunk = getChunkAtPosition(c->position);
-
-	std::vector<Node*> need_registry;
-
-	//Then no node was found in this chunk that could be related to this connector
-	if (c->node == nullptr)
-	{
-		//TODO: Change this to a hex value naming system
-		c->node = c->output_interact->node;
-
-		std::cout << "----------\n";
-		std::cout << "New Node" << "\nID == " << c->node->getName() << "\nType == " << typeid(InteractConnector).name();
-		std::cout << "\n----------\n";
-
-		need_registry.push_back(c->node);
-	}
-	//For now interactor connectors don't have dependencies
-	std::cout << "\n\n";
-	return need_registry;
 }
 
 void ChunkManager::workerPopulate(std::vector<Gate*>::iterator start, std::vector<Gate*>::iterator end)
