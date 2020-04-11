@@ -78,9 +78,6 @@
     <ClCompile Include="src\states\Playing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\features\Backgrid.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\geometry\Geometry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -208,9 +205,6 @@
     </ClInclude>
     <ClInclude Include="deps\imgui\imgui_impl_opengl3.h">
       <Filter>ImGui\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="src\features\Backgrid.h">
-      <Filter>Header Files\features</Filter>
     </ClInclude>
     <ClInclude Include="src\features\Chunk.h">
       <Filter>Header Files\features</Filter>

@@ -139,7 +139,6 @@
     <ClCompile Include="deps\imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="deps\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\CSim.cpp" />
-    <ClCompile Include="src\features\Backgrid.cpp" />
     <ClCompile Include="src\features\Chunk.cpp" />
     <ClCompile Include="src\features\ChunkManager.cpp" />
     <ClCompile Include="src\features\ConnectorManager.cpp" />
@@ -182,7 +181,6 @@
     <ClInclude Include="deps\imgui\imstb_textedit.h" />
     <ClInclude Include="deps\imgui\imstb_truetype.h" />
     <ClInclude Include="src\CSim.h" />
-    <ClInclude Include="src\features\Backgrid.h" />
     <ClInclude Include="src\features\Chunk.h" />
     <ClInclude Include="src\features\ChunkManager.h" />
     <ClInclude Include="src\features\ConnectorManager.h" />

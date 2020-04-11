@@ -32,6 +32,7 @@ void CSim::registerNode(Node* node)
 void CSim::unregisterNode(Node* node)
 {
 	systemNodes.erase(reinterpret_cast<uintptr_t>(node));
+	delete node;
 }
 
 std::unordered_map<uintptr_t, Node*> CSim::getRegisteredNodes() const

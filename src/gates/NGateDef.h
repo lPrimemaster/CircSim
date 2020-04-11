@@ -27,12 +27,12 @@ public:
 		return ret;
 	}
 
-	inline Component* getComponent(int index) override
+	inline GraphicComponent* getComponent(int index) override
 	{
 		return components[index];
 	}
 
-	inline Component** getComponentList() override
+	inline GraphicComponent** getComponentList() override
 	{
 		return components;
 	}
@@ -89,7 +89,7 @@ protected:
 	}
 
 private:
-	Component* components[8];
+	GraphicComponent* components[8];
 	glm::vec2 in = glm::vec2(0.0f, 1.0f);
 	glm::vec2 out = glm::vec2(1.0f, 0.0f);
 
@@ -100,5 +100,5 @@ private:
 	glm::vec2 getTriangleCenter();
 };
 
-#undef GCC(i)
-#undef GET_COLOR_INIT_LIST()
+#undef GCC
+#undef GET_COLOR_INIT_LIST

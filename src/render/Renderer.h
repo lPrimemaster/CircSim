@@ -15,18 +15,18 @@ public:
 	Renderer(const std::string& program);
 	~Renderer();
 
-	virtual void push(Component* c);
-	virtual void pushList(Component** list, size_t size);
+	virtual void push(GraphicComponent* c);
+	virtual void pushList(GraphicComponent** list, size_t size);
 
-	virtual void pop(Component* c);
-	virtual void popList(Component** list, size_t size);
+	virtual void pop(GraphicComponent* c);
+	virtual void popList(GraphicComponent** list, size_t size);
 
 	virtual void setPVMatrix(const glm::mat4& pvm);
 
 	virtual void render() = 0;
 
 protected:
-	std::vector<Component*> comps;
+	std::vector<GraphicComponent*> comps;
 	glm::mat4 pvm;
 	Program p;
 };
