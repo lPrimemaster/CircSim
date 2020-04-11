@@ -28,12 +28,12 @@ public:
 		return ret;
 	}
 
-	inline Component* getComponent(int index) override
+	inline GraphicComponent* getComponent(int index) override
 	{
 		return components[index];
 	}
 
-	inline Component** getComponentList() override
+	inline GraphicComponent** getComponentList() override
 	{
 		return components;
 	}
@@ -91,7 +91,7 @@ protected:
 	}
 
 private:
-	Component* components[8];
+	GraphicComponent* components[8];
 	glm::vec2 out = glm::vec2(2.0f, 0.0f);
 	glm::vec2 center = glm::vec2(0.0f, 0.0f);
 

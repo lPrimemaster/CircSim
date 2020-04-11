@@ -9,21 +9,21 @@ Renderer::~Renderer()
 	comps.clear();
 }
 
-void Renderer::push(Component* c)
+void Renderer::push(GraphicComponent* c)
 {
 	comps.push_back(c);
 }
 
-void Renderer::pop(Component* c)
+void Renderer::pop(GraphicComponent* c)
 {
-	std::vector<Component*>::iterator found = std::find(comps.begin(), comps.end(), c);
+	std::vector<GraphicComponent*>::iterator found = std::find(comps.begin(), comps.end(), c);
 	if (found != comps.end())
 	{
 		comps.erase(found);
 	}
 }
 
-void Renderer::popList(Component** list, size_t size)
+void Renderer::popList(GraphicComponent** list, size_t size)
 {
 	//Pop according to list's order
 	for (int i = 0; i < size; i++)
@@ -32,7 +32,7 @@ void Renderer::popList(Component** list, size_t size)
 	}
 }
 
-void Renderer::pushList(Component** list, size_t size)
+void Renderer::pushList(GraphicComponent** list, size_t size)
 {
 	//Push according to list's order
 	for (int i = 0; i < size; i++)

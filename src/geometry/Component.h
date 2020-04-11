@@ -2,11 +2,11 @@
 #include <iostream>
 #include "Transform.h"
 
-class Component
+class GraphicComponent
 {
 public:
-	Component(const std::string& geometry) : assigned_geometry(geometry) {  };
-	virtual ~Component() = default;
+	GraphicComponent(const std::string& geometry) : assigned_geometry(geometry) {  };
+	virtual ~GraphicComponent() = default;
 
 	inline Transform& transform()
 	{

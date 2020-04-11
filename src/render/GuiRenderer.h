@@ -41,11 +41,11 @@ public:
 	void adjustWindows(LockType lock);
 
 	//Make sure no extra components get in this renderer
-	void push(Component* c) override {}
-	void pushList(Component** list, size_t size) override {}
+	void push(GraphicComponent* c) override {}
+	void pushList(GraphicComponent** list, size_t size) override {}
 
-	void pop(Component* c) override {}
-	void popList(Component** list, size_t size) override {}
+	void pop(GraphicComponent* c) override {}
+	void popList(GraphicComponent** list, size_t size) override {}
 
 private:
 	std::vector<GuiWindow*> windows;

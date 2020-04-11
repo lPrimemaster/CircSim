@@ -2,7 +2,7 @@
 
 Button::Button()
 {
-	quad = new Component("Rectangle");
+	quad = new GraphicComponent("Rectangle");
 }
 
 Button::~Button()

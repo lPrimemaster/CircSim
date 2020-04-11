@@ -53,6 +53,10 @@ public:
 	static const float getZScaling();
 
 private:
+	inline void handleLookAndMouse(GLWrapper* gw);
+	inline void handleGatePlacement(glm::vec2 snapped_pos, Chunk* curr_chunk);
+
+private:
 	GateRenderer gate_renderer;
 	GridRenderer grid_renderer;
 	GuiRenderer gui_renderer;
@@ -78,6 +82,9 @@ private:
 	std::vector<Gate*> gate_tracker;
 
 	std::vector<Node*> require_update;
+	std::vector<Node*> require_unreg;
+
+	GLWrapper* debug_gw = nullptr;
 
 	struct LGStruct
 	{

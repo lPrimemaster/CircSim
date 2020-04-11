@@ -4,7 +4,7 @@
 class ConnectorManager
 {
 public:
-	static std::vector<Node*> updateConnectorNode(Connector* c);
+	static std::pair<std::vector<Node*>, std::vector<Node*>> updateConnectorNode(Connector* c);
 	static std::vector<Node*> updateInteractConnectorNode(InteractConnector* c);
 
 private:

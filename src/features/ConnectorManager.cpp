@@ -1,12 +1,14 @@
 #include "ConnectorManager.h"
 #include "ChunkManager.h"
 
-std::vector<Node*> ConnectorManager::updateConnectorNode(Connector* c)
+std::pair<std::vector<Node*>, std::vector<Node*>> ConnectorManager::updateConnectorNode(Connector* c)
 {
 	//Check where is this connector at
 	Chunk* chunk = ChunkManager::getChunkAtPosition(c->position);
 
 	std::vector<Node*> need_registry;
+	std::vector<Node*> need_deregistry;
+
 	bool isOnly = false;
 
 	//FIX: This can be a problem when moving various coupled connectors at the same time
@@ -36,7 +38,7 @@ std::vector<Node*> ConnectorManager::updateConnectorNode(Connector* c)
 				std::cout << "Delete Node" << "\nID == " << c->node->getName() << "\nType == " << typeid(Connector).name();
 				std::cout << "\n----------\n";
 
-				delete c->node;
+				need_deregistry.push_back(c->node);
 			}
 
 			c->node = con->node;
@@ -90,7 +92,7 @@ std::vector<Node*> ConnectorManager::updateConnectorNode(Connector* c)
 					std::cout << "\n----------\n";
 
 					//FIX: This should delete the old connector (c) dependencies node, not the recentrly created one ...
-					delete cd->node;
+					need_deregistry.push_back(c->node);
 				}
 
 				cd->node = con->node;
@@ -117,7 +119,7 @@ std::vector<Node*> ConnectorManager::updateConnectorNode(Connector* c)
 			c->node->setDependencyNode(cd->node);
 		}
 	}
-	return need_registry;
+	return std::make_pair(need_registry, need_deregistry);
 }
 
 std::vector<Node*> ConnectorManager::updateInteractConnectorNode(InteractConnector* c)

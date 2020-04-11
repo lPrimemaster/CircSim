@@ -5,16 +5,16 @@ NotGate::NotGate()
 	defineConnectorDependencies();
 
 	//Defaults
-	components[0] = new Component("Line"); //Input  Line
-	components[1] = new Component("Line"); //Output Line
+	components[0] = new GraphicComponent("Line"); //Input  Line
+	components[1] = new GraphicComponent("Line"); //Output Line
 
-	components[2] = new Component("Triangle"); //Body Triangle
-	components[3] = new Component("Line"); //Triangle outline Side
-	components[4] = new Component("Line"); //Triangle outline Top
-	components[5] = new Component("Line"); //Triangle outline Bottom
+	components[2] = new GraphicComponent("Triangle"); //Body Triangle
+	components[3] = new GraphicComponent("Line"); //Triangle outline Side
+	components[4] = new GraphicComponent("Line"); //Triangle outline Top
+	components[5] = new GraphicComponent("Line"); //Triangle outline Bottom
 
-	components[6] = new Component("Circle"); //Circle fill state
-	components[7] = new Component("Circunference"); //Circle outline
+	components[6] = new GraphicComponent("Circle"); //Circle fill state
+	components[7] = new GraphicComponent("Circunference"); //Circle outline
 
 	//Create component acnhor points and usable location dependencies based upon the 'in/out' variables
 	const float offset = -90.0f;
