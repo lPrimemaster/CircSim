@@ -1,5 +1,7 @@
 #include "GLWrapper.h"
-#include "../states/State.h"
+#include "../core/ECS.h"
+#include "../states/Playing.h"
+#include "../events/glfw_events.h"
 
 #define ERROR_INIT -1
 #define ERROR_WINDOW -2
@@ -15,7 +17,7 @@ void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id, GLenum se
 #endif
 
 
-GLWrapper::GLWrapper()
+Application::Application()
 {
 	if (!glfwInit())
 	{
@@ -27,7 +29,10 @@ GLWrapper::GLWrapper()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
 	glfwWindowHint(GLFW_SAMPLES, 4);
 
-	window = glfwCreateWindow(1280, 720, "CircSim Dev", NULL, NULL);
+	windowW = 1280;
+	windowH = 720;
+
+	window = glfwCreateWindow(windowW, windowH, "CircSim Dev", NULL, NULL);
 
 	if (!window)
 	{
@@ -56,6 +61,12 @@ GLWrapper::GLWrapper()
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
+	// Set glfw callbacks
+	glfwSetCursorPosCallback(window, glfw_cursorpos_callback);
+	glfwSetMouseButtonCallback(window, glfw_mousebutton_callback);
+	glfwSetScrollCallback(window, glfw_mousescroll_callback);
+	glfwSetFramebufferSizeCallback(window, glfw_framebufferresize_callback);
+
 	// During init, enable debug output
 #ifdef DEBUG
 	glEnable(GL_DEBUG_OUTPUT);
@@ -64,74 +75,41 @@ GLWrapper::GLWrapper()
 }
 
 
-GLWrapper::~GLWrapper()
+Application::~Application()
 {
 	glfwTerminate();
 }
 
-GLFWwindow* GLWrapper::getWindow() const
+GLFWwindow* Application::getWindow() const
 {
 	return window;
 }
 
-CSim* GLWrapper::getSimulation() const
-{
-	return simulation;
-}
-
-PSim* GLWrapper::getPhysics() const
-{
-	return physics;
-}
-
-glm::vec2 GLWrapper::getWindowDim() const
+glm::vec2 Application::getWindowDim() const
 {
 	return glm::vec2(windowW, windowH);
 }
 
-void GLWrapper::draw(State* state)
+void Application::run()
 {
-	glClear(GL_COLOR_BUFFER_BIT);
-	state->draw(this);
-	glfwSwapBuffers(window);
-}
+	// TODO: This needs to be moved / refactored to a diferend init scheme
+	FCS::SceneManager::LoadScene<Playing>();
 
-void GLWrapper::handleEvents(State* state)
-{
-	glfwPollEvents();
-	state->handle(this);
-}
-
-void GLWrapper::update(State* state)
-{
-	state->update(this);
-}
-
-void GLWrapper::run(State* state, CSim* simulation, PSim* physics)
-{
-	//This needs to be moved / refactored to a diferend init scheme
-	state->initialize(this);
-	this->simulation = simulation;
-	this->physics = physics;
+	Events::OnEngineStartup ese;
+	ese.fb_height = windowH;
+	ese.fb_width = windowW;
+	ese.window = window;
+	FCS::SceneManager::GetActiveScene()->emit<Events::OnEngineStartup>(ese);
 
 	while (!glfwWindowShouldClose(window))
 	{
-		//Handle window reajusts
-		int w, h;
-		//Reduce this overheading with call of this on readjust
-		glfwGetFramebufferSize(window, &w, &h);
-		windowW = w;
-		windowH = h;
-		float ratio = (float) w / h;
-		glViewport(0, 0, w, h);
-
-		//Run the main program
-		handleEvents(state);
-		update(state);
-		draw(state);
+		glfwPollEvents();
+		glClear(GL_COLOR_BUFFER_BIT);
+		FCS::SceneManager::Update();
+		glfwSwapBuffers(window);
 	}
 
-	state->cleanUp();
+	FCS::SceneManager::UnloadAllScenes();
 
 	glfwDestroyWindow(window);
 }

@@ -7,8 +7,6 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
-#include "../util/memtrace.h"
-
 namespace loader
 {
 	GLuint loadVS_FS(const std::string& name);

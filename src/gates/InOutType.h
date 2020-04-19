@@ -21,7 +21,7 @@ struct Connector
 		position = glm::vec2(0, 0);
 		node = nullptr;
 		if (useMark)
-			mark = new GraphicComponent("Circle");
+			mark = new Sprite("Circle");
 		else
 			mark = nullptr;
 	}
@@ -32,7 +32,7 @@ struct Connector
 		position = pos;
 		node = nullptr;
 		if (useMark)
-			mark = new GraphicComponent("Circle");
+			mark = new Sprite("Circle");
 		else
 			mark = nullptr;
 	}
@@ -76,7 +76,7 @@ struct Connector
 	std::vector<Connector*> dep_conector;
 
 	Node* node;
-	GraphicComponent* mark;
+	Sprite* mark;
 
 	bool interactible = false;
 };

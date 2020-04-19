@@ -1,7 +1,5 @@
 #include "Geometry.h"
 
-std::unordered_map<std::string, Geometry*> Geometry::rGeometries;
-
 Geometry::Geometry()
 {
 	this->size = 0;
@@ -89,31 +87,4 @@ Geometry::~Geometry()
 	{
 		glDeleteBuffers(1, &b.id);
 	}
-}
-
-void Geometry::unregisterGeometry(const std::string& name)
-{
-	delete rGeometries[name];
-}
-
-std::pair<size_t, size_t> Geometry::getStatistics()
-{
-	size_t bCount = rGeometries.bucket_count();
-	size_t tbSize = 0;
-	for (auto g : rGeometries)
-	{
-		tbSize += g.second->gpuByteSize;
-	}
-
-	return std::make_pair(bCount, tbSize);
-}
-
-void Geometry::rehash(size_t value)
-{
-	rGeometries.rehash(value);
-}
-
-void Geometry::registerGeometry(Geometry* g, const std::string& name)
-{
-	rGeometries.emplace(name, g);
 }

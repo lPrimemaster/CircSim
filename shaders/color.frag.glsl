@@ -1,13 +1,15 @@
 #version 450 core
 
-in vec3 worldPos;
-
 out vec4 fragColour;
+
+uniform sampler2D diffuse_spite;
 
 uniform vec3 Camera;
 uniform vec4 color = vec4(1.0, 1.0, 1.0, 1.0);
 
+in vec2 uvs;
+
 void main()
 {
-	fragColour = color;
+	fragColour = texture(diffuse_spite, uvs);
 }

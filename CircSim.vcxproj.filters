@@ -1,14 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
@@ -25,76 +17,42 @@
     <Filter Include="ImGui\Header">
       <UniqueIdentifier>{80d58854-d53b-4733-adef-1224a8d89977}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\features">
-      <UniqueIdentifier>{72e8828a-630b-44ea-b0ce-fa453cb5dae0}</UniqueIdentifier>
+    <Filter Include="Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="Header Files\gates">
-      <UniqueIdentifier>{2a201119-edb3-49bd-8289-1de55a384729}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\geometry">
+    <Filter Include="Files\components">
       <UniqueIdentifier>{ae210731-78b9-49e5-8d24-ec416a88922f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\render">
+    <Filter Include="Files\render">
       <UniqueIdentifier>{a782fa85-87db-4aaa-8c10-8148b43a07f4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\states">
+    <Filter Include="Files\states">
       <UniqueIdentifier>{7b9f3682-4a81-4a04-bb9c-c61a12ee2bbf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\util">
+    <Filter Include="Files\util">
       <UniqueIdentifier>{2a3a63f7-d275-44ea-8648-31e7475406c7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\render\gui">
-      <UniqueIdentifier>{ccd0f823-b54e-410d-b600-ab120cb6c0ec}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\render\texture">
-      <UniqueIdentifier>{d6bda4d1-bf72-4c74-9c21-3a3ec57d2d7b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\libs">
+    <Filter Include="Files\libs">
       <UniqueIdentifier>{326a2df1-54fa-4c24-813e-77601d68bca5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\render\chars">
-      <UniqueIdentifier>{e9e26bde-508f-46c5-9f34-7d4be3ec2300}</UniqueIdentifier>
+    <Filter Include="Files\core">
+      <UniqueIdentifier>{67e043f2-42fb-4e8b-b715-dbf4d9b69cfc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entry point">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Files\events">
+      <UniqueIdentifier>{6b1047a5-7220-413b-a4e8-43e026dda140}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Files\assets">
+      <UniqueIdentifier>{72e8828a-630b-44ea-b0ce-fa453cb5dae0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\CSim.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Node.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\render\GLWrapper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\render\Program.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\util\loader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\states\Playing.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\geometry\Geometry.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\geometry\Transform.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\render\Renderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\render\Camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Registry.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\gates\NGateDef.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Entry point</Filter>
     </ClCompile>
     <ClCompile Include="deps\imgui\imgui.cpp">
       <Filter>ImGui\Source</Filter>
@@ -114,74 +72,56 @@
     <ClCompile Include="deps\imgui\imgui_impl_opengl3.cpp">
       <Filter>ImGui\Source</Filter>
     </ClCompile>
+    <ClCompile Include="src\components\Camera.cpp">
+      <Filter>Files\components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\components\Material.cpp">
+      <Filter>Files\components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\components\Transform.cpp">
+      <Filter>Files\components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\render\GLWrapper.cpp">
+      <Filter>Files\render</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\loader.cpp">
+      <Filter>Files\util</Filter>
+    </ClCompile>
     <ClCompile Include="src\util\math.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Files\util</Filter>
     </ClCompile>
-    <ClCompile Include="src\render\GridRenderer.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\states\Playing.cpp">
+      <Filter>Files\states</Filter>
     </ClCompile>
-    <ClCompile Include="src\render\GateRenderer.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\render\Program.cpp">
+      <Filter>Files\render</Filter>
     </ClCompile>
-    <ClCompile Include="src\util\InputManager.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\render\SpriteRenderer.cpp">
+      <Filter>Files\render</Filter>
     </ClCompile>
-    <ClCompile Include="src\util\memtrace.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\render\LineRenderer.cpp">
+      <Filter>Files\render</Filter>
     </ClCompile>
-    <ClCompile Include="src\features\Chunk.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\components\Line.cpp">
+      <Filter>Files\components</Filter>
     </ClCompile>
-    <ClCompile Include="src\features\ChunkManager.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\events\glfw_events.cpp">
+      <Filter>Files\events</Filter>
     </ClCompile>
-    <ClCompile Include="src\features\GateManager.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\events\InputHandler.cpp">
+      <Filter>Files\events</Filter>
     </ClCompile>
-    <ClCompile Include="src\gates\SwitchGate.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\assets\Geometry.cpp">
+      <Filter>Files\assets</Filter>
     </ClCompile>
-    <ClCompile Include="src\render\gui\DebugGui.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\assets\Registry.cpp">
+      <Filter>Files\assets</Filter>
     </ClCompile>
-    <ClCompile Include="src\render\GuiRenderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\render\texture\Texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\render\chars\CharAtlas.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\render\TextRenderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\render\gui\Button.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\PSim.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\features\ConnectorManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\render\DebugRenderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\util\Serializer.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\assets\Texture.cpp">
+      <Filter>Files\assets</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\CSim.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Node.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Registry.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="deps\imgui\imconfig.h">
       <Filter>ImGui\Header</Filter>
     </ClInclude>
@@ -206,107 +146,68 @@
     <ClInclude Include="deps\imgui\imgui_impl_opengl3.h">
       <Filter>ImGui\Header</Filter>
     </ClInclude>
-    <ClInclude Include="src\features\Chunk.h">
-      <Filter>Header Files\features</Filter>
-    </ClInclude>
-    <ClInclude Include="src\features\ChunkManager.h">
-      <Filter>Header Files\features</Filter>
-    </ClInclude>
-    <ClInclude Include="src\gates\NGateDef.h">
-      <Filter>Header Files\gates</Filter>
-    </ClInclude>
-    <ClInclude Include="src\geometry\Component.h">
-      <Filter>Header Files\geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="src\geometry\Geometry.h">
-      <Filter>Header Files\geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="src\geometry\Transform.h">
-      <Filter>Header Files\geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="src\render\Camera.h">
-      <Filter>Header Files\render</Filter>
-    </ClInclude>
-    <ClInclude Include="src\render\GateRenderer.h">
-      <Filter>Header Files\render</Filter>
-    </ClInclude>
     <ClInclude Include="src\render\GLWrapper.h">
-      <Filter>Header Files\render</Filter>
-    </ClInclude>
-    <ClInclude Include="src\render\GridRenderer.h">
-      <Filter>Header Files\render</Filter>
+      <Filter>Files\render</Filter>
     </ClInclude>
     <ClInclude Include="src\render\Program.h">
-      <Filter>Header Files\render</Filter>
-    </ClInclude>
-    <ClInclude Include="src\render\Renderer.h">
-      <Filter>Header Files\render</Filter>
+      <Filter>Files\render</Filter>
     </ClInclude>
     <ClInclude Include="src\states\Playing.h">
-      <Filter>Header Files\states</Filter>
-    </ClInclude>
-    <ClInclude Include="src\states\State.h">
-      <Filter>Header Files\states</Filter>
-    </ClInclude>
-    <ClInclude Include="src\util\HashTable.h">
-      <Filter>Header Files\util</Filter>
-    </ClInclude>
-    <ClInclude Include="src\util\InputManager.h">
-      <Filter>Header Files\util</Filter>
+      <Filter>Files\states</Filter>
     </ClInclude>
     <ClInclude Include="src\util\loader.h">
-      <Filter>Header Files\util</Filter>
+      <Filter>Files\util</Filter>
     </ClInclude>
     <ClInclude Include="src\util\math.h">
-      <Filter>Header Files\util</Filter>
-    </ClInclude>
-    <ClInclude Include="src\util\memtrace.h">
-      <Filter>Header Files\util</Filter>
-    </ClInclude>
-    <ClInclude Include="src\gates\InOutType.h">
-      <Filter>Header Files\gates</Filter>
-    </ClInclude>
-    <ClInclude Include="src\gates\Gate.h">
-      <Filter>Header Files\gates</Filter>
-    </ClInclude>
-    <ClInclude Include="src\features\GateManager.h">
-      <Filter>Header Files\features</Filter>
-    </ClInclude>
-    <ClInclude Include="src\gates\SwitchGate.h">
-      <Filter>Header Files\gates</Filter>
-    </ClInclude>
-    <ClInclude Include="src\render\gui\DebugGui.h">
-      <Filter>Header Files\render\gui</Filter>
-    </ClInclude>
-    <ClInclude Include="src\render\GuiRenderer.h">
-      <Filter>Header Files\render</Filter>
-    </ClInclude>
-    <ClInclude Include="src\render\texture\Texture.h">
-      <Filter>Header Files\render\texture</Filter>
+      <Filter>Files\util</Filter>
     </ClInclude>
     <ClInclude Include="src\lib\img_load\stb_image.h">
-      <Filter>Header Files\libs</Filter>
+      <Filter>Files\libs</Filter>
     </ClInclude>
-    <ClInclude Include="src\render\chars\CharAtlas.h">
-      <Filter>Header Files\render\chars</Filter>
+    <ClInclude Include="src\core\ECS.h">
+      <Filter>Files\core</Filter>
     </ClInclude>
-    <ClInclude Include="src\render\TextRenderer.h">
-      <Filter>Header Files\render</Filter>
+    <ClInclude Include="src\components\Camera.h">
+      <Filter>Files\components</Filter>
     </ClInclude>
-    <ClInclude Include="src\render\gui\Button.h">
-      <Filter>Header Files\render\gui</Filter>
+    <ClInclude Include="src\components\Material.h">
+      <Filter>Files\components</Filter>
     </ClInclude>
-    <ClInclude Include="src\PSim.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\components\Sprite.h">
+      <Filter>Files\components</Filter>
     </ClInclude>
-    <ClInclude Include="src\features\ConnectorManager.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\components\Transform.h">
+      <Filter>Files\components</Filter>
     </ClInclude>
-    <ClInclude Include="src\render\DebugRenderer.h">
-      <Filter>Header Files\render</Filter>
+    <ClInclude Include="src\render\SpriteRenderer.h">
+      <Filter>Files\render</Filter>
     </ClInclude>
-    <ClInclude Include="src\util\Serializer.h">
-      <Filter>Header Files\util</Filter>
+    <ClInclude Include="src\render\LineRenderer.h">
+      <Filter>Files\render</Filter>
+    </ClInclude>
+    <ClInclude Include="src\events\Events.h">
+      <Filter>Files\events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\components\Line.h">
+      <Filter>Files\components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\events\glfw_events.h">
+      <Filter>Files\events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\events\InputHandler.h">
+      <Filter>Files\events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\assets\Geometry.h">
+      <Filter>Files\assets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\assets\Registry.h">
+      <Filter>Files\assets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\assets\Texture.h">
+      <Filter>Files\assets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\assets\Asset.h">
+      <Filter>Files\assets</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

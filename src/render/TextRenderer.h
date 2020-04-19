@@ -24,11 +24,11 @@ public:
 	void addText(std::string text, glm::vec2 position, glm::vec3 color = glm::vec3(1.0f), float scale = 1.0f, std::string font = "");
 
 	//Make sure no extra components get in this renderer
-	void push(GraphicComponent* c) override {}
-	void pushList(GraphicComponent** list, size_t size) override {}
+	void push(Sprite* c) override {}
+	void pushList(Sprite** list, size_t size) override {}
 
-	void pop(GraphicComponent* c) override {}
-	void popList(GraphicComponent** list, size_t size) override {}
+	void pop(Sprite* c) override {}
+	void popList(Sprite** list, size_t size) override {}
 
 private:
 	glm::mat4 project;

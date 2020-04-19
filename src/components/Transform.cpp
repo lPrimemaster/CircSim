@@ -1,6 +1,6 @@
 #include "Transform.h"
 
-#define UP glm::vec3(0.0f, 0.0f, 1.0f)
+#define UP glm::vec3(0.0f, 1.0f, 0.0f)
 
 void Transform::update(const Transform transform)
 {
@@ -108,6 +108,13 @@ void Transform::update(glm::vec2 anchor, float angle, float scale)
 	scaleAxis = glm::vec3(scale, scale, 1.0f);
 
 	model = glm::translate(glm::mat4(1.0f), glm::vec3(anchor, 0.0f)) *
+		glm::rotate(glm::mat4(1.0f), rotation, UP) *
+		glm::scale(glm::mat4(1.0f), scaleAxis);
+}
+
+void Transform::translate(glm::vec2 pos)
+{
+	model = glm::translate(glm::mat4(1.0f), glm::vec3(pos, 0.0f)) *
 		glm::rotate(glm::mat4(1.0f), rotation, UP) *
 		glm::scale(glm::mat4(1.0f), scaleAxis);
 }

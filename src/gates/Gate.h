@@ -15,9 +15,9 @@ public:
 
 	virtual inline glm::vec4 getAB() = 0;
 
-	virtual inline GraphicComponent* getComponent(int index) = 0;
+	virtual inline Sprite* getComponent(int index) = 0;
 
-	virtual inline GraphicComponent** getComponentList() = 0;
+	virtual inline Sprite** getComponentList() = 0;
 
 	virtual inline void changeAlpha(float alpha) = 0;
 

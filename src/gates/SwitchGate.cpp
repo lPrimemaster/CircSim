@@ -6,16 +6,16 @@ SwitchGate::SwitchGate()
 	defineConnectorDependencies();
 
 	//Defaults
-	components[0] = new GraphicComponent("Line"); //Output Line
+	components[0] = new Sprite("Line"); //Output Line
 
-	components[1] = new GraphicComponent("Line"); //Rect outline Top
-	components[2] = new GraphicComponent("Line"); //Rect outline Bottom
-	components[3] = new GraphicComponent("Line"); //Rect outline Side
-	components[4] = new GraphicComponent("Line"); //Rect outline Side
-	components[5] = new GraphicComponent("Rectangle"); //Rectangle
+	components[1] = new Sprite("Line"); //Rect outline Top
+	components[2] = new Sprite("Line"); //Rect outline Bottom
+	components[3] = new Sprite("Line"); //Rect outline Side
+	components[4] = new Sprite("Line"); //Rect outline Side
+	components[5] = new Sprite("Rectangle"); //Rectangle
 
-	components[6] = new GraphicComponent("Circle"); //Circle fill state
-	components[7] = new GraphicComponent("Circunference"); //Circle outline
+	components[6] = new Sprite("Circle"); //Circle fill state
+	components[7] = new Sprite("Circunference"); //Circle outline
 
 	//Create component acnhor points and usable location dependencies based upon the 'center/out' variables
 	const float offset = -90.0f;

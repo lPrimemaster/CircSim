@@ -1,10 +1,10 @@
 #include "Playing.h"
 #include <typeinfo>
 
-#define DEBUG
+//#define DEBUG
 
 #ifdef DEBUG
-static void debug(bool* close, GLFWwindow* window, State* state)
+static void debug(bool* close, GLFWwindow* window)
 {
 	static bool l = true;
 	static float f = 0.0f;
@@ -73,11 +73,44 @@ static void debug(bool* close, GLFWwindow* window, State* state)
 }
 #endif
 
-float Playing::z_scl = 0.0f;
-float Playing::lx = 0.0;
-float Playing::ly = 0.0;
+//float Playing::z_scl = 0.0f;
+//float Playing::lx = 0.0;
+//float Playing::ly = 0.0;
 
-void Playing::draw(GLWrapper* gw)
+void Playing::initialize()
+{
+	createSystem<SpriteRenderer>();
+	createSystem<LineRenderer>();
+	createSystem<InputHandler>(true);
+
+	auto cameraEnt = instantiate();
+	auto camera = cameraEnt->addComponent<Camera>();
+	camera->project(glm::ortho<float>(0.0f, 1280.0f, 0.0f, 720.0f, 0.1f, 100.0f));
+	camera->view(glm::vec2(0.0f, 0.0f));
+
+	auto screenQuad = instantiate();
+	screenQuad->addComponent<Sprite>()->addDifuseTest("test_texture");
+	auto mat = screenQuad->addComponent<Material>();
+	mat->setShader("color", 0);
+	mat->setColor(Color(0.0f, 1.0f, 0.0f, 0.2f));
+	auto sq_transform = screenQuad->addComponent<Transform>();
+	sq_transform->scale(glm::vec2(100.0f));
+	sq_transform->translate(glm::vec2(1280.0f / 2, 720.0f / 2));
+
+	auto lineEnt = instantiate();
+	lineEnt->addComponent<Line>();
+	auto lt = lineEnt->addComponent<Transform>();
+	lt->scale(glm::vec2(1000.0f));
+	lt->translate(glm::vec2(100.0f));
+}
+
+void Playing::deinitialize()
+{
+	Material::DeleteMaterials();
+}
+
+#if 0
+void Playing::draw(Application* gw)
 {
 	grid_renderer.render();
 	gate_renderer.render();
@@ -88,7 +121,7 @@ void Playing::draw(GLWrapper* gw)
 }
 
 //TODO: Smooth zoom in
-void Playing::handle(GLWrapper* gw)
+void Playing::handle(Application* gw)
 {
 	//Handle looking at
 	handleLookAndMouse(gw);
@@ -107,7 +140,7 @@ void Playing::handle(GLWrapper* gw)
 	handleGatePlacement(snapped_pos, curr_chunk);
 }
 
-void Playing::update(GLWrapper* gw)
+void Playing::update(Application* gw)
 {
 	if (!require_update.empty())
 	{
@@ -206,7 +239,7 @@ void Playing::click_callback(GLFWwindow* window, int button, int action, int mod
 
 			//Check if we clicked only on the gate itself and wish to select / move it
 			mouse_pick.selected_gate = nullptr;
-			static GraphicComponent obb_draw("Rectangle"); //Automatic storage
+			static Sprite obb_draw("Rectangle"); //Automatic storage
 			debug_renderer.pop(&obb_draw);
 			if (!is_interactor_click)
 			{
@@ -297,7 +330,7 @@ void Playing::click_callback(GLFWwindow* window, int button, int action, int mod
 						GateManager::createGate<NotGate>(chunks, initial_pos, pos_release_snap, last_gates.not_gate, func);
 
 						//TODO: Change this to a more practical application
-						/*GraphicComponent* obb_draw = new GraphicComponent("Rectangle");
+						/*Sprite* obb_draw = new Sprite("Rectangle");
 						obb_draw->transform().update(last_gates.not_gate->getBoundings().getOBBTransform());
 						obb_draw->setColor(glm::vec4(0.2f, 0.0f, 0.8f, 1.0f));
 						debug_renderer.push(obb_draw);*/
@@ -321,7 +354,7 @@ void Playing::click_callback(GLFWwindow* window, int button, int action, int mod
 						GateManager::createGate<SwitchGate>(chunks, initial_pos, pos_release_snap, last_gates.switch_gate, func);
 
 						//TODO: Change this to a more practical application
-						/*GraphicComponent* obb_draw = new GraphicComponent("Rectangle");
+						/*Sprite* obb_draw = new Sprite("Rectangle");
 						obb_draw->transform().update(last_gates.switch_gate->getBoundings().getOBBTransform());
 						obb_draw->setColor(glm::vec4(0.2f, 0.0f, 0.8f, 1.0f));
 						debug_renderer.push(obb_draw);*/
@@ -430,7 +463,7 @@ void Playing::move_callback(GLFWwindow* window, double xpos, double ypos)
 	}
 }
 
-void Playing::initialize(GLWrapper* gw)
+void Playing::initialize(Application* gw)
 {
 	ChunkManager::allocateStart();
 
@@ -510,7 +543,7 @@ const float Playing::getZScaling()
 	return z_scl;
 }
 
-void Playing::handleLookAndMouse(GLWrapper* gw)
+void Playing::handleLookAndMouse(Application* gw)
 {
 	auto window = gw->getWindow();
 	int rmb_state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT);
@@ -667,3 +700,4 @@ void Playing::handleGatePlacement(glm::vec2 snapped_pos, Chunk* curr_chunk)
 		}
 	}
 }
+#endif

@@ -20,7 +20,7 @@ void GateRenderer::render()
 	{
 		Geometry* geo = Geometry::getRegisteredGeometry(c->geometryName()); //FIX: this is a overhead
 		p.loadVector4f("color", c->getColor());
-		p.loadMatrix4f("Model", c->transform().getTransform());
+		p.loadMatrix4f("Model", c->transform().getModelMatrix());
 
 		geo->bind();
 		glDrawArrays(geo->getType(), 0, geo->getSize());

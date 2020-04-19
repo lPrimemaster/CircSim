@@ -4,13 +4,18 @@
 
 #define ADD_GEOM_SHADER 0x01
 
+typedef unsigned int bitfield;
+
 /* This class could use inheritance for multiple program capabilities, but meh */
 
 class Program
 {
 public:
-	explicit Program(const std::string& shaderFileName, int flags);
+	Program();
+	explicit Program(const std::string& shaderFileName, bitfield flags);
 	~Program();
+
+	Program(const Program& other);
 
 	void bind() const;
 	void unbind() const;

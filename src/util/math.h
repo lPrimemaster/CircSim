@@ -5,7 +5,7 @@
 #include <functional>
 #include <glm/glm.hpp>
 #include <random>
-#include "../geometry/Transform.h"
+#include "../components/Transform.h"
 
 #define PI_F 3.141592654f
 #define RAD_2_DEG 360.0f / (2 * PI_F)
@@ -32,6 +32,12 @@ namespace math
 		float angle;
 		float distance;
 	};
+
+	template<typename T>
+	inline T map(T value, T inMin, T inMax, T outMin, T outMax)
+	{
+		return (value - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+	}
 
 	glm::vec2 screenToWorld(glm::vec2 wdim, glm::vec2 coord, glm::mat4 ipvmat);
 

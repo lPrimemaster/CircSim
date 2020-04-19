@@ -1,6 +1,11 @@
 #include "Program.h"
 
-Program::Program(const std::string& shaderFileName, int flags)
+Program::Program()
+{
+	// DO nothing
+}
+
+Program::Program(const std::string& shaderFileName, bitfield flags)
 {
 	if (flags & ADD_GEOM_SHADER)
 	{
@@ -15,6 +20,11 @@ Program::Program(const std::string& shaderFileName, int flags)
 Program::~Program()
 {
 	glDeleteProgram(programID);
+}
+
+Program::Program(const Program& other)
+{
+	programID = other.programID;
 }
 
 void Program::bind() const

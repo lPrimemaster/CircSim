@@ -18,6 +18,6 @@ protected:
 
 private:
 	Texture* drawable_texture = nullptr;
-	GraphicComponent* quad = nullptr;
+	Sprite* quad = nullptr;
 };
 
