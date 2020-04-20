@@ -1,5 +1,6 @@
 #include "InputHandler.h"
 #include "../util/math.h"
+#include "../util/perf_counter.h"
 #include <iostream>
 
 void InputHandler::onEvent(FCS::Scene* scene, const Events::OnMouseMovement& event)

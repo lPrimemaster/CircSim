@@ -1,4 +1,5 @@
 #include "SpriteRenderer.h"
+#include "../util/perf_counter.h"
 
 void SpriteRenderer::initialize(FCS::Scene* scene)
 {
@@ -11,6 +12,7 @@ void SpriteRenderer::deinitialize(FCS::Scene* scene)
 
 void SpriteRenderer::update(FCS::Scene* scene, float deltaTime)
 {
+	TIMED_BLOCK;
 	// TODO: this code should move to onCreate and onDestroy Events
 	auto to_update = scene->getAllWith<Sprite, Material, Transform>();
 	auto cam = scene->getAllWith<Camera>()[0]->getComponent<Camera>();
@@ -28,13 +30,13 @@ void SpriteRenderer::update(FCS::Scene* scene, float deltaTime)
 			glDisable(GL_BLEND);
 
 		p->bind();
-		//p->loadVector4f("color", mat->getColor());
 		p->loadMatrix4f("PView", cam->getPVMatrix());
 		p->loadMatrix4f("Model", tf->getModelMatrix());
 
-		gc->bind();
+		gc->prepare();
 		quad->bind();
 		glDrawArrays(GL_TRIANGLES, 0, 6);
+		gc->done();
 	}
 }
 

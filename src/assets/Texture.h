@@ -34,6 +34,12 @@ public:
 		glBindTexture(buffer.type, buffer.id);
 	}
 
+	inline void unbind(unsigned unit = 0) const
+	{
+		glActiveTexture(GL_TEXTURE0 + unit);
+		glBindTexture(buffer.type, NULL);
+	}
+
 	~Texture();
 
 private:

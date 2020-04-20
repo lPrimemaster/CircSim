@@ -1,4 +1,5 @@
 #include "LineRenderer.h"
+#include "../util/perf_counter.h"
 
 void LineRenderer::initialize(FCS::Scene* scene)
 {
@@ -14,6 +15,7 @@ void LineRenderer::deinitialize(FCS::Scene* scene)
 
 void LineRenderer::update(FCS::Scene* scene, float deltaTime)
 {
+	TIMED_BLOCK;
 	auto to_update = scene->getAllWith<Line, Transform>();
 	auto cam = scene->getAllWith<Camera>()[0]->getComponent<Camera>(); // Remove magic numbers getAllWith<Camera>()[0 <-- here]
 

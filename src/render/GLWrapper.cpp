@@ -3,6 +3,8 @@
 #include "../states/Playing.h"
 #include "../events/glfw_events.h"
 
+#include "../util/perf_counter.h"
+
 #define ERROR_INIT -1
 #define ERROR_WINDOW -2
 
@@ -103,10 +105,15 @@ void Application::run()
 
 	while (!glfwWindowShouldClose(window))
 	{
+		full_record.cycles -= __rdtsc();
+
 		glfwPollEvents();
 		glClear(GL_COLOR_BUFFER_BIT);
 		FCS::SceneManager::Update();
 		glfwSwapBuffers(window);
+		ppPerfCounterRecords();
+
+		full_record.cycles += __rdtsc();
 	}
 
 	FCS::SceneManager::UnloadAllScenes();

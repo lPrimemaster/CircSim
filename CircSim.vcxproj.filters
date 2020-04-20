@@ -120,6 +120,9 @@
     <ClCompile Include="src\assets\Texture.cpp">
       <Filter>Files\assets</Filter>
     </ClCompile>
+    <ClCompile Include="src\util\perf_counter.cpp">
+      <Filter>Files\util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="deps\imgui\imconfig.h">
@@ -208,6 +211,9 @@
     </ClInclude>
     <ClInclude Include="src\assets\Asset.h">
       <Filter>Files\assets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\perf_counter.h">
+      <Filter>Files\util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

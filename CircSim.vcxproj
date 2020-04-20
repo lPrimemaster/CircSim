@@ -78,6 +78,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>deps\glew-2.1.0\include;deps\glfw-3.3.2.bin.WIN32\include;deps\glm;src\lib\FreeType\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -155,6 +156,7 @@
     <ClCompile Include="src\states\Playing.cpp" />
     <ClCompile Include="src\util\loader.cpp" />
     <ClCompile Include="src\util\math.cpp" />
+    <ClCompile Include="src\util\perf_counter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="deps\imgui\imconfig.h" />
@@ -186,6 +188,7 @@
     <ClInclude Include="src\states\Playing.h" />
     <ClInclude Include="src\util\loader.h" />
     <ClInclude Include="src\util\math.h" />
+    <ClInclude Include="src\util\perf_counter.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\color.frag.glsl">

@@ -1,6 +1,8 @@
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "util/perf_counter.h"
+
 #include "render/GLWrapper.h"
 #include "assets/Registry.h"
 

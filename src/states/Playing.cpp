@@ -89,13 +89,17 @@ void Playing::initialize()
 	camera->view(glm::vec2(0.0f, 0.0f));
 
 	auto screenQuad = instantiate();
-	screenQuad->addComponent<Sprite>()->addDifuseTest("test_texture");
+	screenQuad->addComponent<Sprite>()->addTexture<Sprite::DIFFUSE>("test_texture");
 	auto mat = screenQuad->addComponent<Material>();
 	mat->setShader("color", 0);
 	mat->setColor(Color(0.0f, 1.0f, 0.0f, 0.2f));
 	auto sq_transform = screenQuad->addComponent<Transform>();
 	sq_transform->scale(glm::vec2(100.0f));
 	sq_transform->translate(glm::vec2(1280.0f / 2, 720.0f / 2));
+
+	auto sq2 = instantiate(screenQuad);
+	sq2->getComponent<Transform>()->translate(glm::vec2(1280.0f / 2, 720.0f / 2) + glm::vec2(250.0f, 0.0f));
+	//sq2->getComponent<Sprite>()->removeTexture<Sprite::DIFFUSE>();
 
 	auto lineEnt = instantiate();
 	lineEnt->addComponent<Line>();
