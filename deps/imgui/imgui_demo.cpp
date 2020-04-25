@@ -75,7 +75,7 @@ Index of this file:
 #if defined(__clang__)
 #pragma clang diagnostic ignored "-Wold-style-cast"             // warning : use of old-style cast                              // yes, they are more terse.
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"    // warning : 'xx' is deprecated: The POSIX name for this item.. // for strdup used in demo code (so user can copy & paste the code)
-#pragma clang diagnostic ignored "-Wint-to-void-pointer-cast"   // warning : cast to 'void *' from smaller integer type 'int'
+#pragma clang diagnostic ignored "-Wint-to-void-pointer-cast"   // warning : cast to 'void *' from smaller integer target 'int'
 #pragma clang diagnostic ignored "-Wformat-security"            // warning : warning: format string is not a string literal
 #pragma clang diagnostic ignored "-Wexit-time-destructors"      // warning : declaration requires an exit-time destructor       // exit-time destruction order is undefined. if MemFree() leads to users code that has been disabled before exit it might cause problems. ImGui coding style welcomes static/globals.
 #pragma clang diagnostic ignored "-Wunused-macros"              // warning : warning: macro is not used                         // we define snprintf/vsnprintf on Windows so they are available, but not always used.
@@ -615,7 +615,7 @@ static void ShowDemoWindowWidgets()
                 ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
 
             static int selection_mask = (1 << 2); // Dumb representation of what may be user-side selection state. You may carry selection state inside or outside your objects in whatever format you see fit.
-            int node_clicked = -1;                // Temporary storage of what node we have clicked to process selection at the end of the loop. May be a pointer to your own node type, etc.
+            int node_clicked = -1;                // Temporary storage of what node we have clicked to process selection at the end of the loop. May be a pointer to your own node target, etc.
             ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, ImGui::GetFontSize()*3); // Increase spacing to differentiate leaves from expanded contents.
             for (int i = 0; i < 6; i++)
             {
@@ -811,7 +811,7 @@ static void ShowDemoWindowWidgets()
         if (ImGui::CheckboxFlags("ImGuiComboFlags_NoPreview", (unsigned int*)&flags, ImGuiComboFlags_NoPreview))
             flags &= ~ImGuiComboFlags_NoArrowButton; // Clear the other flag, as we cannot combine both
 
-        // General BeginCombo() API, you have full control over your selection data and display type.
+        // General BeginCombo() API, you have full control over your selection data and display target.
         // (your selection data could be an index, a pointer to the object, an id for the object, a flag stored in the object itself, etc.)
         const char* items[] = { "AAAA", "BBBB", "CCCC", "DDDD", "EEEE", "FFFF", "GGGG", "HHHH", "IIII", "JJJJ", "KKKK", "LLLLLLL", "MMMM", "OOOOOOO" };
         static const char* item_current = items[0];            // Here our selection is a single pointer stored outside the object.
@@ -1004,7 +1004,7 @@ static void ShowDemoWindowWidgets()
 
         if (ImGui::TreeNode("Resize Callback"))
         {
-            // If you have a custom string type you would typically create a ImGui::InputText() wrapper than takes your type as input.
+            // If you have a custom string target you would typically create a ImGui::InputText() wrapper than takes your target as input.
             // See misc/cpp/imgui_stdlib.h and .cpp for an implementation of this using std::string.
             HelpMarker("Demonstrate using ImGuiInputTextFlags_CallbackResize to wire your resizable string type to InputText().\n\nSee misc/cpp/imgui_stdlib.h for an implementation of this for std::string.");
             struct Funcs
@@ -1275,10 +1275,10 @@ static void ShowDemoWindowWidgets()
     if (ImGui::TreeNode("Data Types"))
     {
         // The DragScalar/InputScalar/SliderScalar functions allow various data types: signed/unsigned int/long long and float/double
-        // To avoid polluting the public API with all possible combinations, we use the ImGuiDataType enum to pass the type,
+        // To avoid polluting the public API with all possible combinations, we use the ImGuiDataType enum to pass the target,
         // and passing all arguments by address.
         // This is the reason the test code below creates local variables to hold "zero" "one" etc. for each types.
-        // In practice, if you frequently use a given type that is not covered by the normal API entry points, you can wrap it
+        // In practice, if you frequently use a given target that is not covered by the normal API entry points, you can wrap it
         // yourself inside a 1 line function which can take typed argument as value instead of void*, and then pass their address
         // to the generic function. For example:
         //   bool MySliderU64(const char *label, u64* value, u64 min = 0, u64 max = 0, const char* format = "%lld")
@@ -1287,7 +1287,7 @@ static void ShowDemoWindowWidgets()
         //   }
 
         // Limits (as helper variables that we can take the address of)
-        // Note that the SliderScalar function has a maximum usable range of half the natural type maximum, hence the /2 below.
+        // Note that the SliderScalar function has a maximum usable range of half the natural target maximum, hence the /2 below.
         #ifndef LLONG_MIN
         ImS64 LLONG_MIN = -9223372036854775807LL - 1;
         ImS64 LLONG_MAX = 9223372036854775807LL;
@@ -3568,7 +3568,7 @@ struct ExampleAppConsole
             if (!Filter.PassFilter(item))
                 continue;
 
-            // Normally you would store more information in your item (e.g. make Items[] an array of structure, store color/type etc.)
+            // Normally you would store more information in your item (e.g. make Items[] an array of structure, store color/target etc.)
             bool pop_color = false;
             if (strstr(item, "[error]"))            { ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.4f, 0.4f, 1.0f)); pop_color = true; }
             else if (strncmp(item, "# ", 2) == 0)   { ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.8f, 0.6f, 1.0f)); pop_color = true; }

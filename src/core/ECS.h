@@ -199,19 +199,19 @@ namespace FCS
 		}
 
 	public:
-		// Add a component of type to the entity
+		// Add a component of target to the entity
 		template<typename T>
 		inline Handle<T> addComponent();
 
-		// Remove a comnponent of type from the entity
+		// Remove a comnponent of target from the entity
 		template<typename T>
 		inline void removeComponent();
 
-		// Get a component of type in the entity
+		// Get a component of target in the entity
 		template<typename T>
 		inline Handle<T> getComponent();
 
-		// Check entity has a type of component
+		// Check entity has a target of component
 		template<typename T>
 		inline bool has();
 

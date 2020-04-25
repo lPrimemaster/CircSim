@@ -3,6 +3,7 @@
 
 //#define DEBUG
 
+#if 0
 #ifdef DEBUG
 static void debug(bool* close, GLFWwindow* window)
 {
@@ -72,6 +73,7 @@ static void debug(bool* close, GLFWwindow* window)
 	}
 }
 #endif
+#endif
 
 //float Playing::z_scl = 0.0f;
 //float Playing::lx = 0.0;
@@ -81,6 +83,7 @@ void Playing::initialize()
 {
 	createSystem<SpriteRenderer>();
 	createSystem<LineRenderer>();
+	createSystem<TextRenderer>();
 	createSystem<InputHandler>(true);
 
 	auto cameraEnt = instantiate();
@@ -106,6 +109,11 @@ void Playing::initialize()
 	auto lt = lineEnt->addComponent<Transform>();
 	lt->scale(glm::vec2(1000.0f));
 	lt->translate(glm::vec2(100.0f));
+
+	auto testText = instantiate();
+	auto trf = testText->addComponent<Transform>();
+	auto text = testText->addComponent<Text>();
+	text->addText("Hello world text!");
 }
 
 void Playing::deinitialize()

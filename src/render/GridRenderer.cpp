@@ -75,7 +75,7 @@ unsigned GridRenderer::updateGrid(float zscale, glm::vec2 tvec, glm::vec2 sdim)
 	float nearestHighY = (float)((int)floorf(decimalBarrierHY * 5) / 5.0f) + ubarrierYHigh;
 
 	//Fix for memory usage -> offsets just repeat after the unit (...) [ realloc is expensive =( ]
-	float* n_offset = (float*)realloc(offsets, sizeof(float) * totalGenLines * 4); //uysing C type cast
+	float* n_offset = (float*)realloc(offsets, sizeof(float) * totalGenLines * 4); //uysing C target cast
 
 	if (n_offset)
 	{

@@ -6,37 +6,60 @@
 
 #define DEBUG
 
+#define MAX_RECORDS 128
 #define TOKENPASTE_(x, y) x ## y
 #define TOKENPASTE(x, y) TOKENPASTE_(x, y)
 
-#ifdef DEBUG
-#define MAX_COUNTERS 128
+#pragma pack(push, 1)
 struct debug_record
 {
 	char* funcname = nullptr;
 	int line = 0;
-
 	int hitCount = 0;
 	unsigned long long cycles = 0ULL;
+	char padding[12];
 };
-extern std::map<std::string, debug_record> debug_records;
+#pragma pack(pop)
+extern unsigned int frame_debug_records;
+extern debug_record* debug_records;
 extern debug_record full_record;
+
+#ifdef DEBUG
 #define TIMED_BLOCK debug_perf_counter TOKENPASTE(Counter, __LINE__)(__LINE__, (char*)__FUNCTION__)
 #else
 #define TIMED_BLOCK
 #endif
+
+#ifdef DEBUG
+#define GLOBAL_DEBUG_BLOCK_INIT global_debug_perf_counters _gdpc;
+#else
+#define GLOBAL_DEBUG_BLOCK_INIT
+#endif
 void ppPerfCounterRecords();
+void initPerfCounterRecords();
+void cleanPerfCounterRecords();
+void ncc_memcpy(char* dst, char* src, unsigned size);
+
+struct global_debug_perf_counters
+{
+	global_debug_perf_counters()
+	{
+		initPerfCounterRecords();
+	}
+
+	~global_debug_perf_counters()
+	{
+		cleanPerfCounterRecords();
+	}
+};
 
 struct debug_perf_counter
 {
-	debug_record* record = nullptr;
+	debug_record* record;
 
 	debug_perf_counter(int line, char* function)
 	{
-		/*_mm_load_si128();
-		_mm_stream_si128();*/
-		std::string s = std::string(function) + "_" + std::to_string(line);
-		record = &debug_records[s];
+		record = debug_records + frame_debug_records++;
 		record->funcname = function;
 		record->line = line;
 		record->cycles -= __rdtsc();

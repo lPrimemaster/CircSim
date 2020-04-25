@@ -226,4 +226,39 @@ namespace math
 			return debug_t;
 		}
 	};
+
+	template<typename T>
+	inline T swapMax(T last, T current)
+	{
+		return current > last ? current : last;
+	}
+
+	template<typename T>
+	inline T swapMin(T last, T current)
+	{
+		return current < last ? current : last;
+	}
+
+	__forceinline void flipImageVertically(unsigned char* image, int w, int h, int bytes_per_pixel)
+	{
+		int row;
+		size_t bytes_per_row = (size_t)w * bytes_per_pixel;
+		unsigned char temp[2048];
+
+		for (row = 0; row < (h >> 1); row++) {
+			unsigned char* row0 = image + row * bytes_per_row;
+			unsigned char* row1 = image + (h - row - 1) * bytes_per_row;
+			// swap row0 with row1
+			size_t bytes_left = bytes_per_row;
+			while (bytes_left) {
+				size_t bytes_copy = (bytes_left < sizeof(temp)) ? bytes_left : sizeof(temp);
+				memcpy(temp, row0, bytes_copy);
+				memcpy(row0, row1, bytes_copy);
+				memcpy(row1, temp, bytes_copy);
+				row0 += bytes_copy;
+				row1 += bytes_copy;
+				bytes_left -= bytes_copy;
+			}
+		}
+	}
 }

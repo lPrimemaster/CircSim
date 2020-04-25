@@ -1,39 +1,26 @@
 #pragma once
-#include "Renderer.h"
 #include "GLWrapper.h"
+#include "../assets/Registry.h"
+#include "../assets/Geometry.h"
+#include "../components/Material.h"
+#include "../components/Text.h"
+#include "../components/Transform.h"
+#include "../components/Camera.h"
 
-struct Text
-{
-	std::string text;
-	std::string font;
-	glm::vec3 color = glm::vec3(1.0f);
-	float scale = 1.0f;
-	float x = 0.0f;
-	float y = 0.0f;
-};
-
-class TextRenderer : public Renderer
+class TextRenderer : public FCS::System<FCS::Event::EntityCreated>
 {
 public:
-	TextRenderer();
-	~TextRenderer();
+	void initialize(FCS::Scene* scene) override;
+	void deinitialize(FCS::Scene* scene) override;
 
-	void render() override;
+	void update(FCS::Scene* scene, float deltaTime) override;
 
-	void setDefaultFont(std::string font);
-	void addText(std::string text, glm::vec2 position, glm::vec3 color = glm::vec3(1.0f), float scale = 1.0f, std::string font = "");
-
-	//Make sure no extra components get in this renderer
-	void push(Sprite* c) override {}
-	void pushList(Sprite** list, size_t size) override {}
-
-	void pop(Sprite* c) override {}
-	void popList(Sprite** list, size_t size) override {}
+	void onEvent(FCS::Scene* scene, const FCS::Event::EntityCreated& event) override; //TODO: Maybe add onEvent textModified ???
 
 private:
-	glm::mat4 project;
-	std::vector<Text> text_batch;
-	Geometry* quad_geom = nullptr;
-	std::string default_font;
+	Geometry* geo = nullptr;
+	Material* mat = nullptr;
+
+	FCS_SYSTEM(TextRenderer, 1);
 };
 

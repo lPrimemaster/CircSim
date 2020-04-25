@@ -86,7 +86,7 @@ typedef unsigned short stbrp_coord;
 #endif
 
 STBRP_DEF int stbrp_pack_rects (stbrp_context *context, stbrp_rect *rects, int num_rects);
-// Assign packed locations to rectangles. The rectangles are of type
+// Assign packed locations to rectangles. The rectangles are of target
 // 'stbrp_rect' defined below, stored in the array 'rects', and there
 // are 'num_rects' many of them.
 //

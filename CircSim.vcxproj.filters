@@ -123,6 +123,15 @@
     <ClCompile Include="src\util\perf_counter.cpp">
       <Filter>Files\util</Filter>
     </ClCompile>
+    <ClCompile Include="src\render\TextRenderer.cpp">
+      <Filter>Files\render</Filter>
+    </ClCompile>
+    <ClCompile Include="src\assets\TextureAtlas.cpp">
+      <Filter>Files\assets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\assets\Charmap.cpp">
+      <Filter>Files\assets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="deps\imgui\imconfig.h">
@@ -214,6 +223,18 @@
     </ClInclude>
     <ClInclude Include="src\util\perf_counter.h">
       <Filter>Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render\TextRenderer.h">
+      <Filter>Files\render</Filter>
+    </ClInclude>
+    <ClInclude Include="src\components\Text.h">
+      <Filter>Files\components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\assets\TextureAtlas.h">
+      <Filter>Files\assets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\assets\Charmap.h">
+      <Filter>Files\assets</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

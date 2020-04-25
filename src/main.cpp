@@ -1,6 +1,7 @@
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
 
+#define DEBUG
 #include "util/perf_counter.h"
 
 #include "render/GLWrapper.h"
@@ -15,6 +16,8 @@
 //TODO: Makes FCS::Systems threadable
 int main(int argc, char* argv[])
 {
+	GLOBAL_DEBUG_BLOCK_INIT;
+
 	Application app;
 
 	Registry registry_guard;
@@ -23,11 +26,11 @@ int main(int argc, char* argv[])
 
 	CSim csim;
 	PSim psim;
-
 	std::thread ct(&CSim::calculateStates, &csim);
 	std::thread pt(&PSim::calculateStates, &psim);*/
 
 	app.run();
+
 
 	/*ct.join();
 	pt.join();*/

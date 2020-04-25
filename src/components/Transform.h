@@ -22,10 +22,17 @@ public:
 		return model;
 	}
 
+	inline glm::vec3 getPosition() const
+	{
+		return position;
+	}
+
 private:
 	glm::vec2 anchor_pos = glm::vec2();
 	glm::vec2 usable_pos = glm::vec2();
 	glm::vec2 center_pos = glm::vec2();
+
+	glm::vec3 position;
 
 	float rotation = 0.0f;
 	glm::vec3 scaleAxis = { 1.0f, 1.0f, 1.0f };

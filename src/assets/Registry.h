@@ -3,10 +3,12 @@
 #include "Asset.h"
 #include "Geometry.h"
 #include "Texture.h"
+#include "TextureAtlas.h"
+#include "Charmap.h"
 #include <unordered_map>
 #include <vector>
 //#include "render/texture/Texture.h"
-//#include "render/chars/CharAtlas.h"
+//#include "render/chars/TextureAtlas.h"
 
 class Registry
 {
@@ -18,6 +20,7 @@ private:
 	static void registerAllBasicGeometry();
 	static void registerAllGuiGeometry();
 	static void registerAllTextures();
+	static void registerAllCharAtlas();
 
 public:
 	template<typename A, typename... Args>
@@ -29,8 +32,6 @@ public:
 	template<typename A>
 	inline static A* GetAsset(const std::string& asset_name);
 
-	/*static void registerAllCharAtlas();
-	static void unregisterAllCharAtlas();*/
 
 private:
 	inline static std::unordered_map<std::string, std::pair<Asset*, std::type_index>> assets;

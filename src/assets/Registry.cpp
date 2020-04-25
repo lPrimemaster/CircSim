@@ -5,7 +5,7 @@ Registry::Registry()
 	registerAllBasicGeometry();
 	registerAllGuiGeometry();
 	registerAllTextures();
-	//registerAllCharAtlas();
+	registerAllCharAtlas();
 }
 
 Registry::~Registry()
@@ -66,6 +66,10 @@ void Registry::registerAllBasicGeometry()
 	};
 
 	rect->addBuffer(texCoords, 12, Geometry::BufferType::VBO1, GL_ARRAY_BUFFER, 1, 2, GL_FLOAT);
+
+	RegisterAsset<Geometry>("TextRenderGeometry", Geometry::TRIANGLES, nullptr, 1, 4); // Buffer will be resized later GL_DYNAMIC_DRAW
+	Geometry* trg = GetAsset<Geometry>("TextRenderGeometry");
+	trg->addBuffer<float>(nullptr, 1, Geometry::BufferType::VBO1, GL_ARRAY_BUFFER, 1, 3, GL_FLOAT, 6); //Divisor 6 for the color attr
 }
 
 void Registry::registerAllGuiGeometry()
@@ -77,9 +81,8 @@ void Registry::registerAllTextures()
 	RegisterAsset<Texture>("test_texture", GL_TEXTURE_2D, "test.png");
 }
 
-//void Registry::registerAllCharAtlas()
-//{
-//	CharAtlas::registerCharAtlas(new CharAtlas("assets/fonts/PantonRustHeavy.ttf"), "PantonRustHeavy");
-//	CharAtlas::registerCharAtlas(new CharAtlas("assets/fonts/LucidaConsole.ttf"), "LucidaConsole");
-//}
-//
+void Registry::registerAllCharAtlas()
+{
+	RegisterAsset<Charmap>("test_cmap", "assets/fonts/LucidaConsole.ttf");
+}
+

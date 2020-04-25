@@ -5,6 +5,7 @@
 #include "../core/ECS.h"
 #include "../render/SpriteRenderer.h"
 #include "../render/LineRenderer.h"
+#include "../render/TextRenderer.h"
 
 #include "../events/InputHandler.h"
 
