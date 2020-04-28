@@ -21,6 +21,6 @@ private:
 	Geometry* geo = nullptr;
 	Material* mat = nullptr;
 
-	FCS_SYSTEM(TextRenderer, 1);
+	FCS_SYSTEM(TextRenderer, 1); // Highest priority - last call
 };
 

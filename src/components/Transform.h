@@ -27,6 +27,16 @@ public:
 		return position;
 	}
 
+	inline glm::vec2 getScale() const
+	{
+		return glm::vec2(scaleAxis.x, scaleAxis.y);
+	}
+
+	bool& isOnScreen()
+	{
+		return on_screen;
+	}
+
 private:
 	glm::vec2 anchor_pos = glm::vec2();
 	glm::vec2 usable_pos = glm::vec2();
@@ -38,6 +48,8 @@ private:
 	glm::vec3 scaleAxis = { 1.0f, 1.0f, 1.0f };
 
 	glm::mat4 model = glm::mat4(1.0f);
+
+	bool on_screen = false;
 
 	FCS_COMPONENT(Transform);
 };

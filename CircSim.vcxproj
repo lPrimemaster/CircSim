@@ -133,12 +133,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="deps\imgui\imgui.cpp" />
-    <ClCompile Include="deps\imgui\imgui_demo.cpp" />
-    <ClCompile Include="deps\imgui\imgui_draw.cpp" />
-    <ClCompile Include="deps\imgui\imgui_impl_glfw.cpp" />
-    <ClCompile Include="deps\imgui\imgui_impl_opengl3.cpp" />
-    <ClCompile Include="deps\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\assets\Charmap.cpp" />
     <ClCompile Include="src\assets\TextureAtlas.cpp" />
     <ClCompile Include="src\assets\Geometry.cpp" />
@@ -151,6 +145,7 @@
     <ClCompile Include="src\events\glfw_events.cpp" />
     <ClCompile Include="src\events\InputHandler.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\render\DebugRenderer.cpp" />
     <ClCompile Include="src\render\GLWrapper.cpp" />
     <ClCompile Include="src\render\LineRenderer.cpp" />
     <ClCompile Include="src\render\Program.cpp" />
@@ -162,14 +157,6 @@
     <ClCompile Include="src\util\perf_counter.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="deps\imgui\imconfig.h" />
-    <ClInclude Include="deps\imgui\imgui.h" />
-    <ClInclude Include="deps\imgui\imgui_impl_glfw.h" />
-    <ClInclude Include="deps\imgui\imgui_impl_opengl3.h" />
-    <ClInclude Include="deps\imgui\imgui_internal.h" />
-    <ClInclude Include="deps\imgui\imstb_rectpack.h" />
-    <ClInclude Include="deps\imgui\imstb_textedit.h" />
-    <ClInclude Include="deps\imgui\imstb_truetype.h" />
     <ClInclude Include="src\assets\Asset.h" />
     <ClInclude Include="src\assets\Charmap.h" />
     <ClInclude Include="src\assets\TextureAtlas.h" />
@@ -187,6 +174,7 @@
     <ClInclude Include="src\events\glfw_events.h" />
     <ClInclude Include="src\events\InputHandler.h" />
     <ClInclude Include="src\lib\img_load\stb_image.h" />
+    <ClInclude Include="src\render\DebugRenderer.h" />
     <ClInclude Include="src\render\GLWrapper.h" />
     <ClInclude Include="src\render\LineRenderer.h" />
     <ClInclude Include="src\render\Program.h" />

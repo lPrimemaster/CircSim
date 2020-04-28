@@ -22,5 +22,5 @@ public:
 private:
 	Geometry* quad;
 
-	FCS_SYSTEM(SpriteRenderer, 0); // Highest priority - last call
+	FCS_SYSTEM(SpriteRenderer, 2); // Highest priority - last call
 };

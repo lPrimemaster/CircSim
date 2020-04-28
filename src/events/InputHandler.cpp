@@ -38,6 +38,22 @@ void InputHandler::onEvent(FCS::Scene* scene, const Events::OnFramebufferResize&
 {
 	screen_height = event.height;
 	screen_width = event.width;
+
+	//On Resize
+	//Update GUI projection
+	scene->getAllWith<Camera>()[0]->getComponent<Camera>()->updateScreen(screen_width, screen_height);
+
+	//On Resize
+	//Update projection matrix
+	float w_ammt = global_zoom * ((float)screen_width / screen_height);
+	float h_ammt = global_zoom;
+	int vw = screen_width + w_ammt;
+	int vh = screen_height + h_ammt;
+
+	screen_effective_width = vw + w_ammt;
+	screen_effective_height = vh + h_ammt;
+
+	scene->getAllWith<Camera>()[0]->getComponent<Camera>()->project(glm::ortho<float>(-w_ammt, vw, -h_ammt, vh, 0.1f, 100.0f));
 }
 
 void InputHandler::onEvent(FCS::Scene* scene, const Events::OnEngineStartup& event)
@@ -47,6 +63,8 @@ void InputHandler::onEvent(FCS::Scene* scene, const Events::OnEngineStartup& eve
 
 	screen_effective_width = screen_width;
 	screen_effective_height = screen_height;
+
+	scene->getAllWith<Camera>()[0]->getComponent<Camera>()->updateScreen(screen_width, screen_height);
 }
 
 void InputHandler::mouseMoveScreen(FCS::Scene* scene, const Events::OnMouseMovement& event, bool active)

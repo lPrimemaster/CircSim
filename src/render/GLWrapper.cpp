@@ -1,9 +1,8 @@
 #include "GLWrapper.h"
 #include "../core/ECS.h"
 #include "../states/Playing.h"
-#include "../events/glfw_events.h"
-
 #include "../util/perf_counter.h"
+#include "../events/glfw_events.h"
 
 #define ERROR_INIT -1
 #define ERROR_WINDOW -2
@@ -43,7 +42,7 @@ Application::Application()
 	}
 
 	glfwMakeContextCurrent(window);
-	//glfwSwapInterval(0); //No cap for performance test
+	glfwSwapInterval(0); //No cap for performance test
 
 	glewExperimental = true;
 	GLenum status = glewInit();
@@ -105,13 +104,14 @@ void Application::run()
 
 	while (!glfwWindowShouldClose(window))
 	{
+		++full_record.hitCount;
 		full_record.cycles -= __rdtsc();
 
 		glfwPollEvents();
 		glClear(GL_COLOR_BUFFER_BIT);
 		FCS::SceneManager::Update();
 		glfwSwapBuffers(window);
-		ppPerfCounterRecords();
+		endRecordFrame();
 
 		full_record.cycles += __rdtsc();
 	}

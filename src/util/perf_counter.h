@@ -2,6 +2,8 @@
 #include <intrin.h>
 #include <map>
 #include <string>
+#include "../core/ECS.h"
+#include "../events/Events.h"
 // TODO: this only works in a single threaded environment
 
 #define DEBUG
@@ -25,7 +27,7 @@ extern debug_record* debug_records;
 extern debug_record full_record;
 
 #ifdef DEBUG
-#define TIMED_BLOCK debug_perf_counter TOKENPASTE(Counter, __LINE__)(__LINE__, (char*)__FUNCTION__)
+#define TIMED_BLOCK debug_perf_counter TOKENPASTE(Counter, __LINE__)(__LINE__, (char*)__FUNCTION__); FCS::SceneManager::GetActiveScene()->emit<Events::OnPCounterInitDebugInfo>(Events::OnPCounterInitDebugInfo())
 #else
 #define TIMED_BLOCK
 #endif
@@ -35,7 +37,7 @@ extern debug_record full_record;
 #else
 #define GLOBAL_DEBUG_BLOCK_INIT
 #endif
-void ppPerfCounterRecords();
+void endRecordFrame();
 void initPerfCounterRecords();
 void cleanPerfCounterRecords();
 void ncc_memcpy(char* dst, char* src, unsigned size);

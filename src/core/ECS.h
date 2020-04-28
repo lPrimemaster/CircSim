@@ -460,7 +460,9 @@ namespace FCS
 			systems.emplace(getType<System>(), shared);
 			systems_ordered.push_back(shared);
 			std::dynamic_pointer_cast<BaseSystem>(shared)->setPriority();
+#ifndef FCS_NOSORT
 			std::sort(systems_ordered.begin(), systems_ordered.end());
+#endif
 		}
 		else
 		{

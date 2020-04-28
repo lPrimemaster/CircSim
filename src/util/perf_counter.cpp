@@ -16,13 +16,8 @@ void ncc_memcpy(char* dst, char* src, unsigned size)
 	}
 }
 
-void ppPerfCounterRecords()
+void endRecordFrame()
 {
-	for (int i = 0; i < frame_debug_records; i++)
-	{
-		auto record = debug_records + i;
-		printf("(%d) %-30s: %-20llu cy/h | Total: %-20llu cy\n", record->line, record->funcname, record->cycles / (unsigned long long)record->hitCount, full_record.cycles);
-	}
 	frame_debug_records = 0;
 }
 

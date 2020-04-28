@@ -22,7 +22,7 @@ void LineRenderer::update(FCS::Scene* scene, float deltaTime)
 	glDisable(GL_BLEND);
 	auto p = mat->getProgram();
 	p->bind();
-	p->loadVector4f("color", mat->getColor());
+	p->loadVector4f("color", mat->getColor()); // Performance issues here [ for some reason, idk what to do anymore =[ ]
 	p->loadMatrix4f("PView", cam->getPVMatrix());
 	line->bind();
 

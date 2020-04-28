@@ -114,6 +114,7 @@ void Transform::update(glm::vec2 anchor, float angle, float scale)
 
 void Transform::translate(glm::vec2 pos)
 {
+	position = glm::vec3(pos, 0.0f);
 	model = glm::translate(glm::mat4(1.0f), glm::vec3(pos, 0.0f)) *
 		glm::rotate(glm::mat4(1.0f), rotation, UP) *
 		glm::scale(glm::mat4(1.0f), scaleAxis);

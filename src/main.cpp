@@ -1,11 +1,12 @@
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
 
-#define DEBUG
-#include "util/perf_counter.h"
 
 #include "render/GLWrapper.h"
 #include "assets/Registry.h"
+
+#define DEBUG
+#include "util/perf_counter.h"
 
 //TEST
 //#include "util/Serializer.h"

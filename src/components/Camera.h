@@ -25,14 +25,25 @@ public:
 		pmat = proj;
 	}
 
+	inline void updateScreen(float w, float h)
+	{
+		gui_pmat = glm::ortho(0.0f, w, 0.0f, h);
+	}
+
 	inline glm::mat4 getPVMatrix()
 	{
 		return pmat * vmat;
 	}
 
+	inline glm::mat4 getGuiMatrix()
+	{
+		return gui_pmat;
+	}
+
 private:
 	glm::mat4 vmat;
 	glm::mat4 pmat;
+	glm::mat4 gui_pmat;
 
 	FCS_COMPONENT(Camera);
 };

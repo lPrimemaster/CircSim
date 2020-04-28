@@ -8,15 +8,6 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{4e386439-317b-44dc-9723-ad0c8645e029}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ImGui">
-      <UniqueIdentifier>{e06b6e17-d7b6-4080-a4db-0b23af9fb03f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ImGui\Source">
-      <UniqueIdentifier>{a3561194-dd6f-4c48-ba8c-290b11508ad8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ImGui\Header">
-      <UniqueIdentifier>{80d58854-d53b-4733-adef-1224a8d89977}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Files">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
@@ -53,24 +44,6 @@
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
       <Filter>Entry point</Filter>
-    </ClCompile>
-    <ClCompile Include="deps\imgui\imgui.cpp">
-      <Filter>ImGui\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="deps\imgui\imgui_demo.cpp">
-      <Filter>ImGui\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="deps\imgui\imgui_draw.cpp">
-      <Filter>ImGui\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="deps\imgui\imgui_widgets.cpp">
-      <Filter>ImGui\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="deps\imgui\imgui_impl_glfw.cpp">
-      <Filter>ImGui\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="deps\imgui\imgui_impl_opengl3.cpp">
-      <Filter>ImGui\Source</Filter>
     </ClCompile>
     <ClCompile Include="src\components\Camera.cpp">
       <Filter>Files\components</Filter>
@@ -132,32 +105,11 @@
     <ClCompile Include="src\assets\Charmap.cpp">
       <Filter>Files\assets</Filter>
     </ClCompile>
+    <ClCompile Include="src\render\DebugRenderer.cpp">
+      <Filter>Files\render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="deps\imgui\imconfig.h">
-      <Filter>ImGui\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\imgui\imgui.h">
-      <Filter>ImGui\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\imgui\imstb_rectpack.h">
-      <Filter>ImGui\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\imgui\imgui_internal.h">
-      <Filter>ImGui\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\imgui\imstb_textedit.h">
-      <Filter>ImGui\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\imgui\imstb_truetype.h">
-      <Filter>ImGui\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\imgui\imgui_impl_glfw.h">
-      <Filter>ImGui\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="deps\imgui\imgui_impl_opengl3.h">
-      <Filter>ImGui\Header</Filter>
-    </ClInclude>
     <ClInclude Include="src\render\GLWrapper.h">
       <Filter>Files\render</Filter>
     </ClInclude>
@@ -235,6 +187,9 @@
     </ClInclude>
     <ClInclude Include="src\assets\Charmap.h">
       <Filter>Files\assets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render\DebugRenderer.h">
+      <Filter>Files\render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

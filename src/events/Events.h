@@ -44,5 +44,10 @@ namespace Events
 
 		GLFWwindow* window;
 	};
+
+	struct OnPCounterInitDebugInfo
+	{
+
+	};
 }
 

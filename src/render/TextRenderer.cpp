@@ -20,7 +20,7 @@ void TextRenderer::update(FCS::Scene* scene, float deltaTime)
 	auto to_update = scene->getAllWith<Text, Transform>();
 	auto cam = scene->getAllWith<Camera>()[0]->getComponent<Camera>();
 	p->bind();
-	p->loadMatrix4f("PView", cam->getPVMatrix());
+
 	geo->bind();
 	// Batch text and send all at once
 
@@ -31,23 +31,32 @@ void TextRenderer::update(FCS::Scene* scene, float deltaTime)
 
 	for (auto t : to_update)
 	{
-		auto text = t->getComponent<Text>();
-		text->formatText("%s cy/h: %llu", debug_records[0].funcname, debug_records[0].cycles / debug_records[0].hitCount);
 		auto tfm = t->getComponent<Transform>();
+		if (tfm->isOnScreen())
+		{
+			p->loadMatrix4f("PView", cam->getGuiMatrix());
+		}
+		else
+		{
+			p->loadMatrix4f("PView", cam->getPVMatrix());
+		}
+
+		auto text = t->getComponent<Text>();
 		auto font = Registry::GetAsset<Charmap>(text->getFontName()); // Assure this doesn't become a problem
 		std::string textValue = text->getString();
 		auto characters_info = font->getString(textValue);
 
 		glm::vec3 position = tfm->getPosition();
+		glm::vec2 scale = tfm->getScale();
 		auto color = text->getColor();
 
 		for (auto c : characters_info)
 		{
-			GLfloat x = position.x + c.bearing.x /* [ADD] * text scale */;
-			GLfloat y = position.y - (c.size.y - c.bearing.y) /* [ADD] * text scale */;
+			GLfloat x = position.x + c.bearing.x * scale.x;
+			GLfloat y = position.y - (c.size.y - c.bearing.y) * scale.y;
 
-			GLfloat w = c.size.x /* [ADD] * text scale */;
-			GLfloat h = c.size.y /* [ADD] * text scale */;
+			GLfloat w = c.size.x * scale.x;
+			GLfloat h = c.size.y * scale.y;
 
 			GLfloat uv[4] = { 
 				c.uvCoords.x,			   c.uvCoords.y,
@@ -64,7 +73,7 @@ void TextRenderer::update(FCS::Scene* scene, float deltaTime)
 				x + w, y + h,   uv[2], uv[3]
 			};
 
-			position.x += (c.advance >> 6) /* [ADD] * text scale */;
+			position.x += (c.advance >> 6) * scale.x;
 
 			drawBatch.insert(drawBatch.end(), vertices.begin(), vertices.end());
 			colorAtt.push_back(color.r); colorAtt.push_back(color.g); colorAtt.push_back(color.b);

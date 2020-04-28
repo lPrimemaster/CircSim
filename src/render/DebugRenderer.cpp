@@ -1,28 +1,47 @@
 #include "DebugRenderer.h"
+#include "../util/perf_counter.h"
+#include "../components/Text.h"
+#include "../components/Transform.h"
+#include "../util/perf_counter.h"
 
-DebugRenderer::DebugRenderer() : Renderer("debug", ADD_GEOM_SHADER) {  }
-
-DebugRenderer::~DebugRenderer()
+void DebugRenderer::initialize(FCS::Scene* scene)
 {
 }
 
-void DebugRenderer::render()
+void DebugRenderer::deinitialize(FCS::Scene* scene)
 {
-	p.bind();
-	p.loadMatrix4f("PView", pvm);
+}
 
-	//Using geometry shader instead
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-	for (auto c : comps)
+void DebugRenderer::update(FCS::Scene* scene, float deltaTime)
+{
+	int diff = frame_debug_text - debug_text.size(); // This should not be negative for the meantime... So its ok to do just this!
+	if (diff > 0)
 	{
-		Geometry* geo = Geometry::getRegisteredGeometry(c->geometryName()); //FIX: this is a overhead
-		p.loadVector4f("color", c->getColor());
-		p.loadMatrix4f("Model", c->transform().getModelMatrix());
-
-		geo->bind();
-		glDrawArrays(geo->getType(), 0, geo->getSize());
+		glm::vec2 lpos = glm::vec2(0.0f);
+		float scale = 20.0f;
+		for (int i = 0; i < diff; i++)
+		{
+			auto e = scene->instantiate();
+			e->addComponent<Text>();
+			auto t = e->addComponent<Transform>();
+			t->isOnScreen() = true;
+			t->translate(lpos);
+			t->scale(glm::vec2(0.3f));
+			lpos.y += scale;
+			debug_text.push_back(e);
+		}
 	}
 
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	for (int i = 0; i < frame_debug_text; i++)
+	{
+		debug_record* record = debug_records + i;
+		debug_text[i]->getComponent<Text>()->formatText("(%d) %-25s: %-15llu cy/h [%d hits]", record->line, record->funcname, record->cycles / (unsigned long long)record->hitCount, record->hitCount);
+	}
+
+	frame_debug_text = 0;
+}
+
+void DebugRenderer::onEvent(FCS::Scene* scene, const Events::OnPCounterInitDebugInfo& event)
+{
+	frame_debug_text++;
 }

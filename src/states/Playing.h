@@ -2,10 +2,13 @@
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
 
+#define FCS_NOSORT // We can use the system ordering as we like now
 #include "../core/ECS.h"
 #include "../render/SpriteRenderer.h"
 #include "../render/LineRenderer.h"
 #include "../render/TextRenderer.h"
+
+#include "../render/DebugRenderer.h"
 
 #include "../events/InputHandler.h"
 

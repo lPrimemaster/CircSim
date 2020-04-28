@@ -20,6 +20,6 @@ private:
 	Geometry* line;
 	Material* mat;
 
-	FCS_SYSTEM(LineRenderer, 0);
+	FCS_SYSTEM(LineRenderer, 1);
 };
 

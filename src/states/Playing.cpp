@@ -81,10 +81,19 @@ static void debug(bool* close, GLFWwindow* window)
 
 void Playing::initialize()
 {
-	createSystem<SpriteRenderer>();
-	createSystem<LineRenderer>();
-	createSystem<TextRenderer>();
+	// Order matters here now ! Top updates first - FCS_NOSORT
+	/* Update here */
 	createSystem<InputHandler>(true);
+
+	/* Late Update here */
+
+	/* Render Here */
+	createSystem<LineRenderer>();
+	createSystem<SpriteRenderer>();
+
+	/* Late Render Here */
+	createSystem<TextRenderer>();
+	createSystem<DebugRenderer>();
 
 	auto cameraEnt = instantiate();
 	auto camera = cameraEnt->addComponent<Camera>();
@@ -95,7 +104,6 @@ void Playing::initialize()
 	screenQuad->addComponent<Sprite>()->addTexture<Sprite::DIFFUSE>("test_texture");
 	auto mat = screenQuad->addComponent<Material>();
 	mat->setShader("color", 0);
-	mat->setColor(Color(0.0f, 1.0f, 0.0f, 0.2f));
 	auto sq_transform = screenQuad->addComponent<Transform>();
 	sq_transform->scale(glm::vec2(100.0f));
 	sq_transform->translate(glm::vec2(1280.0f / 2, 720.0f / 2));
@@ -112,6 +120,7 @@ void Playing::initialize()
 
 	auto testText = instantiate();
 	auto trf = testText->addComponent<Transform>();
+	trf->translate(glm::vec2(0.0f, 700.0f));
 	auto text = testText->addComponent<Text>();
 	text->addText("Hello world text!");
 }
