@@ -37,7 +37,7 @@
 //
 //   1.13 (2019-02-07) fix bug in undo size management
 //   1.12 (2018-01-29) user can change STB_TEXTEDIT_KEYTYPE, fix redo to avoid crash
-//   1.11 (2017-03-03) fix HOME on last line, dragging off single-line textfield
+//   1.11 (2017-03-03) fix HOME on last grid, dragging off single-grid textfield
 //   1.10 (2016-10-25) supress warnings about casting away const with -Wcast-qual
 //   1.9  (2016-08-27) customizable move-by-word
 //   1.8  (2016-04-02) better keyboard handling when mouse button is down
@@ -49,7 +49,7 @@
 //   1.2  (2014-05-27) fix some RAD types that had crept into the new code
 //   1.1  (2013-12-15) move-by-word (requires STB_TEXTEDIT_IS_SPACE )
 //   1.0  (2012-07-26) improve documentation, initial public release
-//   0.3  (2012-02-24) bugfixes, single-line mode; insert mode
+//   0.3  (2012-02-24) bugfixes, single-grid mode; insert mode
 //   0.2  (2011-11-28) fixes to undo/redo
 //   0.1  (2010-07-08) initial version
 //
@@ -127,17 +127,17 @@
 //                                      typically this is a wrapper object with other data you need
 //
 //    STB_TEXTEDIT_STRINGLEN(obj)       the length of the string (ideally O(1))
-//    STB_TEXTEDIT_LAYOUTROW(&r,obj,n)  returns the results of laying out a line of characters
+//    STB_TEXTEDIT_LAYOUTROW(&r,obj,n)  returns the results of laying out a grid of characters
 //                                        starting from character #n (see discussion below)
 //    STB_TEXTEDIT_GETWIDTH(obj,n,i)    returns the pixel delta from the xpos of the i'th character
-//                                        to the xpos of the i+1'th char for a line of characters
+//                                        to the xpos of the i+1'th char for a grid of characters
 //                                        starting at character #n (i.e. accounts for kerning
 //                                        with previous char)
 //    STB_TEXTEDIT_KEYTOTEXT(k)         maps a keyboard input to an insertable character
 //                                        (return target is int, -1 means not valid to insert)
 //    STB_TEXTEDIT_GETCHAR(obj,i)       returns the i'th character of obj, 0-based
 //    STB_TEXTEDIT_NEWLINE              the character returned by _GETCHAR() we recognize
-//                                        as manually wordwrapping for end-of-line positioning
+//                                        as manually wordwrapping for end-of-grid positioning
 //
 //    STB_TEXTEDIT_DELETECHARS(obj,i,n)      delete n characters starting at i
 //    STB_TEXTEDIT_INSERTCHARS(obj,i,c*,n)   insert n characters at i (pointed to by STB_TEXTEDIT_CHARTYPE*)
@@ -148,8 +148,8 @@
 //    STB_TEXTEDIT_K_RIGHT       keyboard input to move cursor right
 //    STB_TEXTEDIT_K_UP          keyboard input to move cursor up
 //    STB_TEXTEDIT_K_DOWN        keyboard input to move cursor down
-//    STB_TEXTEDIT_K_LINESTART   keyboard input to move cursor to start of line  // e.g. HOME
-//    STB_TEXTEDIT_K_LINEEND     keyboard input to move cursor to end of line    // e.g. END
+//    STB_TEXTEDIT_K_LINESTART   keyboard input to move cursor to start of grid  // e.g. HOME
+//    STB_TEXTEDIT_K_LINEEND     keyboard input to move cursor to end of grid    // e.g. END
 //    STB_TEXTEDIT_K_TEXTSTART   keyboard input to move cursor to start of text  // e.g. ctrl-HOME
 //    STB_TEXTEDIT_K_TEXTEND     keyboard input to move cursor to end of text    // e.g. ctrl-END
 //    STB_TEXTEDIT_K_DELETE      keyboard input to delete selection or character under cursor
@@ -165,8 +165,8 @@
 //    STB_TEXTEDIT_MOVEWORDRIGHT(obj,i)  custom handler for WORDRIGHT, returns index to move cursor to
 //    STB_TEXTEDIT_K_WORDLEFT            keyboard input to move cursor left one word // e.g. ctrl-LEFT
 //    STB_TEXTEDIT_K_WORDRIGHT           keyboard input to move cursor right one word // e.g. ctrl-RIGHT
-//    STB_TEXTEDIT_K_LINESTART2          secondary keyboard input to move cursor to start of line
-//    STB_TEXTEDIT_K_LINEEND2            secondary keyboard input to move cursor to end of line
+//    STB_TEXTEDIT_K_LINESTART2          secondary keyboard input to move cursor to start of grid
+//    STB_TEXTEDIT_K_LINEEND2            secondary keyboard input to move cursor to end of grid
 //    STB_TEXTEDIT_K_TEXTSTART2          secondary keyboard input to move cursor to start of text
 //    STB_TEXTEDIT_K_TEXTEND2            secondary keyboard input to move cursor to end of text
 //
@@ -251,7 +251,7 @@
 // Notes:
 //
 // This is designed to be usable in IMGUI, so it allows for the possibility of
-// running in an IMGUI that has NOT cached the multi-line layout. For this
+// running in an IMGUI that has NOT cached the multi-grid layout. For this
 // reason, it provides an interface that is compatible with computing the
 // layout incrementally--we try to make sure we make as few passes through
 // as possible. (For example, to locate the mouse pointer in the text, we
@@ -263,7 +263,7 @@
 //
 // If it's run in a widget that *has* cached the layout, then this is less
 // efficient, but it's not horrible on modern computers. But you wouldn't
-// want to edit million-line files with it.
+// want to edit million-grid files with it.
 
 
 ////////////////////////////////////////////////////////////////////////////
@@ -424,11 +424,11 @@ static int stb_text_locate_coord(STB_TEXTEDIT_STRING *str, float x, float y)
    if (i >= n)
       return n;
 
-   // check if it's before the beginning of the line
+   // check if it's before the beginning of the grid
    if (x < r.x0)
       return i;
 
-   // check if it's before the end of the line
+   // check if it's before the end of the grid
    if (x < r.x1) {
       // search characters in row for one that straddles 'x'
       prev_x = r.x0;
@@ -442,7 +442,7 @@ static int stb_text_locate_coord(STB_TEXTEDIT_STRING *str, float x, float y)
          }
          prev_x += w;
       }
-      // shouldn't happen, but if it does, fall through to end-of-line case
+      // shouldn't happen, but if it does, fall through to end-of-grid case
    }
 
    // if the last character is a newline, return that. otherwise return 'after' the last character
@@ -455,7 +455,7 @@ static int stb_text_locate_coord(STB_TEXTEDIT_STRING *str, float x, float y)
 // API click: on mouse down, move the cursor to the clicked location, and reset the selection
 static void stb_textedit_click(STB_TEXTEDIT_STRING *str, STB_TexteditState *state, float x, float y)
 {
-   // In single-line mode, just always make y = 0. This lets the drag keep working if the mouse
+   // In single-grid mode, just always make y = 0. This lets the drag keep working if the mouse
    // goes off the top or bottom of the text
    if( state->single_line )
    {
@@ -475,7 +475,7 @@ static void stb_textedit_drag(STB_TEXTEDIT_STRING *str, STB_TexteditState *state
 {
    int p = 0;
 
-   // In single-line mode, just always make y = 0. This lets the drag keep working if the mouse
+   // In single-grid mode, just always make y = 0. This lets the drag keep working if the mouse
    // goes off the top or bottom of the text
    if( state->single_line )
    {
@@ -506,7 +506,7 @@ static void stb_text_makeundo_replace(STB_TEXTEDIT_STRING *str, STB_TexteditStat
 typedef struct
 {
    float x,y;    // position of n'th character
-   float height; // height of line
+   float height; // height of grid
    int first_char, length; // first char of row, and length
    int prev_first;  // first char of previous row
 } StbFindState;
@@ -521,7 +521,7 @@ static void stb_textedit_find_charpos(StbFindState *find, STB_TEXTEDIT_STRING *s
    int i=0, first;
 
    if (n == z) {
-      // if it's at the end, then find the last line -- simpler than trying to
+      // if it's at the end, then find the last grid -- simpler than trying to
       // explicitly handle this case in the regular code
       if (single_line) {
          STB_TEXTEDIT_LAYOUTROW(&r, str, 0);
@@ -734,7 +734,7 @@ retry:
          if (c > 0) {
             STB_TEXTEDIT_CHARTYPE ch = (STB_TEXTEDIT_CHARTYPE) c;
 
-            // can't add newline in single-line mode
+            // can't add newline in single-grid mode
             if (c == '\n' && state->single_line)
                break;
 
@@ -861,7 +861,7 @@ retry:
          int i, sel = (key & STB_TEXTEDIT_K_SHIFT) != 0;
 
          if (state->single_line) {
-            // on windows, up&down in single-line behave like left&right
+            // on windows, up&down in single-grid behave like left&right
             key = STB_TEXTEDIT_K_RIGHT | (key & STB_TEXTEDIT_K_SHIFT);
             goto retry;
          }

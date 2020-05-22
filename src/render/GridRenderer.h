@@ -1,33 +1,36 @@
 #pragma once
-#include "Renderer.h"
+#include <iostream>
+
+#include "../core/ECS.h"
+#include "../assets/Geometry.h"
+#include "../components/Material.h"
+
+#include "../assets/Registry.h"
+
+#include "../components/Camera.h"
 
 
-class GridRenderer : public Renderer
+class GridRenderer : public FCS::System<FCS::Event::EntityCreated>
 {
 public:
-	GridRenderer();
-	~GridRenderer();
+	void initialize(FCS::Scene* scene) override;
+	void deinitialize(FCS::Scene* scene) override;
 
-	void render() override;
+	void update(FCS::Scene* scene, float deltaTime) override;
 
-	float& getLW();
-
-	unsigned updateGrid(float zscale, glm::vec2 tvec, glm::vec2 sdim);
-
-	//Make sure no extra components get in this renderer
-	void push(Sprite* c) override {}
-	void pushList(Sprite** list, size_t size) override {}
-
-	void pop(Sprite* c) override {}
-	void popList(Sprite** list, size_t size) override {}
+	void onEvent(FCS::Scene* scene, const FCS::Event::EntityCreated& event) override;
 
 private:
-	void generateGrid();
+	void updateGrid(float zscale, glm::vec2 tvec, glm::vec2 sdim);
 
 private:
+	Geometry* grid;
+	Material* mat;
 	float lw = 0.005f;
 
 	float* offsets = nullptr;
 	unsigned totalGenLines = 20; //Ensure 20 lines at least
-};
 
+private:
+	FCS_SYSTEM(GridRenderer, 98);
+};

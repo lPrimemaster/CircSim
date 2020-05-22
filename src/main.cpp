@@ -11,7 +11,6 @@
 //TEST
 //#include "util/Serializer.h"
 
-
 //TODO: Check and fix (duh!) all 'FIX' tags
 //TODO: Run check tests with nsight to eliminate useless openGL API calls
 //TODO: Makes FCS::Systems threadable

@@ -78,7 +78,18 @@ void Registry::registerAllGuiGeometry()
 
 void Registry::registerAllTextures()
 {
-	RegisterAsset<Texture>("test_texture", GL_TEXTURE_2D, "test.png");
+	RegisterAsset<Texture>("NotGate_On", GL_TEXTURE_2D, "assets/textures/NotGate_On.png");
+	RegisterAsset<Texture>("NotGate_On_Hover", GL_TEXTURE_2D, "assets/textures/NotGate_On_Hover.png");
+	RegisterAsset<Texture>("NotGate_Off", GL_TEXTURE_2D, "assets/textures/NotGate_Off.png");
+	RegisterAsset<Texture>("NotGate_Off_Hover", GL_TEXTURE_2D, "assets/textures/NotGate_Off_Hover.png");
+
+	RegisterAsset<Texture>("NotGate", GL_TEXTURE_2D_ARRAY, 1024, 256, 4);
+
+	auto t = GetAsset<Texture>("NotGate");
+	t->addSubData("assets/textures/NotGate_On.png", 0, 0, 0);
+	t->addSubData("assets/textures/NotGate_Off.png", 0, 0, 1);
+	t->addSubData("assets/textures/NotGate_On_Hover.png", 0, 0, 2);
+	t->addSubData("assets/textures/NotGate_Off_Hover.png", 0, 0, 3);
 }
 
 void Registry::registerAllCharAtlas()

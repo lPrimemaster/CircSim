@@ -9,10 +9,6 @@ public:
 	Application();
 	~Application();
 
-	GLFWwindow* getWindow() const;
-
-	glm::vec2 getWindowDim() const;
-
 public:
 	void run();
 

@@ -67,6 +67,7 @@ Application::Application()
 	glfwSetMouseButtonCallback(window, glfw_mousebutton_callback);
 	glfwSetScrollCallback(window, glfw_mousescroll_callback);
 	glfwSetFramebufferSizeCallback(window, glfw_framebufferresize_callback);
+	glfwSetKeyCallback(window, glfw_keypressed_callback);
 
 	// During init, enable debug output
 #ifdef DEBUG
@@ -79,16 +80,6 @@ Application::Application()
 Application::~Application()
 {
 	glfwTerminate();
-}
-
-GLFWwindow* Application::getWindow() const
-{
-	return window;
-}
-
-glm::vec2 Application::getWindowDim() const
-{
-	return glm::vec2(windowW, windowH);
 }
 
 void Application::run()

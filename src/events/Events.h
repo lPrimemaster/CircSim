@@ -1,9 +1,11 @@
 #pragma once
 #include "../core/ECS.h"
-#include <GLFW/glfw3.h>
+
+struct GLFWwindow;
 
 namespace Events
 {
+	template<typename T>
 	struct OnMouseMovement
 	{
 		double x;
@@ -11,6 +13,12 @@ namespace Events
 
 		GLFWwindow* window;
 	};
+
+	namespace MovementType
+	{
+		struct ScreenSpace;
+		struct WorldSpace;
+	}
 
 	struct OnMouseClick
 	{
@@ -41,6 +49,15 @@ namespace Events
 	{
 		int fb_width;
 		int fb_height;
+
+		GLFWwindow* window;
+	};
+
+	struct OnKeyPressed
+	{
+		int key;
+		int action;
+		int mods;
 
 		GLFWwindow* window;
 	};

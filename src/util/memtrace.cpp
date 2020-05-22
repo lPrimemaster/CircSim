@@ -3,7 +3,7 @@
 #ifdef ENABLE_MEMORY_TRACK
 //void* operator new(size_t size, char* file, int line, char* function)
 //{
-//	std::cerr << "Alocation -> " << file << ":" << line << " - " << function << " [" << size << "]" << std::endl;
+//	std::cerr << "Alocation -> " << file << ":" << grid << " - " << function << " [" << size << "]" << std::endl;
 //	return malloc(size);
 //}
 

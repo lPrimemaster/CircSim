@@ -27,7 +27,7 @@ namespace glm
 	/// First, converts each component of the normalized floating-point value v into 8- or 16-bit integer values.
 	/// Then, the results are packed into the returned 32-bit unsigned integer.
 	///
-	/// The conversion for component c of v to fixed point is done as follows:
+	/// The conversion for component c of v to fixed point is unbind as follows:
 	/// packUnorm2x16: round(clamp(c, 0, +1) * 65535.0)
 	///
 	/// The first component of the vector will be written to the least significant bits of the output;
@@ -40,7 +40,7 @@ namespace glm
 	/// First, converts each component of the normalized floating-point value v into 8- or 16-bit integer values.
 	/// Then, the results are packed into the returned 32-bit unsigned integer.
 	///
-	/// The conversion for component c of v to fixed point is done as follows:
+	/// The conversion for component c of v to fixed point is unbind as follows:
 	/// packSnorm2x16: round(clamp(v, -1, +1) * 32767.0)
 	///
 	/// The first component of the vector will be written to the least significant bits of the output;
@@ -53,7 +53,7 @@ namespace glm
 	/// First, converts each component of the normalized floating-point value v into 8- or 16-bit integer values.
 	/// Then, the results are packed into the returned 32-bit unsigned integer.
 	///
-	/// The conversion for component c of v to fixed point is done as follows:
+	/// The conversion for component c of v to fixed point is unbind as follows:
 	/// packUnorm4x8:	round(clamp(c, 0, +1) * 255.0)
 	///
 	/// The first component of the vector will be written to the least significant bits of the output;
@@ -66,7 +66,7 @@ namespace glm
 	/// First, converts each component of the normalized floating-point value v into 8- or 16-bit integer values.
 	/// Then, the results are packed into the returned 32-bit unsigned integer.
 	///
-	/// The conversion for component c of v to fixed point is done as follows:
+	/// The conversion for component c of v to fixed point is unbind as follows:
 	/// packSnorm4x8:	round(clamp(c, -1, +1) * 127.0)
 	///
 	/// The first component of the vector will be written to the least significant bits of the output;
@@ -79,7 +79,7 @@ namespace glm
 	/// First, unpacks a single 32-bit unsigned integer p into a pair of 16-bit unsigned integers, four 8-bit unsigned integers, or four 8-bit signed integers.
 	/// Then, each component is converted to a normalized floating-point value to generate the returned two- or four-component vector.
 	///
-	/// The conversion for unpacked fixed-point value f to floating point is done as follows:
+	/// The conversion for unpacked fixed-point value f to floating point is unbind as follows:
 	/// unpackUnorm2x16: f / 65535.0
 	///
 	/// The first component of the returned vector will be extracted from the least significant bits of the input;
@@ -92,7 +92,7 @@ namespace glm
 	/// First, unpacks a single 32-bit unsigned integer p into a pair of 16-bit unsigned integers, four 8-bit unsigned integers, or four 8-bit signed integers.
 	/// Then, each component is converted to a normalized floating-point value to generate the returned two- or four-component vector.
 	///
-	/// The conversion for unpacked fixed-point value f to floating point is done as follows:
+	/// The conversion for unpacked fixed-point value f to floating point is unbind as follows:
 	/// unpackSnorm2x16: clamp(f / 32767.0, -1, +1)
 	///
 	/// The first component of the returned vector will be extracted from the least significant bits of the input;
@@ -105,7 +105,7 @@ namespace glm
 	/// First, unpacks a single 32-bit unsigned integer p into a pair of 16-bit unsigned integers, four 8-bit unsigned integers, or four 8-bit signed integers.
 	/// Then, each component is converted to a normalized floating-point value to generate the returned two- or four-component vector.
 	///
-	/// The conversion for unpacked fixed-point value f to floating point is done as follows:
+	/// The conversion for unpacked fixed-point value f to floating point is unbind as follows:
 	/// unpackUnorm4x8: f / 255.0
 	///
 	/// The first component of the returned vector will be extracted from the least significant bits of the input;
@@ -118,7 +118,7 @@ namespace glm
 	/// First, unpacks a single 32-bit unsigned integer p into a pair of 16-bit unsigned integers, four 8-bit unsigned integers, or four 8-bit signed integers.
 	/// Then, each component is converted to a normalized floating-point value to generate the returned two- or four-component vector.
 	///
-	/// The conversion for unpacked fixed-point value f to floating point is done as follows:
+	/// The conversion for unpacked fixed-point value f to floating point is unbind as follows:
 	/// unpackSnorm4x8: clamp(f / 127.0, -1, +1)
 	///
 	/// The first component of the returned vector will be extracted from the least significant bits of the input;

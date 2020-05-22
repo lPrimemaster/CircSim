@@ -16,11 +16,12 @@ public:
 		size_t gpuSize;
 	};
 
-	Texture(GLenum target, const char* path, bool invert = true, GLenum internalformat = GL_RGB8, GLenum format = GL_RGBA, GLenum type = GL_UNSIGNED_BYTE, GLuint depth = 0);
-	Texture(GLenum target, unsigned char* img, int width, int height, GLenum internalformat = GL_RGB8, GLenum format = GL_RGBA, GLenum type = GL_UNSIGNED_BYTE, GLuint depth = 0);
-	Texture(GLenum target, int width, int height, GLuint depth, GLenum internalformat = GL_RGB8, GLenum format = GL_RGBA, GLenum type = GL_UNSIGNED_BYTE);
+	Texture(GLenum target, const char* path, bool invert = true, GLenum internalformat = GL_RGBA8, GLenum format = GL_RGBA, GLenum type = GL_UNSIGNED_BYTE, GLuint depth = 0);
+	Texture(GLenum target, unsigned char* img, int width, int height, GLenum internalformat = GL_RGBA8, GLenum format = GL_RGBA, GLenum type = GL_UNSIGNED_BYTE, GLuint depth = 0);
+	Texture(GLenum target, int width, int height, GLuint depth, GLenum internalformat = GL_RGBA8, GLenum format = GL_RGBA, GLenum type = GL_UNSIGNED_BYTE);
 
 	void addSubData(unsigned char* img, int width, int height, GLint xoff = 0, GLint yoff = 0, GLint zoff = 0, GLenum format = GL_RGBA, GLenum type = GL_UNSIGNED_BYTE);
+	void addSubData(const char* path, GLint xoff = 0, GLint yoff = 0, GLint zoff = 0, GLenum format = GL_RGBA, GLenum type = GL_UNSIGNED_BYTE);
 
 	inline GLenum getType() const
 	{

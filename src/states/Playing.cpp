@@ -85,44 +85,33 @@ void Playing::initialize()
 	/* Update here */
 	createSystem<InputHandler>(true);
 
-	/* Late Update here */
+	/* Late update here */
+	createSystem<ColliderUpdater>(true);
 
-	/* Render Here */
+	/* Render here */
+	createSystem<GridRenderer>();
 	createSystem<LineRenderer>();
 	createSystem<SpriteRenderer>();
 
-	/* Late Render Here */
+	/* Late render here */
 	createSystem<TextRenderer>();
 	createSystem<DebugRenderer>();
 
+	// Main camera
 	auto cameraEnt = instantiate();
 	auto camera = cameraEnt->addComponent<Camera>();
-	camera->project(glm::ortho<float>(0.0f, 1280.0f, 0.0f, 720.0f, 0.1f, 100.0f));
-	camera->view(glm::vec2(0.0f, 0.0f));
+	camera->view2DInstant(glm::vec2(0.0f, 0.0f), 1.0f);
 
+	//Test sprite (with copy!)
 	auto screenQuad = instantiate();
-	screenQuad->addComponent<Sprite>()->addTexture<Sprite::DIFFUSE>("test_texture");
-	auto mat = screenQuad->addComponent<Material>();
-	mat->setShader("color", 0);
+	auto sprt = screenQuad->addComponent<Sprite>();
+	sprt->addTexture<Sprite::DIFFUSE>("NotGate");
+	sprt->enable(WRAP_MODE_NORMAL | BLEND_ALPHA);
 	auto sq_transform = screenQuad->addComponent<Transform>();
-	sq_transform->scale(glm::vec2(100.0f));
-	sq_transform->translate(glm::vec2(1280.0f / 2, 720.0f / 2));
+	sq_transform->scaleIncrement(glm::vec2(4.0f, 1.0f));
+	sq_transform->translateIncrement(glm::vec2(0.0f, 0.0f));
 
-	auto sq2 = instantiate(screenQuad);
-	sq2->getComponent<Transform>()->translate(glm::vec2(1280.0f / 2, 720.0f / 2) + glm::vec2(250.0f, 0.0f));
-	//sq2->getComponent<Sprite>()->removeTexture<Sprite::DIFFUSE>();
-
-	auto lineEnt = instantiate();
-	lineEnt->addComponent<Line>();
-	auto lt = lineEnt->addComponent<Transform>();
-	lt->scale(glm::vec2(1000.0f));
-	lt->translate(glm::vec2(100.0f));
-
-	auto testText = instantiate();
-	auto trf = testText->addComponent<Transform>();
-	trf->translate(glm::vec2(0.0f, 700.0f));
-	auto text = testText->addComponent<Text>();
-	text->addText("Hello world text!");
+	screenQuad->addComponent<Collider>()->bounding = math::BRect(0.0f, glm::vec2(0.0f), 8.0f, 2.0f);
 }
 
 void Playing::deinitialize()

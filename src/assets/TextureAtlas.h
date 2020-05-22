@@ -9,7 +9,8 @@
 class TextureAtlas : public Asset
 {
 public:
-	TextureAtlas(std::filesystem::path path, glm::ivec2 size, GLint count, GLint root); // Allocate and copy
+	TextureAtlas(std::filesystem::path path, glm::ivec2 size, GLint count, GLint root, GLenum internalformat); // Allocate and copy integrally
+	TextureAtlas(std::filesystem::path path, glm::ivec2 size, GLint count, GLint root); // Allocate and copy subdividing
 	TextureAtlas(glm::ivec2 size, GLint count, GLint root); // Allocate only
 
 	void addSubData(unsigned char* img, GLint x, GLint y);
@@ -22,12 +23,12 @@ public:
 		return texture_atlas;
 	}
 
-	inline void prepare(unsigned unit = 0) const
+	inline void bind(unsigned unit = 0) const
 	{
 		texture_atlas->bind(unit);
 	}
 
-	inline void done(unsigned unit = 0) const
+	inline void unbind(unsigned unit = 0) const
 	{
 		texture_atlas->unbind(unit);
 	}

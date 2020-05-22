@@ -564,7 +564,11 @@ namespace FCS
 	inline void SceneManager::Update()
 	{
 		//FIX: Use clock instead of the constant 0 placeholder in delta time
-		Instance().scenes.top()->internal_update(0);
+		static std::chrono::steady_clock::duration delta;
+		auto t0 = std::chrono::high_resolution_clock::now();
+		Instance().scenes.top()->internal_update(delta.count() / 10E6f);
+		auto t1 = std::chrono::high_resolution_clock::now();
+		delta = t1 - t0;
 	}
 
 	template<typename Scene>

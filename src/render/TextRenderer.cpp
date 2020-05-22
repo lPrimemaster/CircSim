@@ -44,6 +44,11 @@ void TextRenderer::update(FCS::Scene* scene, float deltaTime)
 		auto text = t->getComponent<Text>();
 		auto font = Registry::GetAsset<Charmap>(text->getFontName()); // Assure this doesn't become a problem
 		std::string textValue = text->getString();
+
+		// Skip empty text
+		if (textValue.size() == 0)
+			continue;
+
 		auto characters_info = font->getString(textValue);
 
 		glm::vec3 position = tfm->getPosition();

@@ -21,6 +21,7 @@ public:
 
 private:
 	Geometry* quad;
+	Material* mat;
 
 	FCS_SYSTEM(SpriteRenderer, 2); // Highest priority - last call
 };

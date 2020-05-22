@@ -40,6 +40,9 @@
     <Filter Include="Files\assets">
       <UniqueIdentifier>{72e8828a-630b-44ea-b0ce-fa453cb5dae0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Files\Physics">
+      <UniqueIdentifier>{bce14a1e-9f98-4ea5-9924-d441b0ace690}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -106,6 +109,12 @@
       <Filter>Files\assets</Filter>
     </ClCompile>
     <ClCompile Include="src\render\DebugRenderer.cpp">
+      <Filter>Files\render</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics\ColliderUpdater.cpp">
+      <Filter>Files\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\render\GridRenderer.cpp">
       <Filter>Files\render</Filter>
     </ClCompile>
   </ItemGroup>
@@ -189,6 +198,18 @@
       <Filter>Files\assets</Filter>
     </ClInclude>
     <ClInclude Include="src\render\DebugRenderer.h">
+      <Filter>Files\render</Filter>
+    </ClInclude>
+    <ClInclude Include="src\components\Node.h">
+      <Filter>Files\components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\components\Collider.h">
+      <Filter>Files\components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\physics\ColliderUpdater.h">
+      <Filter>Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render\GridRenderer.h">
       <Filter>Files\render</Filter>
     </ClInclude>
   </ItemGroup>

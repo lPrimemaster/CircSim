@@ -4,14 +4,24 @@
 
 #define FCS_NOSORT // We can use the system ordering as we like now
 #include "../core/ECS.h"
-#include "../render/SpriteRenderer.h"
-#include "../render/LineRenderer.h"
-#include "../render/TextRenderer.h"
 
-#include "../render/DebugRenderer.h"
-
+//Events
 #include "../events/InputHandler.h"
 
+//Collisions
+#include "../physics/ColliderUpdater.h"
+
+//Renderers
+#include "../render/SpriteRenderer.h"
+#include "../render/GridRenderer.h"
+#include "../render/LineRenderer.h"
+#include "../render/TextRenderer.h"
+#include "../render/DebugRenderer.h"
+
+//Extra components
+#include "../components/Collider.h"
+
+//Utils
 #include "../util/math.h"
 
 //TODO: Emplace the global callbacks inside the state as virtual functions to enable easier controll
